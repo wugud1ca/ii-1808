@@ -1,0 +1,6 @@
+{
+  "name": "Express Today",
+  "description": "B2B сервис международной логистики, выкупа и доставки товаров из Китая и Турции в Россию",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

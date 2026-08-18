@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+html, body {
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Container query setup for cargo tracking cards */
+.cargo-card-container {
+  container-type: inline-size;
+}
+
+/* Metric table grid responding to actual container width */
+.cargo-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+/* When the card container has at least 520px inline width, switch to 4 clean columns */
+@container (min-width: 520px) {
+  .cargo-metrics-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.625rem;
+  }
+}
+
+/* Typography rules to forbid tearing words or numbers */
+.cargo-metric-val {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+}
+
+/* Accessibility Mode Styles per Specification */
+html.accessibility-mode {
+  font-size: 20px !important;
+  line-height: 1.6 !important;
+  filter: contrast(115%);
+}
+
+html.accessibility-mode * {
+  animation: none !important;
+  transition: none !important;
+}
+
+html.accessibility-mode button:focus-visible,
+html.accessibility-mode a:focus-visible,
+html.accessibility-mode input:focus-visible {
+  outline: 4px solid #f59e0b !important;
+  outline-offset: 3px !important;
+}
