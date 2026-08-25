@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowRight, 
   CheckCircle2, 
@@ -30,6 +30,12 @@ import { CalculatorWidget } from '../common/CalculatorWidget';
 import { OfficialLegalEntitySection } from '../home/OfficialLegalEntitySection';
 import { trackEvent } from '../../utils/analytics';
 
+const TYPEWRITER_PHRASES = [
+  'Войти в личный кабинет',
+  'Пробовать бесплатно',
+  'Зарегистрироваться',
+];
+
 interface HomePageProps {
   onOpenLeadModal: (requestType?: string) => void;
   onNavigate: (route: string) => void;
@@ -37,6 +43,45 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate }) => {
   const [openFaqId, setOpenFaqId] = useState<string | null>('faq-1');
+
+  // Typewriter effect state for the Hero cabinet button
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentPhrase = TYPEWRITER_PHRASES[phraseIndex];
+    let timer: NodeJS.Timeout;
+
+    if (!isDeleting) {
+      // Typing phase: type letter by letter (~65ms)
+      if (displayText.length < currentPhrase.length) {
+        timer = setTimeout(() => {
+          setDisplayText(currentPhrase.slice(0, displayText.length + 1));
+        }, 65);
+      } else {
+        // Full phrase displayed: wait for 4 seconds (4000ms)
+        timer = setTimeout(() => {
+          setIsDeleting(true);
+        }, 4000);
+      }
+    } else {
+      // Deleting phase: backspace quickly (~30ms)
+      if (displayText.length > 0) {
+        timer = setTimeout(() => {
+          setDisplayText(currentPhrase.slice(0, displayText.length - 1));
+        }, 30);
+      } else {
+        // Fully cleared: short pause (~250ms), then move to next phrase
+        timer = setTimeout(() => {
+          setIsDeleting(false);
+          setPhraseIndex((prev) => (prev + 1) % TYPEWRITER_PHRASES.length);
+        }, 250);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, phraseIndex]);
 
   const toggleFaq = (id: string) => {
     setOpenFaqId(openFaqId === id ? null : id);
@@ -152,13 +197,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate 
               </button>
 
               <a
-                href={siteConfig.clientCabinet.loginUrl}
+                href="https://my.express-today.ru/registration"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-base px-7 py-4 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                onClick={() => trackEvent('cabinet_registration_click', { source: 'hero_typewriter_btn' })}
+                className="w-full sm:w-[310px] h-[58px] bg-slate-900 hover:bg-slate-800 text-white font-bold text-base px-6 rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 shrink-0 group border border-slate-800 select-none"
+                title="Регистрация в личном кабинете Express Today"
               >
-                <span>Войти в личный кабинет</span>
-                <ExternalLink className="w-4 h-4 text-blue-400" />
+                <span className="flex items-center justify-center min-w-0">
+                  <span className="whitespace-nowrap tracking-tight">{displayText}</span>
+                  <span className="w-[2px] h-4.5 bg-orange-400 ml-1 inline-block animate-pulse shrink-0" aria-hidden="true"></span>
+                </span>
+                <ExternalLink className="w-4 h-4 text-orange-400 shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
             </div>
 
@@ -230,6 +280,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate 
 
         </div>
       </section>
+
+      {/* Dedicated Video Showcase for LK Consolidation & Shipping */}
+      <div id="cabinet-video-showcase" className="max-w-7xl mx-auto px-4">
+        <CabinetVideoShowcase onOpenLeadModal={onOpenLeadModal} />
+      </div>
 
       {/* Customer Scenario Selector ("Какая задача у вас сейчас?") */}
       <section className="max-w-7xl mx-auto px-4">
@@ -374,11 +429,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate 
 
         </div>
       </section>
-
-      {/* Dedicated Video Showcase for LK Consolidation & Shipping */}
-      <div id="cabinet-video-showcase">
-        <CabinetVideoShowcase onOpenLeadModal={onOpenLeadModal} />
-      </div>
 
       {/* Client Cabinet Walkthrough Component */}
       <CabinetWalkthrough />

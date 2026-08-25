@@ -91,29 +91,17 @@ export const CabinetVideoShowcase: React.FC<CabinetVideoShowcaseProps> = ({ onOp
       <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-orange-600" />
-              <span>Личный кабинет</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              4 ключевых видеопроцесса в Личном кабинете
-            </h2>
-            <p className="text-sm text-slate-600 max-w-2xl">
-              Наглядная демонстрация основных действий внутри личного кабинета Express Today.
-            </p>
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-bold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-orange-600" />
+            <span>Личный кабинет</span>
           </div>
-
-          <a
-            href={siteConfig.clientCabinet.loginUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-colors cursor-pointer shrink-0"
-          >
-            <span>Войти в кабинет</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Контроль всех этапов поставки в Личном Кабинете
+          </h2>
+          <p className="text-sm text-slate-600 max-w-2xl">
+            Наглядная демонстрация основных действий и отслеживания внутри личного кабинета Express Today.
+          </p>
         </div>
 
         {/* 4 Process Switcher Tabs */}
