@@ -9,7 +9,14 @@ export const siteConfig: SiteConfig = {
   },
   email: 'hello@express-today.ru',
   emailHref: 'mailto:hello@express-today.ru',
-  officeAddress: 'Краснодар, Пушкина 2, оф. 6',
+  officeAddress: 'Москва, пер. Огородная Слобода, 5А, оф. 205',
+  russianOffices: [
+    { city: 'Москва', address: 'пер. Огородная Слобода, 5А, оф. 205' },
+    { city: 'Санкт-Петербург', address: 'Петроградская наб., 18, оф. 27' },
+    { city: 'Краснодар', address: 'Пушкина 2, оф. 6' },
+    { city: 'Новосибирск', address: 'ул. Фрунзе, 5, оф. 311' },
+    { city: 'Хабаровск', address: 'ул. Карла Маркса, 96А, оф. 77' },
+  ],
   chinaWarehouse: 'Гуанчжоу, 广州市越秀区荔德路318号汇富商贸中',
   clientCabinet: {
     loginUrl: 'https://my.express-today.ru/',

@@ -42,6 +42,12 @@ export interface AnalyticsConfig {
   ga4Id: string;
 }
 
+export interface OfficeLocation {
+  city: string;
+  address: string;
+  isMain?: boolean;
+}
+
 export interface SiteConfig {
   brandName: string;
   logoAlt: string;
@@ -49,6 +55,7 @@ export interface SiteConfig {
   email: string;
   emailHref: string;
   officeAddress: string;
+  russianOffices?: OfficeLocation[];
   chinaWarehouse: string;
   clientCabinet: ClientCabinetConfig;
   legal: LegalConfig;

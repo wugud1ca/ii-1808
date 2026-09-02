@@ -48,7 +48,7 @@ export const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onClose, requestTy
           </div>
           <div>
             <h2 className="text-xl font-bold text-slate-900">Рассчитать поставку</h2>
-            <p className="text-sm text-slate-600">Заполните форму, менеджер свяжется с вами с точным расчетом</p>
+            <p className="text-sm text-slate-600">Оставьте заявку, менеджер свяжется с вами с точным расчетом или запросом уточнений</p>
           </div>
         </div>
 

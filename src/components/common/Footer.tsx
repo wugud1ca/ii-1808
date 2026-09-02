@@ -23,15 +23,25 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLeadModal }) =
               B2B-сервис международной логистики, выкупа, проверки, консолидации и доставки товаров из Китая и всех стран мира в Россию.
             </p>
 
-            <div className="space-y-2 pt-2 text-sm">
-              <div className="flex items-start gap-2 text-slate-300">
-                <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-semibold text-white">Офис в РФ:</span> {siteConfig.officeAddress}
+            <div className="space-y-3 pt-2 text-xs sm:text-sm">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-white font-semibold">
+                  <MapPin className="w-4 h-4 text-orange-400 shrink-0" />
+                  <span>Офисы и филиалы в России:</span>
+                </div>
+                <div className="space-y-1 pl-6 text-xs text-slate-300">
+                  <div>• <strong className="text-white">Москва:</strong> пер. Огородная Слобода, 5А, оф. 205</div>
+                  <div>• <strong className="text-white">Санкт-Петербург:</strong> Петроградская наб., 18, оф. 27</div>
+                  <div>• <strong className="text-white">Краснодар:</strong> Пушкина 2, оф. 6</div>
+                  <div>• <strong className="text-white">Новосибирск:</strong> ул. Фрунзе, 5, оф. 311</div>
+                  <div>• <strong className="text-white">Хабаровск:</strong> ул. Карла Маркса, 96А, оф. 77</div>
+                </div>
+                <div className="pl-6 text-[11px] text-orange-300 font-medium pt-0.5">
+                  ✓ Представительства и пункты выдачи в 65 городах России
                 </div>
               </div>
 
-              <div className="flex items-start gap-2 text-slate-300">
+              <div className="flex items-start gap-2 text-slate-300 pt-1">
                 <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-semibold text-white">Склад в КНР:</span> {siteConfig.chinaWarehouse}
