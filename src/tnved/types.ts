@@ -1,8 +1,6 @@
 export interface TnvedSession {
-  authenticated: boolean;
   ready: boolean;
-  mode: 'private';
-  expiresAt: string | null;
+  mode: 'public';
 }
 
 export interface SearchItem {

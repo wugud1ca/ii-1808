@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from 'react';
-import { ApiError, api, formatDateTime, initializeSession, parsePositiveDecimal } from './api';
+import { api, formatDateTime, parsePositiveDecimal } from './api';
 import type {
-  CalculationRequest, CalculationResponse, CardResponse, ExchangeRatesResponse, SearchItem, SearchResponse, TnvedSession,
+  CalculationRequest, CalculationResponse, CardResponse, ExchangeRatesResponse, SearchItem, SearchResponse,
 } from './types';
 
-export { initializeSession, parsePositiveDecimal };
+export { parsePositiveDecimal };
 
 const EXAMPLE_QUERIES = ['стул', 'кроссовки', '9401790009'];
 
@@ -307,7 +307,6 @@ function SearchPane({ onOpenCard }: { onOpenCard: (code: string) => void }) {
       if (res.kind === 'code' && res.items.length === 1 && res.items[0].isLeaf) onOpenCard(res.items[0].code);
     } catch (e: any) {
       if (id !== seq.current) return;
-      if (e instanceof ApiError && e.status === 401) return;
       setError(e instanceof Error ? e.message : 'Ошибка поиска.');
       setResult(null);
     } finally {
@@ -444,38 +443,8 @@ function SearchPane({ onOpenCard }: { onOpenCard: (code: string) => void }) {
   );
 }
 
-function AuthScreen({ onAuthed }: { onAuthed: (s: TnvedSession) => void }) {
-  const [token, setToken] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    setBusy(true); setError(null);
-    try { onAuthed(await api.access(token.trim())); }
-    catch (err: any) { setError(err instanceof Error ? err.message : 'Неверная ссылка доступа.'); }
-    finally { setBusy(false); }
-  };
-  return (
-    <div className="mx-auto max-w-md rounded-xl border border-slate-200 p-6">
-      <h2 className="text-lg font-bold text-slate-900">Закрытое тестирование</h2>
-      <p className="mt-2 text-sm text-slate-600">Страница доступна только по приглашению. Введите код доступа из персональной ссылки.</p>
-      <form onSubmit={submit} className="mt-4 space-y-3">
-        <input value={token} onChange={(e) => setToken(e.target.value)} type="password" autoComplete="off" placeholder="Код доступа" aria-label="Код доступа"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-orange-500 focus:outline-none" />
-        <button type="submit" disabled={busy || token.trim().length < 8}
-          className="w-full rounded-md bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50">
-          {busy ? 'Проверка…' : 'Войти'}
-        </button>
-        {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
-      </form>
-    </div>
-  );
-}
-
 export default function TnvedApp() {
-  const [session, setSession] = useState<TnvedSession | null>(null);
-  const [sessionLoading, setSessionLoading] = useState(true);
-  const [accessError, setAccessError] = useState<string | null>(null);
+  const [ready, setReady] = useState<boolean | null>(null);
   const [card, setCard] = useState<CardResponse | null>(null);
   const [cardLoading, setCardLoading] = useState(false);
   const [cardError, setCardError] = useState<string | null>(null);
@@ -500,49 +469,35 @@ export default function TnvedApp() {
     let cancelled = false;
     (async () => {
       try {
-        const s = await initializeSession();
-        if (!cancelled) setSession(s);
-      } catch (e: any) {
-        if (!cancelled) {
-          setAccessError(e instanceof Error ? e.message : null);
-          try { const s = await api.session(); if (!cancelled) setSession(s); } catch { /* stays unauthenticated */ }
-        }
-      } finally {
-        if (!cancelled) setSessionLoading(false);
+        const s = await api.session();
+        if (!cancelled) setReady(s.ready);
+      } catch {
+        if (!cancelled) setReady(false);
       }
     })();
     return () => { cancelled = true; };
   }, []);
 
-  const logout = async () => { try { await api.logout(); } catch { /* ignore */ } setSession(null); setCard(null); };
-
-  if (sessionLoading) {
+  if (ready === null) {
     return <div className="mx-auto max-w-3xl p-6 text-center text-slate-500">Загрузка…</div>;
   }
-  if (!session?.authenticated) {
+  if (!ready) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
-        <header className="mb-6 flex items-center justify-between">
+        <header className="mb-6">
           <h1 className="text-xl font-bold text-slate-900">ТН ВЭД — подбор кода и предварительный расчёт</h1>
-          <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">Закрытое тестирование</span>
         </header>
-        {accessError && <p className="mb-4 text-sm text-red-600">{accessError}</p>}
-        <AuthScreen onAuthed={setSession} />
+        <p className="text-sm text-slate-600">Сервис временно недоступен. Попробуйте позже.</p>
+        <p className="mt-4 text-sm"><a className="text-orange-600 hover:underline" href="https://express-today.ru/">← Вернуться на сайт Express Today</a></p>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <header className="mb-6 flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900">ТН ВЭД — подбор кода и предварительный расчёт</h1>
-          <p className="text-sm text-slate-500">Поиск кода по товару, ставки пошлины и НДС. Предварительный расчёт — не решение о классификации.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">Закрытое тестирование</span>
-          <button type="button" onClick={logout} className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50">Выйти</button>
-        </div>
+      <header className="mb-6">
+        <h1 className="text-xl font-bold text-slate-900">ТН ВЭД — подбор кода и предварительный расчёт</h1>
+        <p className="text-sm text-slate-500">Поиск кода по товару, ставки пошлины и НДС. Предварительный расчёт — не решение о классификации.</p>
       </header>
 
       <SearchPane onOpenCard={openCard} />
@@ -554,7 +509,7 @@ export default function TnvedApp() {
       </div>
 
       <footer className="mt-10 border-t border-slate-200 pt-4 text-xs text-slate-500">
-        <p>Страница в режиме закрытого тестирования. Данные ТН ВЭД предоставлены TKS.</p>
+        <p>Данные ТН ВЭД предоставлены TKS. Расчёт предварительный и не является решением о классификации.</p>
         <p className="mt-1"><a className="text-orange-600 hover:underline" href="https://express-today.ru/">← Вернуться на сайт Express Today</a></p>
       </footer>
     </div>

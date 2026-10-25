@@ -40,21 +40,6 @@ export async function requestJson<T>(path: string, options: RequestInit = {}): P
   }
 }
 
-export async function initializeSession(
-  location: Pick<Location, 'hash' | 'pathname' | 'search'> = window.location,
-  history: Pick<History, 'replaceState'> = window.history,
-): Promise<TnvedSession> {
-  let token = new URLSearchParams(location.hash.slice(1)).get('access');
-  if (token !== null) {
-    // Remove the fragment synchronously, before any request or React render.
-    history.replaceState(null, '', `${location.pathname}${location.search}`);
-    try {
-      await requestJson('/access', { method: 'POST', body: JSON.stringify({ token }) });
-    } finally { token = null; }
-  }
-  return requestJson<TnvedSession>('/session');
-}
-
 export function parsePositiveDecimal(value: string): number | null {
   const clean = value.trim();
   if (!/^(?:\d+(?:[.,]\d+)?|[.,]\d+)$/.test(clean)) return null;
@@ -64,8 +49,6 @@ export function parsePositiveDecimal(value: string): number | null {
 
 export const api = {
   session: () => requestJson<TnvedSession>('/session'),
-  access: (token: string) => requestJson<TnvedSession>('/access', { method: 'POST', body: JSON.stringify({ token }) }),
-  logout: () => requestJson<TnvedSession>('/logout', { method: 'POST', body: '{}' }),
   search: (q: string, page: number) => requestJson<SearchResponse>(`/search?q=${encodeURIComponent(q)}&page=${page}`),
   card: (code: string) => requestJson<CardResponse>(`/card/${code}`),
   rates: () => requestJson<ExchangeRatesResponse>('/rates'),

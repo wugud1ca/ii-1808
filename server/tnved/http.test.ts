@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { once } from 'node:events';
 import test from 'node:test';
 import express from 'express';
@@ -7,16 +6,11 @@ import { createTnvedRouter, type TnvedDependencies } from './http';
 import { TksClient, TnvedError } from './client';
 import { parseExchangeRates } from './rates';
 
-const invitation = 't'.repeat(43); // synthetic offline fixture, not an access credential
-const previewHash = createHash('sha256').update(invitation).digest('hex');
-const origin = 'https://express-today.ru';
-
 async function harness(overrides: Partial<TnvedDependencies> = {}) {
   const app = express();
   const calls: string[] = [];
   const deps: TnvedDependencies = {
-    key: 'a'.repeat(32), previewHash, sessionSecret: 'b'.repeat(64),
-    previewExpiresAt: '2099-01-01T00:00:00.000Z', origin, secureCookies: true,
+    key: 'a'.repeat(32),
     api: { card: async(code) => { calls.push(code); return { data: { CODE: code }, fetchedAt: new Date().toISOString(), cached: false }; }, search: async(q) => { calls.push(q); return { data: [], fetchedAt: new Date().toISOString(), cached: false }; } },
     normalizeCard: (raw: any, fetchedAt, cached) => ({ code: raw.CODE, fetchedAt, cached }) as any,
     normalizeSearch: (_raw, q) => ({ query: q, items: [] }) as any,
@@ -33,78 +27,63 @@ async function harness(overrides: Partial<TnvedDependencies> = {}) {
   return { base, close, calls };
 }
 
-async function login(base: string) {
-  const response = await fetch(base + '/access', { method: 'POST', headers: { 'content-type': 'application/json', origin }, body: JSON.stringify({ token: invitation }) });
-  assert.equal(response.status, 200);
-  return response.headers.get('set-cookie')!;
-}
-
-test('private endpoints reject unauthenticated access without contacting TKS', async () => {
+test('public endpoints work without any authentication', async () => {
   const h = await harness();
   try {
+    assert.deepEqual(await fetch(h.base + '/session').then((r) => r.json()), { ready: true, mode: 'public' });
+    assert.equal((await fetch(h.base + '/card/9401790009')).status, 200);
+    assert.equal((await fetch(h.base + '/search?q=стул')).status, 200);
+    assert.equal((await fetch(h.base + '/rates')).status, 200);
+    assert.deepEqual(h.calls, ['9401790009', 'стул']);
+  } finally { await h.close(); }
+});
+
+test('missing key reports ready:false and 503s data endpoints without contacting TKS', async () => {
+  const h = await harness({ key: '' });
+  try {
+    assert.deepEqual(await fetch(h.base + '/session').then((r) => r.json()), { ready: false, mode: 'public' });
     for (const path of ['/search?q=стул', '/card/9401790009', '/rates']) {
-      const res = await fetch(h.base + path);
-      assert.equal(res.status, 401);
-      assert.match(res.headers.get('x-robots-tag')!, /noindex/);
-      assert.match(res.headers.get('cache-control')!, /no-store/);
+      assert.equal((await fetch(h.base + path)).status, 503, path);
     }
     assert.deepEqual(h.calls, []);
   } finally { await h.close(); }
 });
 
-test('invitation produces a signed HttpOnly Secure session, not a provider key', async () => {
+test('responses carry no-store/noindex hygiene headers', async () => {
   const h = await harness();
   try {
-    const cookie = await login(h.base);
-    assert.match(cookie, /HttpOnly/); assert.match(cookie, /Secure/); assert.match(cookie, /SameSite=Strict/);
-    assert.ok(!cookie.includes(invitation)); assert.ok(!cookie.includes('a'.repeat(32)));
-    const session = await fetch(h.base + '/session', { headers: { cookie: cookie.split(';')[0] } }).then(r => r.json());
-    assert.equal(session.authenticated, true);
-    const card = await fetch(h.base + '/card/9401790009', { headers: { cookie: cookie.split(';')[0] } });
-    assert.equal(card.status, 200); assert.equal((await card.json()).code, '9401790009');
+    const res = await fetch(h.base + '/session');
+    assert.match(res.headers.get('x-robots-tag')!, /noindex/);
+    assert.match(res.headers.get('cache-control')!, /no-store/);
   } finally { await h.close(); }
-});
-
-test('wrong invitation, cross-origin requests and tampered cookies fail closed', async () => {
-  const h = await harness();
-  try {
-    const other = await fetch(h.base + '/access', { method: 'POST', headers: { 'content-type': 'application/json', origin: 'https://evil.example' }, body: JSON.stringify({ token: invitation }) });
-    assert.equal(other.status, 403);
-    const wrong = await fetch(h.base + '/access', { method: 'POST', headers: { 'content-type': 'application/json', origin }, body: JSON.stringify({ token: 'x'.repeat(43) }) });
-    assert.equal(wrong.status, 401);
-    const cookie = await login(h.base);
-    const bad = cookie.split(';')[0] + 'x';
-    assert.equal((await fetch(h.base + '/card/9401790009', { headers: { cookie: bad } })).status, 401);
-  } finally { await h.close(); }
-});
-
-test('missing config or expired invitation cannot grant access', async () => {
-  for (const config of [{ key: '' }, { previewExpiresAt: '2000-01-01T00:00:00Z' }]) {
-    const h = await harness(config);
-    try {
-      const res = await fetch(h.base + '/access', { method: 'POST', headers: { 'content-type': 'application/json', origin }, body: JSON.stringify({ token: invitation }) });
-      assert.ok([401, 503].includes(res.status)); assert.deepEqual(h.calls, []);
-    } finally { await h.close(); }
-  }
 });
 
 test('malformed queries, excessive pagination and invalid code never reach TKS', async () => {
   const h = await harness();
   try {
-    const cookie = (await login(h.base)).split(';')[0];
     for (const path of ['/search?q=x', '/search?q=%3Cscript%3E', '/search?q=12345678901', '/search?q=стул&page=999', '/card/9401', '/search?q[]=стул']) {
-      assert.equal((await fetch(h.base + path, { headers: { cookie } })).status, 400, path);
+      assert.equal((await fetch(h.base + path)).status, 400, path);
     }
     assert.deepEqual(h.calls, []);
+  } finally { await h.close(); }
+});
+
+test('calculate validates the code and runs the estimator', async () => {
+  const h = await harness();
+  try {
+    const res = await fetch(h.base + '/calculate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ code: '9401790009', customsValueRub: 100, confirmedBaseRates: true }) });
+    assert.equal(res.status, 200);
+    assert.equal((await res.json()).totalRub, 100);
+    assert.deepEqual(h.calls, ['9401790009']);
   } finally { await h.close(); }
 });
 
 test('upstream exception text cannot leak a credential-bearing URL', async () => {
   const h = await harness({ api: { card: async () => { throw new Error('https://api1.tks.ru/tnved.json/json/' + 'a'.repeat(32)); }, search: async () => { throw new Error('secret'); } } });
   try {
-    const cookie = (await login(h.base)).split(';')[0];
-    const res = await fetch(h.base + '/card/9401790009', { headers: { cookie } });
-    assert.equal(res.status, 502); assert.ok(!(await res.text()).includes('a'.repeat(32)));
+    const res = await fetch(h.base + '/card/9401790009');
+    assert.equal(res.status, 502);
+    assert.ok(!(await res.text()).includes('a'.repeat(32)));
   } finally { await h.close(); }
 });
 

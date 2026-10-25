@@ -21,33 +21,6 @@ test('calculator requires server eligibility, all required inputs, and explicit 
 });
 
 // Pure frontend tests; no production API or provider is contacted.
-test('invitation fragment is removed before access and is never included in a GET', async () => {
-  const { initializeSession } = await import('./TnvedApp');
-  const originalFetch = globalThis.fetch;
-  const events: string[] = [];
-  const session = { authenticated: true, ready: true, mode: 'private', expiresAt: null };
-  globalThis.fetch = async (url, options) => {
-    events.push(String(url));
-    assert.equal(options?.credentials, 'same-origin');
-    assert.equal(options?.referrerPolicy, 'no-referrer');
-    if (String(url).endsWith('/access')) {
-      assert.equal(events[0], '/tnved?view=test');
-      assert.equal(options?.method, 'POST');
-      assert.deepEqual(JSON.parse(String(options?.body)), { token: 'offline-fixture-only' });
-      return new Response(null, { status: 204 });
-    }
-    assert.equal(options?.body, undefined);
-    return Response.json(session);
-  };
-  try {
-    const result = await initializeSession(
-      { hash: '#access=offline-fixture-only', pathname: '/tnved', search: '?view=test' },
-      { replaceState: (_state, _unused, url) => { events.push(String(url)); } },
-    );
-    assert.deepEqual(result, session);
-    assert.deepEqual(events, ['/tnved?view=test', '/api/tnved/access', '/api/tnved/session']);
-  } finally { globalThis.fetch = originalFetch; }
-});
 test('decimal input accepts a comma and rejects non-positive or non-finite values', async () => {
   const { parsePositiveDecimal } = await import('./TnvedApp');
   assert.equal(parsePositiveDecimal(' 1250,50 '), 1250.5);
