@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import 'dotenv/config';
+import { createTnvedRouterFromEnv } from './server/tnved/bootstrap';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const DEFAULT_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '614478298';
@@ -247,6 +248,9 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Private TKS TN VED search/calculator (closed testing, /api/tnved/*).
+  app.use('/api/tnved', createTnvedRouterFromEnv(process.env));
+
   // API Route for receiving leads
   app.post('/api/lead', (req, res) => {
     console.log('Received lead submission:', req.body);
@@ -274,6 +278,9 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
+    app.get('/tnved', (_req, res) => {
+      res.sendFile(path.join(distPath, 'tnved.html'));
+    });
     app.get('*', (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
