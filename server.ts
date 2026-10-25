@@ -281,6 +281,9 @@ async function startServer() {
     app.get('/tnved', (_req, res) => {
       res.sendFile(path.join(distPath, 'tnved.html'));
     });
+    app.get('/tnved2', (_req, res) => {
+      res.sendFile(path.join(distPath, 'tnved2.html'));
+    });
     app.get('*', (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });

@@ -443,7 +443,7 @@ function SearchPane({ onOpenCard }: { onOpenCard: (code: string) => void }) {
   );
 }
 
-export default function TnvedApp() {
+export default function TnvedApp({ embedded = false }: { embedded?: boolean } = {}) {
   const [ready, setReady] = useState<boolean | null>(null);
   const [card, setCard] = useState<CardResponse | null>(null);
   const [cardLoading, setCardLoading] = useState(false);
@@ -494,7 +494,7 @@ export default function TnvedApp() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className={embedded ? 'mx-auto max-w-7xl px-4 py-8' : 'mx-auto max-w-6xl px-4 py-6'}>
       <header className="mb-6">
         <h1 className="text-xl font-bold text-slate-900">ТН ВЭД — подбор кода и предварительный расчёт</h1>
         <p className="text-sm text-slate-500">Поиск кода по товару, ставки пошлины и НДС. Предварительный расчёт — не решение о классификации.</p>
@@ -508,10 +508,12 @@ export default function TnvedApp() {
         {card && <CardView card={card} rates={rates} />}
       </div>
 
-      <footer className="mt-10 border-t border-slate-200 pt-4 text-xs text-slate-500">
-        <p>Данные ТН ВЭД предоставлены TKS. Расчёт предварительный и не является решением о классификации.</p>
-        <p className="mt-1"><a className="text-orange-600 hover:underline" href="https://express-today.ru/">← Вернуться на сайт Express Today</a></p>
-      </footer>
+      {!embedded && (
+        <footer className="mt-10 border-t border-slate-200 pt-4 text-xs text-slate-500">
+          <p>Данные ТН ВЭД предоставлены TKS. Расчёт предварительный и не является решением о классификации.</p>
+          <p className="mt-1"><a className="text-orange-600 hover:underline" href="https://express-today.ru/">← Вернуться на сайт Express Today</a></p>
+        </footer>
+      )}
     </div>
   );
 }

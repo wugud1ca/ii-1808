@@ -16,6 +16,7 @@ export default defineConfig(() => {
         input: {
           main: path.resolve(__dirname, 'index.html'),
           tnved: path.resolve(__dirname, 'tnved.html'),
+          tnved2: path.resolve(__dirname, 'tnved2.html'),
         },
       },
     },
