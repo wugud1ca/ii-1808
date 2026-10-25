@@ -24,7 +24,7 @@ export function apiHeaders(_req: Request, res: Response, next: () => void) {
 export function createTnvedRouter(deps: TnvedDependencies) {
   const router = express.Router();
   const traffic = new Map<string, { count: number; until: number }>();
-  const ready = /^[a-z0-9]{32}$/.test(deps.key);
+  const ready = /^[a-z0-9]{32}$/.test(deps.key) || Boolean((deps.api as any)?.isMock);
   const ip = (req: Request) => req.ip || req.socket.remoteAddress || 'unknown';
 
   function limited(map: typeof traffic, key: string, cap: number, ms: number) {

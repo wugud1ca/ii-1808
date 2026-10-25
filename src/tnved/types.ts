@@ -62,7 +62,7 @@ export interface CardResponse {
   estimation: {
     supported: boolean;
     reason: string | null;
-    requiredInputs: Array<'weightKg' | 'quantity' | 'volumeM3' | 'eurRate' | 'usdRate'>;
+    requiredInputs: Array<'customsValueRub' | 'weightKg' | 'quantity' | 'volumeM3' | 'eurRate' | 'usdRate'>;
     measureUnit: string | null;
     notes: string[];
   };

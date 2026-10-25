@@ -61,3 +61,11 @@ export function formatDateTime(iso: string | null | undefined): string {
   if (!Number.isFinite(date.getTime())) return '';
   return date.toLocaleString('ru-RU', { timeZone: 'Europe/Moscow', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
+
+export function formatCurrencyRub(amount: number): string {
+  return new Intl.NumberFormat('ru-RU', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount) + ' ₽';
+}
+

@@ -343,18 +343,22 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="text-xs text-slate-500">Честный Знак & Сертификация под ключ</div>
                     </div>
                   </button>
+                  <button
+                    onClick={() => { onNavigate('/tnved2'); setServicesDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
+                  >
+                    <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
+                    <div>
+                      <div className="font-semibold flex items-center gap-1.5">
+                        <span>ТН ВЭД & Таможня</span>
+                        <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700">Расчёт</span>
+                      </div>
+                      <div className="text-xs text-slate-500">Подбор кода, пошлины, Честный ЗНАК</div>
+                    </div>
+                  </button>
                 </div>
               )}
             </div>
-
-            <button
-              onClick={() => onNavigate('/world')}
-              className={`px-3 py-2 rounded-lg transition-colors cursor-pointer ${
-                activeNav === '/world' ? 'text-orange-600 font-bold bg-orange-50' : 'hover:text-orange-600 hover:bg-slate-50'
-              }`}
-            >
-              Направления (Весь мир)
-            </button>
 
             {/* Business Dropdown */}
             <div 
@@ -365,7 +369,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button 
                 onClick={() => setBusinessDropdownOpen(prev => !prev)}
                 className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors cursor-pointer ${
-                  activeNav.includes('marketpleisov') || activeNav.includes('fulfilment')
+                  activeNav.includes('marketpleisov') || activeNav.includes('fulfilment') || activeNav === '/world' || activeNav === '/raschet-stoimosti-dostavki-gruza-iz-kitaja' || activeNav === '/tnved2' || activeNav === '/tnved'
                     ? 'text-orange-600 font-semibold bg-orange-50' 
                     : 'hover:text-orange-600 hover:bg-slate-50'
                 }`}
@@ -375,7 +379,45 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               {businessDropdownOpen && (
-                <div className="absolute top-full left-0 w-72 bg-white border border-orange-200/80 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="absolute top-full left-0 w-80 bg-white border border-orange-200/80 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <button
+                    onClick={() => { onNavigate('/world'); setBusinessDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
+                  >
+                    <Globe2 className="w-4 h-4 text-orange-600 shrink-0" />
+                    <div>
+                      <div className="font-semibold">Направления (Весь мир)</div>
+                      <div className="text-xs text-slate-500">Турция, ОАЭ, Европа, Азия, Америка</div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => { onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja'); setBusinessDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
+                  >
+                    <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
+                    <div>
+                      <div className="font-semibold">Калькулятор доставки</div>
+                      <div className="text-xs text-slate-500">Расчет ориентировочной стоимости</div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => { onNavigate('/tnved2'); setBusinessDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-orange-600 shrink-0" />
+                    <div>
+                      <div className="font-semibold flex items-center gap-1.5">
+                        <span>ТН ВЭД & Таможенный расчёт</span>
+                        <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700">NEW</span>
+                      </div>
+                      <div className="text-xs text-slate-500">Подбор кода, пошлины, Честный ЗНАК</div>
+                    </div>
+                  </button>
+
+                  <div className="my-1 border-t border-slate-100" />
+
                   <button
                     onClick={() => { onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov'); setBusinessDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors"
@@ -400,16 +442,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Zap className="w-4 h-4 text-orange-600" />
               <span>Тарифы онлайн ⚡</span>
-            </button>
-
-            <button
-              onClick={() => onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja')}
-              className={`px-3 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeNav === '/raschet-stoimosti-dostavki-gruza-iz-kitaja' ? 'text-orange-600 font-semibold bg-orange-50' : 'hover:text-orange-600 hover:bg-slate-50'
-              }`}
-            >
-              <CalcIcon className="w-4 h-4 text-slate-500" />
-              <span>Калькулятор</span>
             </button>
 
             <button
@@ -826,21 +858,16 @@ export const Header: React.FC<HeaderProps> = ({
                         <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>Документы для ввоза (Честный Знак & Сертификация)</span>
                       </button>
+                      <button
+                        onClick={() => { onNavigate('/tnved2'); setMobileMenuOpen(false); }}
+                        className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
+                      >
+                        <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
+                        <span>ТН ВЭД & Таможенный расчёт (Честный ЗНАК, пошлины)</span>
+                      </button>
                     </div>
                   )}
                 </div>
-
-                {/* World Directions */}
-                <button
-                  onClick={() => { onNavigate('/world'); setMobileMenuOpen(false); }}
-                  className="w-full p-3 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 text-orange-950 font-bold text-sm text-left flex items-center justify-between cursor-pointer min-h-[48px]"
-                >
-                  <span className="flex items-center gap-2">
-                    <Globe2 className="w-5 h-5 text-orange-600" />
-                    <span>🌍 Направление Весь мир</span>
-                  </span>
-                  <ChevronRight className="w-4 h-4 text-orange-600" />
-                </button>
 
                 {/* For Business Collapsible Accordion */}
                 <div className="border rounded-xl border-slate-200 overflow-hidden bg-slate-50/50">
@@ -857,6 +884,28 @@ export const Header: React.FC<HeaderProps> = ({
 
                   {mobileBusinessOpen && (
                     <div className="bg-white border-t border-slate-200 p-2 space-y-1 text-xs">
+                      <button
+                        onClick={() => { onNavigate('/world'); setMobileMenuOpen(false); }}
+                        className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
+                      >
+                        <Globe2 className="w-4 h-4 text-orange-600 shrink-0" />
+                        <span>Направления (Весь мир)</span>
+                      </button>
+                      <button
+                        onClick={() => { onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja'); setMobileMenuOpen(false); }}
+                        className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
+                      >
+                        <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
+                        <span>Калькулятор стоимости доставки</span>
+                      </button>
+                      <button
+                        onClick={() => { onNavigate('/tnved2'); setMobileMenuOpen(false); }}
+                        className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
+                      >
+                        <ShieldCheck className="w-4 h-4 text-orange-600 shrink-0" />
+                        <span>ТН ВЭД & Таможенный расчёт</span>
+                      </button>
+                      <div className="my-1 border-t border-slate-100" />
                       <button
                         onClick={() => { onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
@@ -882,17 +931,6 @@ export const Header: React.FC<HeaderProps> = ({
                     <span>Тарифы онлайн ⚡ (Aviasales-стиль)</span>
                   </span>
                   <ChevronRight className="w-4 h-4 text-orange-600" />
-                </button>
-
-                <button
-                  onClick={() => { onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja'); setMobileMenuOpen(false); }}
-                  className="w-full p-3 rounded-xl hover:bg-orange-50/60 text-slate-900 font-bold text-sm text-left flex items-center justify-between cursor-pointer min-h-[48px]"
-                >
-                  <span className="flex items-center gap-2">
-                    <CalcIcon className="w-5 h-5 text-slate-600" />
-                    <span>Калькулятор стоимости</span>
-                  </span>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
                 </button>
 
                 <button

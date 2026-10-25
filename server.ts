@@ -270,6 +270,18 @@ async function startServer() {
 
   // Vite development middleware or static production serving
   if (process.env.NODE_ENV !== 'production') {
+    app.get(['/tnved2', '/tnved2/'], (_req, _res, next) => {
+      _req.url = '/tnved2.html';
+      next();
+    });
+    app.get(['/tnved3', '/tnved3/'], (_req, _res, next) => {
+      _req.url = '/tnved3.html';
+      next();
+    });
+    app.get(['/tnved', '/tnved/'], (_req, _res, next) => {
+      _req.url = '/tnved.html';
+      next();
+    });
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
@@ -283,6 +295,9 @@ async function startServer() {
     });
     app.get('/tnved2', (_req, res) => {
       res.sendFile(path.join(distPath, 'tnved2.html'));
+    });
+    app.get('/tnved3', (_req, res) => {
+      res.sendFile(path.join(distPath, 'tnved3.html'));
     });
     app.get('*', (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));

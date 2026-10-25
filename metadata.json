@@ -1,6 +1,8 @@
 {
-  "name": "Express Today",
+  "name": "Remix Express Today (site)",
   "description": "B2B сервис международной логистики, выкупа и доставки товаров из Китая и Турции в Россию",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

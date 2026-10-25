@@ -17,12 +17,14 @@ import { CalculatorWidget } from './components/common/CalculatorWidget';
 import { OnlineTariffSearchPage } from './components/pages/OnlineTariffSearchPage';
 import { WholesaleBuyoutPage } from './components/pages/WholesaleBuyoutPage';
 import { RetailBuyoutPage } from './components/pages/RetailBuyoutPage';
+import TnvedApp from './tnved/TnvedApp';
 
 // Известные маршруты сайта: всё, что рендерит renderCurrentView.
 // Всё остальное считается 404 и редиректится на выкуп с 1688.
 function isKnownRoute(path: string): boolean {
   if (path === '/') return true;
   const exact = [
+    '/tnved', '/tnved2', '/tnved3', '/tamozhnya-tnved', '/podbor-koda-tnved',
     '/online-tariffs', '/tariffs', '/turkey', '/world', '/faq', '/kontakti', '/test2', '/original19102026',
     '/raschet-stoimosti-dostavki-gruza-iz-kitaja',
     '/publichnaya-oferta',
@@ -191,6 +193,21 @@ export default function App() {
         <OnlineTariffSearchPage
           onOpenLeadModal={handleOpenDirectLeadModal}
           onNavigate={handleNavigate}
+        />
+      );
+    }
+
+    if (
+      currentRoute === '/tnved' ||
+      currentRoute === '/tnved2' ||
+      currentRoute === '/tnved3' ||
+      currentRoute === '/tamozhnya-tnved' ||
+      currentRoute === '/podbor-koda-tnved'
+    ) {
+      return (
+        <TnvedApp
+          embedded
+          onOpenLeadModal={handleOpenDirectLeadModal}
         />
       );
     }
