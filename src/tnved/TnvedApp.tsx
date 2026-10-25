@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from 'react';
 import { ApiError, api, formatDateTime, initializeSession, parsePositiveDecimal } from './api';
 import type {
-  CalculationRequest, CalculationResponse, CardResponse, ExchangeRatesResponse, SearchResponse, TnvedSession,
+  CalculationRequest, CalculationResponse, CardResponse, ExchangeRatesResponse, SearchItem, SearchResponse, TnvedSession,
 } from './types';
 
 export { initializeSession, parsePositiveDecimal };
@@ -261,15 +261,41 @@ function SearchPane({ onOpenCard }: { onOpenCard: (code: string) => void }) {
   const [result, setResult] = useState<SearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(5);
   const seq = useRef(0);
+
+  // Autocomplete state
+  const [suggestions, setSuggestions] = useState<SearchResponse | null>(null);
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [highlight, setHighlight] = useState(-1);
+  const suggestSeq = useRef(0);
+  const debounceTimer = useRef<number | null>(null);
+  const wrapperRef = useRef<HTMLFormElement>(null);
+
+  const closeSuggest = useCallback(() => { setSuggestOpen(false); setHighlight(-1); }, []);
+
+  useEffect(() => {
+    const onDocMouseDown = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) closeSuggest();
+    };
+    document.addEventListener('mousedown', onDocMouseDown);
+    return () => {
+      document.removeEventListener('mousedown', onDocMouseDown);
+      if (debounceTimer.current !== null) window.clearTimeout(debounceTimer.current);
+    };
+  }, [closeSuggest]);
 
   const runSearch = useCallback(async (q: string, p: number) => {
     const id = ++seq.current;
+    suggestSeq.current++;
+    closeSuggest();
+    setSuggestions(null);
     setLoading(true); setError(null);
     try {
       const res = await api.search(q, p);
       if (id !== seq.current) return;
       setResult(res); setQuery(q); setPage(p);
+      setVisibleCount(5);
       if (res.kind === 'code' && res.items.length === 1 && res.items[0].isLeaf) onOpenCard(res.items[0].code);
     } catch (e: any) {
       if (id !== seq.current) return;
@@ -279,20 +305,85 @@ function SearchPane({ onOpenCard }: { onOpenCard: (code: string) => void }) {
     } finally {
       if (id === seq.current) setLoading(false);
     }
-  }, [onOpenCard]);
+  }, [onOpenCard, closeSuggest]);
+
+  const fetchSuggestions = useCallback(async (q: string) => {
+    const id = ++suggestSeq.current;
+    try {
+      const res = await api.search(q, 1);
+      if (id !== suggestSeq.current) return;
+      setSuggestions(res);
+      setSuggestOpen(true);
+      setHighlight(-1);
+    } catch {
+      if (id === suggestSeq.current) setSuggestions(null);
+    }
+  }, []);
+
+  const onChangeQuery = (e: ChangeEvent<HTMLInputElement>) => {
+    const q = e.target.value;
+    setQuery(q);
+    if (debounceTimer.current !== null) window.clearTimeout(debounceTimer.current);
+    const trimmed = q.trim();
+    if (trimmed.length >= 2) {
+      debounceTimer.current = window.setTimeout(() => fetchSuggestions(trimmed), 500);
+    } else {
+      suggestSeq.current++;
+      setSuggestions(null);
+      closeSuggest();
+    }
+  };
+
+  const selectSuggestion = (item: SearchItem) => {
+    suggestSeq.current++;
+    setSuggestions(null);
+    closeSuggest();
+    setQuery(item.code);
+    if (item.isLeaf) onOpenCard(item.code);
+    else runSearch(item.code, 1);
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (!suggestOpen || !suggestions || suggestions.items.length === 0) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); setHighlight((h) => Math.min(h + 1, suggestions.items.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setHighlight((h) => Math.max(h - 1, 0)); }
+    else if (e.key === 'Enter' && highlight >= 0) { e.preventDefault(); selectSuggestion(suggestions.items[highlight]); }
+    else if (e.key === 'Escape') closeSuggest();
+  };
 
   const submit = (e: FormEvent) => { e.preventDefault(); const q = query.trim(); if (q.length >= 2) runSearch(q, 1); };
 
+  const shownItems = result ? result.items.slice(0, visibleCount) : [];
+  const remaining = result ? result.items.length - visibleCount : 0;
+
   return (
     <div className="space-y-4">
-      <form onSubmit={submit} className="flex gap-2">
-        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Название товара или код ТН ВЭД"
+      <form onSubmit={submit} ref={wrapperRef} className="relative flex gap-2">
+        <input value={query} onChange={onChangeQuery} onKeyDown={onKeyDown}
+          onFocus={() => { if (suggestions && suggestions.items.length > 0) setSuggestOpen(true); }}
+          placeholder="Название товара или код ТН ВЭД"
           aria-label="Название товара или код ТН ВЭД"
+          autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
           className="min-w-0 flex-1 rounded-md border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-orange-500 focus:outline-none" />
         <button type="submit" disabled={loading || query.trim().length < 2}
           className="shrink-0 rounded-md bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50">
           {loading ? 'Поиск…' : 'Найти'}
         </button>
+        {suggestOpen && suggestions && suggestions.items.length > 0 && (
+          <ul className="absolute left-0 right-0 top-full z-10 mt-1 max-h-80 overflow-auto rounded-md border border-slate-200 bg-white py-1 shadow-lg">
+            {suggestions.items.slice(0, 8).map((item, i) => (
+              <li key={item.code}>
+                <button type="button"
+                  onMouseDown={(e) => { e.preventDefault(); selectSuggestion(item); }}
+                  onMouseEnter={() => setHighlight(i)}
+                  className={`flex w-full items-baseline gap-2 px-3 py-2 text-left text-sm ${highlight === i ? 'bg-orange-50' : 'hover:bg-slate-50'}`}>
+                  <span className="shrink-0 font-mono text-slate-800">{item.code}</span>
+                  <span className="truncate text-slate-600">{item.name}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </form>
       <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
         <span>Например:</span>
@@ -308,11 +399,13 @@ function SearchPane({ onOpenCard }: { onOpenCard: (code: string) => void }) {
       {result && !loading && (
         <div>
           <p className="text-sm text-slate-500">
-            {result.kind === 'name' ? <>Найдено {result.total} записей (показано {result.items.length})</> : <>Совпадения по коду</>}
+            {result.kind === 'name'
+              ? <>Найдено {result.total} записей (показано {shownItems.length})</>
+              : <>Совпадения по коду (показано {shownItems.length})</>}
           </p>
           {result.items.length === 0 && <p className="mt-2 text-sm text-slate-600">Ничего не найдено. Попробуйте иначе сформулировать запрос.</p>}
           <ul className="mt-2 space-y-2">
-            {result.items.map((item) => (
+            {shownItems.map((item) => (
               <li key={item.code}>
                 <button type="button" onClick={() => onOpenCard(item.code)}
                   className="w-full rounded-lg border border-slate-200 p-3 text-left transition-colors hover:border-orange-400 hover:bg-orange-50">
@@ -325,6 +418,12 @@ function SearchPane({ onOpenCard }: { onOpenCard: (code: string) => void }) {
               </li>
             ))}
           </ul>
+          {remaining > 0 && (
+            <button type="button" onClick={() => setVisibleCount(result.items.length)}
+              className="mt-3 w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:border-orange-400 hover:text-orange-700">
+              Показать ещё ({remaining})
+            </button>
+          )}
           {result.hasMore && (
             <div className="mt-3 flex items-center gap-3">
               {page > 1 && <button type="button" onClick={() => runSearch(query, page - 1)} className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50">← Назад</button>}
