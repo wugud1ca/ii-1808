@@ -21,6 +21,7 @@ export interface DocumentsConfig {
   privacyUrl: string;
   offerUrl: string;
   referralOfferUrl: string;
+  deliveryOfferUrl: string;
 }
 
 export interface SocialConfig {

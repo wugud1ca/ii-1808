@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { withTrackingParams } from '../../utils/urlParams';
 import { 
   UserCheck, 
   PackageCheck, 
@@ -30,14 +31,20 @@ export const CabinetWalkthrough: React.FC = () => {
     itemsCount: 420,
     weightKg: 215,
     volumeM3: 1.15,
-    photoCount: 12,
+    photoCount: 9,
     totalCostRmb: 28400,
     estimatedDelivery: '14.08.2026',
     trackingNumber: 'ETD-889122',
     photos: [
-      'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=400&q=80',
-      'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&q=80',
-      'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&q=80',
+      '/cabinet/w01.webp',
+      '/cabinet/w02.webp',
+      '/cabinet/w03.webp',
+      '/cabinet/w04.webp',
+      '/cabinet/w05.webp',
+      '/cabinet/w06.webp',
+      '/cabinet/w07.webp',
+      '/cabinet/w08.webp',
+      '/cabinet/w09.webp',
     ]
   };
 
@@ -62,7 +69,7 @@ export const CabinetWalkthrough: React.FC = () => {
 
           <div className="flex items-center gap-3 shrink-0">
             <a
-              href={siteConfig.clientCabinet.loginUrl}
+              href={withTrackingParams(siteConfig.clientCabinet.loginUrl)}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-md shadow-orange-600/25 transition-all flex items-center gap-2 cursor-pointer"
@@ -72,7 +79,7 @@ export const CabinetWalkthrough: React.FC = () => {
             </a>
 
             <a
-              href={siteConfig.clientCabinet.registrationUrl}
+              href={withTrackingParams(siteConfig.clientCabinet.registrationUrl)}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white hover:bg-orange-50 text-slate-800 font-bold text-sm px-4 py-3 rounded-xl border border-slate-300 transition-all cursor-pointer shadow-xs"

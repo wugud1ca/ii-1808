@@ -3,6 +3,7 @@ import { Send, CheckCircle2, AlertCircle, Loader2, ShieldCheck, Trash2, SlidersH
 import { siteConfig } from '../../siteConfig';
 import { LeadFormData } from '../../types';
 import { trackEvent } from '../../utils/analytics';
+import { validatePhone, PHONE_HINT } from '../../utils/phoneValidation';
 
 interface LeadFormProps {
   initialRequestType?: string;
@@ -195,8 +196,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
       setErrorMessage('Пожалуйста, укажите ваше имя');
       return;
     }
-    if (!formData.phone.trim() || formData.phone.length < 7) {
-      setErrorMessage('Пожалуйста, введите корректный номер телефона');
+    const phoneCheck = validatePhone(formData.phone);
+    if (!phoneCheck.valid) {
+      setErrorMessage(phoneCheck.error || 'Пожалуйста, введите корректный номер телефона');
       return;
     }
     if (!formData.agreedToPolicy) {
@@ -211,6 +213,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
     const payload = {
       ...formData,
       ...urlMeta,
+      phone: phoneCheck.normalized || formData.phone,
       timestamp: new Date().toISOString(),
     };
 
@@ -226,51 +229,6 @@ export const LeadForm: React.FC<LeadFormProps> = ({
 
       if (!res.ok) {
         console.warn(`Endpoint ${endpoint} returned status ${res.status}`);
-      }
-
-      // Direct client backup call to Telegram bot API to guarantee delivery
-      try {
-        const botToken = '614478298:AAFM1bFmrCerHEuGKMmqnSlFWhfNPGjgt6g';
-        const chatId = '614478298';
-
-        let msg = `🚀 <b>НОВАЯ ЗАЯВКА С САЙТА EXPRESS TODAY</b>\n\n`;
-        if (payload.requestType) msg += `📋 <b>Тип:</b> ${payload.requestType}\n`;
-        if (payload.name) msg += `👤 <b>Имя:</b> ${payload.name}\n`;
-        if (payload.phone) msg += `📞 <b>Тел:</b> <code>${payload.phone}</code>\n`;
-
-        const details = [];
-        if (payload.weightKg) details.push(`• Вес: ${payload.weightKg} кг`);
-        if (payload.volumeM3) details.push(`• Объем: ${payload.volumeM3} м³`);
-        if (payload.costEstimate) details.push(`• Оценка стоимости: ${payload.costEstimate}`);
-        if (payload.destinationCity) details.push(`• Город назначения: ${payload.destinationCity}`);
-        if (payload.needsDocuments) details.push(`• С документами: ${payload.needsDocuments ? 'Да' : 'Нет'}`);
-
-        if (details.length > 0) msg += `\n📦 <b>Детали груза:</b>\n${details.join('\n')}\n`;
-        if (payload.comment) msg += `\n💬 <b>Комментарий / Запрос:</b>\n${payload.comment}\n`;
-
-        msg += `\n🌐 <b>ИСТОЧНИК И МЕТКИ URL:</b>\n`;
-        msg += `🔗 <b>URL страницы:</b> ${payload.pageUrl || 'Не указан'}\n`;
-        msg += `❓ <b>Строка параметров URL (?):</b>\n<code>${payload.queryString || '(нет)'}</code>\n`;
-
-        if (payload.utmParams && Object.keys(payload.utmParams).length > 0) {
-          msg += `\n🎯 <b>UTM-метки:</b>\n`;
-          for (const [k, v] of Object.entries(payload.utmParams)) {
-            msg += `• <b>${k}:</b> ${v}\n`;
-          }
-        }
-
-        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: msg,
-            parse_mode: 'HTML',
-            disable_web_page_preview: true,
-          }),
-        }).catch(err => console.warn('Client telegram backup request note:', err));
-      } catch (tgErr) {
-        console.warn('Client telegram backup note:', tgErr);
       }
 
       setLoading(false);
@@ -361,6 +319,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
             onChange={e => setFormData({ ...formData, phone: e.target.value })}
             className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
           />
+          <p className="text-[11px] text-slate-400 pt-1 leading-snug">{PHONE_HINT}</p>
         </div>
       </div>
 

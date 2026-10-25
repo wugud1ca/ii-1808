@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { withTrackingParams } from '../../utils/urlParams';
 import { 
   Phone, 
   User, 
@@ -35,7 +36,6 @@ interface HeaderProps {
   onOpenLeadModal: (requestType?: string) => void;
   activeNav: string;
   onNavigate: (route: string) => void;
-  onOpenReadme: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -46,7 +46,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenLeadModal,
   activeNav,
   onNavigate,
-  onOpenReadme,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
@@ -86,12 +85,12 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleLoginClick = () => {
     trackEvent('click_login');
-    window.open(siteConfig.clientCabinet.loginUrl, '_blank');
+    window.open(withTrackingParams(siteConfig.clientCabinet.loginUrl), '_blank');
   };
 
   const handleRegClick = () => {
     trackEvent('click_registration');
-    window.open(siteConfig.clientCabinet.registrationUrl, '_blank');
+    window.open(withTrackingParams(siteConfig.clientCabinet.registrationUrl), '_blank');
   };
 
   return (
@@ -209,15 +208,6 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <Eye className="w-3.5 h-3.5" />
                 <span>Слабовидящим</span>
-              </button>
-
-              {/* Developer README */}
-              <button
-                onClick={onOpenReadme}
-                className="flex items-center gap-1 text-xs text-slate-400 hover:text-orange-300 transition-colors px-1.5 py-0.5 rounded border border-slate-800 hover:border-slate-700 cursor-pointer"
-                title="Файл конфигурации"
-              >
-                <span>README</span>
               </button>
 
               {/* Cabinet Login / Registration */}

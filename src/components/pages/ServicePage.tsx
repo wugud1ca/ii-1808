@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowLeft, CheckCircle2, ShieldCheck, Building2 } from 'lucide-react';
 import { coreServices } from '../../siteConfig';
 import { LeadForm } from '../common/LeadForm';
+import { CargoGallery } from '../common/CargoGallery';
 import {
   SupplierSearchSection,
   BuyoutPlatformSection,
@@ -75,6 +76,9 @@ export const ServicePage: React.FC<ServicePageProps> = ({ slug, onNavigate, onOp
               ))}
             </div>
           </div>
+
+          {/* Фото-галерея грузов для страницы карго-доставки */}
+          {slug === 'kargo-dostavka-iz-kitaia' && <CargoGallery />}
 
           {/* Render dedicated full detailed sections according to the requested service */}
           {isPoisk && <SupplierSearchSection onOpenLeadModal={onOpenLeadModal} />}

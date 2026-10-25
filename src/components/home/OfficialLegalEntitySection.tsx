@@ -18,7 +18,7 @@ export const OfficialLegalEntitySection: React.FC<OfficialLegalEntitySectionProp
   onOpenLeadModal
 }) => {
   const [isZoomed, setIsZoomed] = useState(false);
-  const [imgSrc] = useState('/china-legal-license.jpg');
+  const [imgSrc] = useState('/china-legal-license.webp');
   const [hasImgError, setHasImgError] = useState(false);
 
   const chessCards = [

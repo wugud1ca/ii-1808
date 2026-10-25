@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { withTrackingParams } from '../../utils/urlParams';
 import { 
   ArrowRight, 
   CheckCircle2, 
@@ -28,6 +29,7 @@ import { CabinetVideoShowcase } from '../common/CabinetVideoShowcase';
 import { TrackingWidget } from '../common/TrackingWidget';
 import { CalculatorWidget } from '../common/CalculatorWidget';
 import { OfficialLegalEntitySection } from '../home/OfficialLegalEntitySection';
+import { DailyArrivalsBlock } from '../common/DailyArrivalsBlock';
 import { trackEvent } from '../../utils/analytics';
 
 const TYPEWRITER_PHRASES = [
@@ -39,9 +41,10 @@ const TYPEWRITER_PHRASES = [
 interface HomePageProps {
   onOpenLeadModal: (requestType?: string) => void;
   onNavigate: (route: string) => void;
+  showDailyArrivals?: boolean;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate, showDailyArrivals = false }) => {
   const [openFaqId, setOpenFaqId] = useState<string | null>('faq-1');
 
   // Typewriter effect state for the Hero cabinet button
@@ -197,7 +200,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate 
               </button>
 
               <a
-                href="https://my.express-today.ru/registration"
+                href={withTrackingParams('https://my.express-today.ru/registration')}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent('cabinet_registration_click', { source: 'hero_typewriter_btn' })}
@@ -375,6 +378,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate 
 
         </div>
       </section>
+
+      {/* Тестовый блок приходов (страница /test2) — между «Как мы работаем» и «Мы работаем официально» */}
+      {showDailyArrivals && (
+        <div className="max-w-7xl mx-auto px-4">
+          <DailyArrivalsBlock />
+        </div>
+      )}
 
       {/* Official Chinese Legal Entity Block ("Мы работаем официально") */}
       <OfficialLegalEntitySection onOpenLeadModal={onOpenLeadModal} />

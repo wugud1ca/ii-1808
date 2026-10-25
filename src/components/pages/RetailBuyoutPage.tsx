@@ -44,10 +44,30 @@ interface RetailOrderCase {
   isLoading?: boolean;
 }
 
+// Relative arrival time: fresh at the top of the feed, up to a day old at the bottom
+// (kept in date+time format for a business look)
+function relativeArrival(minutesAgo: number, now: number = Date.now()): string {
+  const dt = new Date(now - minutesAgo * 60000);
+  const today = new Date(now);
+  const time = dt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  const sameDay = dt.getDate() === today.getDate() && dt.getMonth() === today.getMonth() && dt.getFullYear() === today.getFullYear();
+  if (sameDay) return `Сегодня, ${time}`;
+  const yesterday = new Date(now - 24 * 3600 * 1000);
+  const isYesterday = dt.getDate() === yesterday.getDate() && dt.getMonth() === yesterday.getMonth() && dt.getFullYear() === yesterday.getFullYear();
+  if (isYesterday) return `Вчера, ${time}`;
+  return `${dt.toLocaleDateString('ru-RU')}, ${time}`;
+}
+
+// Gradient for the base list: 30 min → 23 h (top → bottom)
+const INITIAL_ARRIVAL_OFFSETS_MIN = [30, 180, 330, 480, 630, 780, 930, 1080, 1230, 1380];
+
+// Fresh offsets for the live-inserted cards (first inserted = bottom of the live group)
+const LIVE_ARRIVAL_OFFSETS_MIN = [25, 18, 12, 7, 3];
+
 const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   {
     id: 'retail-1',
-    photo: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r01.webp',
     name: 'Nike Air Jordan 1 Retro High OG (Лимитированная серия)',
     category: 'Обувь / Streetwear',
     trackingNo: 'SF-CN-9912048',
@@ -62,7 +82,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-2',
-    photo: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r02.webp',
     name: 'Умные часы Apple Watch Ultra 2 (Официальный дилер)',
     category: 'Электроника',
     trackingNo: 'ZT-CN-8841029',
@@ -77,7 +97,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-3',
-    photo: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r03.webp',
     name: 'Кожаная сумка премиум-класса с персонализацией',
     category: 'Аксессуары и сумки',
     trackingNo: 'YT-CN-7729104',
@@ -92,7 +112,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-4',
-    photo: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r04.webp',
     name: 'Студийные полноразмерные наушники Sony WH-1000XM5',
     category: 'Аудиотехника',
     trackingNo: 'SF-CN-6618290',
@@ -107,7 +127,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-5',
-    photo: 'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r05.webp',
     name: 'Кроссовки New Balance 990v6 Made in USA',
     category: 'Обувь',
     trackingNo: 'SF-CN-5519283',
@@ -122,7 +142,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-6',
-    photo: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r06.webp',
     name: 'Компактный стабилизатор и экшн-камера DJI Osmo Pocket 3',
     category: 'Гаджеты / Видео',
     trackingNo: 'ZT-CN-4418290',
@@ -137,7 +157,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-7',
-    photo: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r07.webp',
     name: 'Дизайнерские солнцезащитные очки Gentle Monster',
     category: 'Оптика / Мода',
     trackingNo: 'YT-CN-3319028',
@@ -152,7 +172,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-8',
-    photo: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r08.webp',
     name: 'Коллекционные фигурки и арт-игрушки Pop Mart Mega Space',
     category: 'Хобби / Коллекции',
     trackingNo: 'SF-CN-2219804',
@@ -167,7 +187,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-9',
-    photo: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r09.webp',
     name: 'Утепленный оверсайз пуховик Arc\'teryx водонепроницаемый',
     category: 'Одежда Outdoor',
     trackingNo: 'SF-CN-1192840',
@@ -182,7 +202,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-10',
-    photo: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r10.webp',
     name: 'Механическая кастомная клавиатура с RGB и свитчами Gateron',
     category: 'Гейминг / IT',
     trackingNo: 'ZT-CN-0091823',
@@ -201,7 +221,7 @@ const INITIAL_RETAIL_CASES: RetailOrderCase[] = [
 const EXTRA_INCOMING_RETAIL_CASES: RetailOrderCase[] = [
   {
     id: 'retail-extra-1',
-    photo: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r11.webp',
     name: 'Кроссовки Adidas Yeezy Boost 350 V2 Onyx',
     category: 'Обувь / Streetwear',
     trackingNo: 'SF-CN-9988102',
@@ -217,7 +237,7 @@ const EXTRA_INCOMING_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-extra-2',
-    photo: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r12.webp',
     name: 'Набор шелковых пижам и постельного белья Mulberry Silk',
     category: 'Текстиль / Дом',
     trackingNo: 'ZT-CN-9977201',
@@ -233,7 +253,7 @@ const EXTRA_INCOMING_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-extra-3',
-    photo: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r13.webp',
     name: 'Смарт-браслеты Xiaomi Smart Band 9 и ремешки',
     category: 'Гаджеты',
     trackingNo: 'SF-CN-9966304',
@@ -249,7 +269,7 @@ const EXTRA_INCOMING_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-extra-4',
-    photo: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r14.webp',
     name: 'Набор уходовой косметики и сывороток премиум-бренда',
     category: 'Красота / Уход',
     trackingNo: 'YT-CN-9955410',
@@ -265,7 +285,7 @@ const EXTRA_INCOMING_RETAIL_CASES: RetailOrderCase[] = [
   },
   {
     id: 'retail-extra-5',
-    photo: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400&auto=format&fit=crop&q=80',
+    photo: '/retail/r15.webp',
     name: 'Кожаный кошелек и ремень ручной работы',
     category: 'Аксессуары',
     trackingNo: 'SF-CN-9944520',
@@ -290,7 +310,12 @@ export const RetailBuyoutPage: React.FC<RetailBuyoutPageProps> = ({
   onOpenLeadModal,
   onNavigate
 }) => {
-  const [orderList, setOrderList] = useState<RetailOrderCase[]>(INITIAL_RETAIL_CASES);
+  const [orderList, setOrderList] = useState<RetailOrderCase[]>(() =>
+    INITIAL_RETAIL_CASES.map((c, i) => ({
+      ...c,
+      arrivalDateAtWh: relativeArrival(INITIAL_ARRIVAL_OFFSETS_MIN[i] ?? 0),
+    }))
+  );
   const [addedCount, setAddedCount] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [toastOrder, setToastOrder] = useState<RetailOrderCase | null>(null);
@@ -316,8 +341,13 @@ export const RetailBuyoutPage: React.FC<RetailBuyoutPageProps> = ({
     const intervalTimer = setTimeout(() => {
       const nextItem = EXTRA_INCOMING_RETAIL_CASES[addedCount];
       if (nextItem) {
-        const loadingItem: RetailOrderCase = {
+        // Live cards get a fresh relative timestamp: the newest card lands on top
+        const liveItem: RetailOrderCase = {
           ...nextItem,
+          arrivalDateAtWh: relativeArrival(LIVE_ARRIVAL_OFFSETS_MIN[addedCount] ?? 3),
+        };
+        const loadingItem: RetailOrderCase = {
+          ...liveItem,
           isLoading: true
         };
 
@@ -337,7 +367,7 @@ export const RetailBuyoutPage: React.FC<RetailBuyoutPageProps> = ({
 
           // If user is not viewing the top of the list, trigger bottom-left push toast
           if (!isFeedTopInView()) {
-            setToastOrder(nextItem);
+            setToastOrder(liveItem);
           }
         }, 1300);
       }

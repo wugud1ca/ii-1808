@@ -48,7 +48,7 @@ export const ContactsPage: React.FC = () => {
   const offices = siteConfig.russianOffices || [
     { city: 'Москва', address: 'пер. Огородная Слобода, 5А, оф. 205' },
     { city: 'Санкт-Петербург', address: 'Петроградская наб., 18, оф. 27' },
-    { city: 'Краснодар', address: 'Пушкина 2, оф. 6' },
+    { city: 'Краснодар', address: 'Северная 484, этаж 3' },
     { city: 'Новосибирск', address: 'ул. Фрунзе, 5, оф. 311' },
     { city: 'Хабаровск', address: 'ул. Карла Маркса, 96А, оф. 77' },
   ];

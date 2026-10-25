@@ -1,0 +1,72 @@
+// Грузы, получаемые ежедневно. Порядок массива = порядок появления на странице.
+// Новые грузы (без веса/объёма) идут вперемешку со старыми.
+
+export interface DailyArrival {
+  ttn: string;
+  photo: string;
+  places: number | null;
+  weight: number | null;
+  volume: number | null;
+}
+
+export const dailyArrivals: DailyArrival[] = [
+  { ttn: 'D73566', photo: '/arrivals/d73566.webp', places: 10, weight: null, volume: null },
+  { ttn: 'D54961', photo: '/arrivals/d54961.webp', places: 1, weight: null, volume: null },
+  { ttn: 'D10839', photo: '/arrivals/d10839.webp', places: 9, weight: 315.4, volume: 0.95 },
+  { ttn: 'D94003', photo: '/arrivals/d94003.webp', places: 14, weight: null, volume: null },
+  { ttn: 'D12859', photo: '/arrivals/d12859.webp', places: 10, weight: 377.2, volume: 1 },
+  { ttn: 'D58678', photo: '/arrivals/d58678.webp', places: null, weight: null, volume: null },
+  { ttn: 'D17547', photo: '/arrivals/d17547.webp', places: 2, weight: 435.3, volume: 2.78 },
+  { ttn: 'D77230', photo: '/arrivals/d77230.webp', places: 19, weight: null, volume: null },
+  { ttn: 'D19533', photo: '/arrivals/d19533.webp', places: 1, weight: 361.5, volume: 2.4 },
+  { ttn: 'D16281', photo: '/arrivals/d16281.webp', places: 1, weight: null, volume: null },
+  { ttn: 'D23440', photo: '/arrivals/d23440.webp', places: 16, weight: 435.2, volume: 2.75 },
+  { ttn: 'D66898', photo: '/arrivals/d66898.webp', places: null, weight: null, volume: null },
+  { ttn: 'D29113', photo: '/arrivals/d29113.webp', places: 2, weight: 643, volume: 3.43 },
+  { ttn: 'D50216', photo: '/arrivals/d50216.webp', places: null, weight: null, volume: null },
+  { ttn: 'D31121', photo: '/arrivals/d31121.webp', places: 1, weight: 466, volume: 3.2 },
+  { ttn: 'D20443', photo: '/arrivals/d20443.webp', places: 3, weight: null, volume: null },
+  { ttn: 'D34989', photo: '/arrivals/d34989.webp', places: 21, weight: 392.7, volume: 2.12 },
+  { ttn: 'D37662', photo: '/arrivals/d37662.webp', places: null, weight: null, volume: null },
+  { ttn: 'D39957', photo: '/arrivals/d39957.webp', places: 9, weight: 322.4, volume: 1.4 },
+  { ttn: 'D52120', photo: '/arrivals/d52120.webp', places: null, weight: null, volume: null },
+  { ttn: 'D40285', photo: '/arrivals/d40285.webp', places: 6, weight: 474.9, volume: 1.99 },
+  { ttn: 'D91028', photo: '/arrivals/d91028.webp', places: 12, weight: null, volume: null },
+  { ttn: 'D41203', photo: '/arrivals/d41203.webp', places: 16, weight: 584.2, volume: 6.72 },
+  { ttn: 'D61425', photo: '/arrivals/d61425.webp', places: null, weight: null, volume: null },
+  { ttn: 'D4298', photo: '/arrivals/d4298.webp', places: 10, weight: 492.4, volume: 1.7 },
+  { ttn: 'D99221', photo: '/arrivals/d99221.webp', places: null, weight: null, volume: null },
+  { ttn: 'D46678', photo: '/arrivals/d46678.webp', places: 18, weight: 429.8, volume: 2.19 },
+  { ttn: 'D82723', photo: '/arrivals/d82723.webp', places: null, weight: null, volume: null },
+  { ttn: 'D47120', photo: '/arrivals/d47120.webp', places: 7, weight: 339.9, volume: 0.67 },
+  { ttn: 'D57326', photo: '/arrivals/d57326.webp', places: null, weight: null, volume: null },
+  { ttn: 'D51526', photo: '/arrivals/d51526.webp', places: 9, weight: 559.4, volume: 2.3 },
+  { ttn: 'D20961', photo: '/arrivals/d20961.webp', places: null, weight: null, volume: null },
+  { ttn: 'D56480', photo: '/arrivals/d56480.webp', places: 15, weight: 353.6, volume: 2.42 },
+  { ttn: 'D65530', photo: '/arrivals/d65530.webp', places: 3, weight: null, volume: null },
+  { ttn: 'D56488', photo: '/arrivals/d56488.webp', places: 4, weight: 305.4, volume: 1.06 },
+  { ttn: 'D91263', photo: '/arrivals/d91263.webp', places: null, weight: null, volume: null },
+  { ttn: 'D57949', photo: '/arrivals/d57949.webp', places: 2, weight: 414.5, volume: 5.5 },
+  { ttn: 'D91529', photo: '/arrivals/d91529.webp', places: 5, weight: null, volume: null },
+  { ttn: 'D59791', photo: '/arrivals/d59791.webp', places: 1, weight: 331, volume: 1.35 },
+  { ttn: 'D99553', photo: '/arrivals/d99553.webp', places: null, weight: null, volume: null },
+  { ttn: 'D66880', photo: '/arrivals/d66880.webp', places: 1, weight: 577.5, volume: 1.18 },
+  { ttn: 'D63146', photo: '/arrivals/d63146.webp', places: null, weight: null, volume: null },
+  { ttn: 'D6752', photo: '/arrivals/d6752.webp', places: 9, weight: 414.7, volume: 1.56 },
+  { ttn: 'D30018', photo: '/arrivals/d30018.webp', places: 1, weight: null, volume: null },
+  { ttn: 'D68595', photo: '/arrivals/d68595.webp', places: 9, weight: 379.6, volume: 1.52 },
+  { ttn: 'D55725', photo: '/arrivals/d55725.webp', places: 2, weight: null, volume: null },
+  { ttn: 'D79535', photo: '/arrivals/d79535.webp', places: 2, weight: 392.5, volume: 4.07 },
+  { ttn: 'D95255', photo: '/arrivals/d95255.webp', places: 10, weight: null, volume: null },
+  { ttn: 'D84976', photo: '/arrivals/d84976.webp', places: 1, weight: 583.5, volume: 2.97 },
+  { ttn: 'D40036', photo: '/arrivals/d40036.webp', places: null, weight: null, volume: null },
+  { ttn: 'D86663', photo: '/arrivals/d86663.webp', places: 1, weight: 340, volume: 2.93 },
+  { ttn: 'D63511', photo: '/arrivals/d63511.webp', places: 7, weight: null, volume: null },
+  { ttn: 'D8698', photo: '/arrivals/d8698.webp', places: 1, weight: 325, volume: 2.55 },
+  { ttn: 'D58816', photo: '/arrivals/d58816.webp', places: null, weight: null, volume: null },
+  { ttn: 'D87939', photo: '/arrivals/d87939.webp', places: 1, weight: 377, volume: 1.56 },
+  { ttn: 'D80192', photo: '/arrivals/d80192.webp', places: null, weight: null, volume: null },
+  { ttn: 'D93374', photo: '/arrivals/d93374.webp', places: 15, weight: 651.4, volume: 1.35 },
+  { ttn: 'D98319', photo: '/arrivals/d98319.webp', places: 14, weight: 462.2, volume: 2.56 },
+  { ttn: 'D9900', photo: '/arrivals/d9900.webp', places: 10, weight: 305.1, volume: 0.63 },
+];

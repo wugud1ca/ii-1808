@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { withTrackingParams } from '../../utils/urlParams';
 import { Search, Loader2, Package, MapPin, CheckCircle, AlertTriangle, ArrowRight, ExternalLink } from 'lucide-react';
 import { siteConfig } from '../../siteConfig';
 import { TrackingResult } from '../../types';
@@ -126,7 +127,7 @@ export const TrackingWidget: React.FC = () => {
         <div className="text-center text-sm text-slate-600">
           Нет накладной?{' '}
           <a
-            href={siteConfig.clientCabinet.loginUrl}
+            href={withTrackingParams(siteConfig.clientCabinet.loginUrl)}
             target="_blank"
             rel="noopener noreferrer"
             className="text-orange-600 hover:text-orange-700 font-bold underline inline-flex items-center gap-1"

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { withTrackingParams } from '../../utils/urlParams';
 import { 
   ShoppingBag, 
   Wallet, 
@@ -27,6 +28,17 @@ interface VideoProcess {
 
 export const CabinetVideoShowcase: React.FC<CabinetVideoShowcaseProps> = ({ onOpenLeadModal }) => {
   const [activeId, setActiveId] = useState<number>(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Autoplay the shown video: the element remounts on tab switch (key={videoSrc}),
+  // and explicit play() covers browsers with a strict autoplay policy.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v) {
+      v.muted = true;
+      v.play().catch(() => { /* fallback: user can press the play button */ });
+    }
+  }, [activeId]);
 
   const processes: VideoProcess[] = [
     {
@@ -132,9 +144,10 @@ export const CabinetVideoShowcase: React.FC<CabinetVideoShowcaseProps> = ({ onOp
             
             {/* Video Player (7 Cols) */}
             <div className="lg:col-span-7">
-              <div className="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-200 aspect-video flex items-center justify-center shadow-inner">
+              <div className="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-200 aspect-[19/12] flex items-center justify-center shadow-inner">
                 <video
                   key={activeProcess.videoSrc}
+                  ref={videoRef}
                   controls
                   autoPlay
                   loop
@@ -143,7 +156,6 @@ export const CabinetVideoShowcase: React.FC<CabinetVideoShowcaseProps> = ({ onOp
                   className="w-full h-full object-contain"
                 >
                   <source src={activeProcess.videoSrc} type="video/mp4" />
-                  <source src="/4ren.mp4" type="video/mp4" />
                   <p className="p-4 text-white text-xs">Ваш браузер не поддерживает видео.</p>
                 </video>
               </div>
@@ -171,7 +183,7 @@ export const CabinetVideoShowcase: React.FC<CabinetVideoShowcaseProps> = ({ onOp
 
               <div className="pt-3">
                 <a
-                  href={siteConfig.clientCabinet.registrationUrl}
+                  href={withTrackingParams(siteConfig.clientCabinet.registrationUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 w-full bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl transition-colors cursor-pointer"

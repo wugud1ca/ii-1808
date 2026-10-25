@@ -33,6 +33,7 @@ import {
   Scale
 } from 'lucide-react';
 import { trackEvent } from '../../utils/analytics';
+import { validatePhone } from '../../utils/phoneValidation';
 import { siteConfig } from '../../siteConfig';
 
 interface OnlineTariffSearchPageProps {
@@ -659,6 +660,7 @@ export const OnlineTariffSearchPage: React.FC<OnlineTariffSearchPageProps> = ({
   const [bookingClientPhone, setBookingClientPhone] = useState<string>('');
   const [bookingComment, setBookingComment] = useState<string>('');
   const [bookingSuccess, setBookingSuccess] = useState<boolean>(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingOrderNumber, setBookingOrderNumber] = useState<string>('');
 
   const usdToRubRate = 92.5;
@@ -853,7 +855,16 @@ export const OnlineTariffSearchPage: React.FC<OnlineTariffSearchPageProps> = ({
   // Submit booking
   const handleSubmitBooking = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bookingClientName.trim() || !bookingClientPhone.trim()) return;
+    if (!bookingClientName.trim()) {
+      setBookingError('Пожалуйста, укажите ваше имя');
+      return;
+    }
+    const phoneCheck = validatePhone(bookingClientPhone);
+    if (!phoneCheck.valid) {
+      setBookingError(phoneCheck.error || 'Пожалуйста, введите корректный номер телефона');
+      return;
+    }
+    setBookingError(null);
 
     const orderNum = `ET-${Math.floor(100000 + Math.random() * 900000)}`;
     setBookingOrderNumber(orderNum);
@@ -1711,7 +1722,14 @@ export const OnlineTariffSearchPage: React.FC<OnlineTariffSearchPageProps> = ({
                     onChange={e => setBookingClientPhone(e.target.value)}
                     className="w-full p-3 rounded-xl border border-slate-300 focus:outline-hidden focus:border-orange-500 text-sm font-medium text-slate-900"
                   />
+                  <p className="text-[11px] text-slate-500 pt-1 leading-snug">Поддерживаются: +7 (РФ), +86 (Китай), +852 (Гонконг), номера стран СНГ</p>
                 </div>
+
+                {bookingError && (
+                  <div className="bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold px-3.5 py-2.5 rounded-xl">
+                    {bookingError}
+                  </div>
+                )}
 
                 {/* Comment / Link */}
                 <div className="space-y-1">

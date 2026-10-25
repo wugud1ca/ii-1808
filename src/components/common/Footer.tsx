@@ -32,7 +32,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLeadModal }) =
                 <div className="space-y-1 pl-6 text-xs text-slate-300">
                   <div>• <strong className="text-white">Москва:</strong> пер. Огородная Слобода, 5А, оф. 205</div>
                   <div>• <strong className="text-white">Санкт-Петербург:</strong> Петроградская наб., 18, оф. 27</div>
-                  <div>• <strong className="text-white">Краснодар:</strong> Пушкина 2, оф. 6</div>
+                  <div>• <strong className="text-white">Краснодар:</strong> Северная 484, этаж 3</div>
                   <div>• <strong className="text-white">Новосибирск:</strong> ул. Фрунзе, 5, оф. 311</div>
                   <div>• <strong className="text-white">Хабаровск:</strong> ул. Карла Маркса, 96А, оф. 77</div>
                 </div>
@@ -212,6 +212,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLeadModal }) =
                 <a href={siteConfig.documents.referralOfferUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1">
                   <FileText className="w-3 h-3 text-amber-400" />
                   <span>Партнерская оферта</span>
+                </a>
+              </div>
+              <div>
+                <a href={siteConfig.documents.deliveryOfferUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1">
+                  <FileText className="w-3 h-3 text-amber-400" />
+                  <span>Оферта — Доставка</span>
                 </a>
               </div>
             </div>

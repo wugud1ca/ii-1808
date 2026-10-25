@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { withTrackingParams } from '../../utils/urlParams';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Search, 
@@ -42,16 +43,68 @@ interface CargoCase {
   isNew?: boolean;
   isLoading?: boolean;
 }
+// ---- Даты прихода: динамические, от текущего момента ----
+
+function pad2(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+function fmtDateTime(d: Date): string {
+  return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+// Изначально видимые грузы: по 2 шт в день, от сегодняшнего дня (NOW) назад по 1 дню
+function buildInitialArrivalDates(): string[] {
+  const now = new Date();
+  const dates: string[] = [];
+  const pairs = 5; // 10 грузов = 5 пар дней
+  const dayHours: Array<[number, number]> = [
+    [10, 15], [9, 17], [11, 14], [8, 13], [10, 16],
+  ];
+  for (let pair = 0; pair < pairs; pair++) {
+    for (let j = 0; j < 2; j++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - pair);
+      if (pair === 0) {
+        // сегодня: время строго в прошлом относительно NOW()
+        d.setHours(d.getHours() - (j === 0 ? 3 : 1));
+        d.setMinutes((37 + j * 23) % 60);
+      } else {
+        const [h1, h2] = dayHours[(pair - 1) % dayHours.length];
+        d.setHours(j === 0 ? h1 : h2);
+        d.setMinutes((pair * 11 + j * 29) % 60);
+      }
+      dates.push(fmtDateTime(d));
+    }
+  }
+  return dates;
+}
+
+const INITIAL_DATES = buildInitialArrivalDates();
+
+// Смещения «назад» для новых появляющихся грузов: раскидываем по часам
+// от времени просмотра клиентом (в момент появления груза на странице)
+const EXTRA_ARRIVAL_OFFSETS_MS: number[] = [
+  25 * 60_000,   // 25 мин
+  95 * 60_000,   // 1.5 часа
+  210 * 60_000,  // 3.5 часа
+  45 * 60_000,   // 45 мин
+  160 * 60_000,  // 2ч 40мин
+  300 * 60_000,  // 5 часов
+  70 * 60_000,   // 1ч 10мин
+  190 * 60_000,  // 3ч 10мин
+];
+
 
 const INITIAL_CARGO_CASES: CargoCase[] = [
   {
     id: 'cargo-1',
-    photo: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c07.webp',
     name: 'Промышленные сервоприводы и блоки автоматики',
     category: 'Оборудование / Станки',
     waybill: 'ET-RU-94821-MOW',
     platform: '1688',
-    arrivalDate: '17.08.2026',
+    arrivalDate: INITIAL_DATES[0],
     weight: '1 840 кг',
     volume: '5.2 м³',
     places: '12 паллет',
@@ -60,12 +113,12 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-2',
-    photo: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c03.webp',
     name: 'Беспроводные акустические системы и гарнитуры',
     category: 'Электроника',
     waybill: 'ET-RU-94750-SPB',
     platform: 'Alibaba',
-    arrivalDate: '17.08.2026',
+    arrivalDate: INITIAL_DATES[1],
     weight: '620 кг',
     volume: '3.8 м³',
     places: '48 коробов',
@@ -74,12 +127,12 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-3',
-    photo: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c02.webp',
     name: 'Дизайнерские LED-люстры и трековые светильники',
     category: 'Освещение и интерьер',
     waybill: 'ET-RU-94612-EKB',
     platform: '1688',
-    arrivalDate: '16.08.2026',
+    arrivalDate: INITIAL_DATES[2],
     weight: '950 кг',
     volume: '7.4 м³',
     places: '36 мест (обрешетка)',
@@ -88,12 +141,12 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-4',
-    photo: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c01.webp',
     name: 'Премиальный трикотаж и спортивный текстиль оптом',
     category: 'Одежда и ткани',
     waybill: 'ET-RU-94590-MOW',
     platform: 'Фабрика КНР',
-    arrivalDate: '16.08.2026',
+    arrivalDate: INITIAL_DATES[3],
     weight: '2 400 кг',
     volume: '11.5 м³',
     places: '80 мешков в пломбах',
@@ -102,12 +155,12 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-5',
-    photo: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c15.webp',
     name: 'Комплектующие для ПК и майнинг-охлаждение',
     category: 'IT-оборудование',
     waybill: 'ET-RU-94420-NSK',
     platform: '1688',
-    arrivalDate: '15.08.2026',
+    arrivalDate: INITIAL_DATES[4],
     weight: '480 кг',
     volume: '2.1 м³',
     places: '24 коробки',
@@ -116,12 +169,12 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-6',
-    photo: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c14.webp',
     name: 'Спортивная обувь и кроссовки для маркетплейсов',
     category: 'Обувь опт',
     waybill: 'ET-RU-94380-MOW',
     platform: '1688',
-    arrivalDate: '15.08.2026',
+    arrivalDate: INITIAL_DATES[5],
     weight: '1 120 кг',
     volume: '6.9 м³',
     places: '56 коробов',
@@ -130,12 +183,12 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-7',
-    photo: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c05.webp',
     name: 'Автомобильные датчики, фары и зеркала в сборе',
     category: 'Автозапчасти',
     waybill: 'ET-RU-94210-KRD',
     platform: 'Alibaba',
-    arrivalDate: '14.08.2026',
+    arrivalDate: INITIAL_DATES[6],
     weight: '890 кг',
     volume: '4.6 м³',
     places: '30 мест (деревянный каркас)',
@@ -144,12 +197,12 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-8',
-    photo: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c13.webp',
     name: 'Стоматологические расходные материалы и боксы',
     category: 'Медицинские изделия',
     waybill: 'ET-RU-94105-MOW',
     platform: 'Фабрика КНР',
-    arrivalDate: '14.08.2026',
+    arrivalDate: INITIAL_DATES[7],
     weight: '310 кг',
     volume: '1.4 м³',
     places: '16 коробок',
@@ -158,12 +211,12 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-9',
-    photo: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c09.webp',
     name: 'Станки лазерной гравировки и резки с ЧПУ',
     category: 'Станки и спецтехника',
     waybill: 'ET-RU-93990-NN',
     platform: 'Alibaba',
-    arrivalDate: '13.08.2026',
+    arrivalDate: INITIAL_DATES[8],
     weight: '3 200 кг',
     volume: '14.0 м³',
     places: '4 ящика (морской стандарт)',
@@ -172,12 +225,12 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-10',
-    photo: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c10.webp',
     name: 'Оптические объективы, экшн-камеры и штативы',
     category: 'Фото и видеотехника',
     waybill: 'ET-RU-93850-MOW',
     platform: '1688',
-    arrivalDate: '13.08.2026',
+    arrivalDate: INITIAL_DATES[9],
     weight: '430 кг',
     volume: '2.0 м³',
     places: '22 короба',
@@ -187,15 +240,14 @@ const INITIAL_CARGO_CASES: CargoCase[] = [
 ];
 
 // 5 additional incoming cases that will be dynamically inserted in real time
-const EXTRA_INCOMING_CASES: CargoCase[] = [
+const EXTRA_INCOMING_CASES: Omit<CargoCase, 'arrivalDate'>[] = [
   {
     id: 'cargo-extra-1',
-    photo: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c04.webp',
     name: 'Электроинструмент и аккумуляторы высокой емкости',
     category: 'Инструмент / Строительство',
     waybill: 'ET-RU-94910-MOW',
     platform: '1688',
-    arrivalDate: '17.08.2026 14:15',
     weight: '1 350 кг',
     volume: '4.8 м³',
     places: '40 коробов в паллетах',
@@ -205,12 +257,11 @@ const EXTRA_INCOMING_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-extra-2',
-    photo: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c12.webp',
     name: 'Смарт-часы, фитнес-трекеры и беспроводные зарядки',
     category: 'Гаджеты и аксессуары',
     waybill: 'ET-RU-94925-SPB',
     platform: 'Alibaba',
-    arrivalDate: '17.08.2026 14:18',
     weight: '290 кг',
     volume: '1.2 м³',
     places: '15 коробов',
@@ -220,12 +271,11 @@ const EXTRA_INCOMING_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-extra-3',
-    photo: 'https://images.unsplash.com/photo-1503602642458-232111445657?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c08.webp',
     name: 'Мебельная фурнитура и системы направляющих Soft-Close',
     category: 'Мебель и фурнитура',
     waybill: 'ET-RU-94940-KZN',
     platform: 'Фабрика КНР',
-    arrivalDate: '17.08.2026 14:22',
     weight: '2 850 кг',
     volume: '8.4 м³',
     places: '14 паллет',
@@ -235,12 +285,11 @@ const EXTRA_INCOMING_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-extra-4',
-    photo: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c11.webp',
     name: 'Трендовые наручные хронографы и подарочные боксы',
     category: 'Аксессуары и подарки',
     waybill: 'ET-RU-94962-MOW',
     platform: '1688',
-    arrivalDate: '17.08.2026 14:26',
     weight: '410 кг',
     volume: '1.9 м³',
     places: '28 коробок',
@@ -250,12 +299,11 @@ const EXTRA_INCOMING_CASES: CargoCase[] = [
   },
   {
     id: 'cargo-extra-5',
-    photo: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&auto=format&fit=crop&q=80',
+    photo: '/cargo/c06.webp',
     name: 'Солнцезащитные поляризационные очки оптом',
     category: 'Оптика и аксессуары',
     waybill: 'ET-RU-94980-EKB',
     platform: '1688',
-    arrivalDate: '17.08.2026 14:30',
     weight: '530 кг',
     volume: '2.5 м³',
     places: '34 короба',
@@ -302,8 +350,12 @@ export const WholesaleBuyoutPage: React.FC<WholesaleBuyoutPageProps> = ({
     const intervalTimer = setTimeout(() => {
       const nextItem = EXTRA_INCOMING_CASES[addedCount];
       if (nextItem) {
+        // Дата прихода — «по часам» от времени просмотра клиентом:
+        // в момент появления груза ставим текущее время минус сдвиг
+        const offsetMs = EXTRA_ARRIVAL_OFFSETS_MS[addedCount % EXTRA_ARRIVAL_OFFSETS_MS.length];
         const loadingItem: CargoCase = {
           ...nextItem,
+          arrivalDate: fmtDateTime(new Date(Date.now() - offsetMs)),
           isLoading: true
         };
 
@@ -325,7 +377,7 @@ export const WholesaleBuyoutPage: React.FC<WholesaleBuyoutPageProps> = ({
 
           // If user is not viewing the top of the list, trigger bottom-left push toast
           if (!isFeedTopInView()) {
-            setToastCargo(nextItem);
+            setToastCargo(loadingItem);
           }
         }, 1300);
       }
@@ -357,7 +409,10 @@ export const WholesaleBuyoutPage: React.FC<WholesaleBuyoutPageProps> = ({
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onOpenLeadModal(`Поиск и выкуп на 1688/Alibaba: ${searchQuery || 'любые товары оптом'}`);
+    // Search goes to the client cabinet's public 1688 search in a new tab
+    const query = encodeURIComponent(searchQuery.trim());
+    const searchUrl = withTrackingParams(`https://my.express-today.ru/1688/search?q=${query}`);
+    window.open(searchUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (

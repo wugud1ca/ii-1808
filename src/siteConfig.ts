@@ -13,7 +13,7 @@ export const siteConfig: SiteConfig = {
   russianOffices: [
     { city: 'Москва', address: 'пер. Огородная Слобода, 5А, оф. 205' },
     { city: 'Санкт-Петербург', address: 'Петроградская наб., 18, оф. 27' },
-    { city: 'Краснодар', address: 'Пушкина 2, оф. 6' },
+    { city: 'Краснодар', address: 'Северная 484, этаж 3' },
     { city: 'Новосибирск', address: 'ул. Фрунзе, 5, оф. 311' },
     { city: 'Хабаровск', address: 'ул. Карла Маркса, 96А, оф. 77' },
   ],
@@ -32,6 +32,7 @@ export const siteConfig: SiteConfig = {
     privacyUrl: 'https://express-today.ru/soglashenie-o-konfidencialnosti-i-polzovatelskoe-soglashenie',
     offerUrl: 'https://express-today.ru/publichnaya-oferta',
     referralOfferUrl: 'https://express-today.ru/partnerskoye-referalnoye-soglasheniye-oferta',
+    deliveryOfferUrl: 'https://express-today.ru/oferta-dostavka',
   },
   social: {
     max: 'https://max.ru/id271700368747_bot',

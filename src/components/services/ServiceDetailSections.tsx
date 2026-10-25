@@ -171,7 +171,7 @@ export const SupplierSearchSection: React.FC<SectionProps> = ({ onOpenLeadModal 
    2. ВЫКУП С 1688, TAOBAO, POIZON (Buyout Platforms & Client Cabinet)
    ========================================================================= */
 export const BuyoutPlatformSection: React.FC<SectionProps> = ({ onOpenLeadModal }) => {
-  const [activeTab, setActiveTab] = useState<'catalog1688' | 'orderInvoice' | 'incoming' | 'tracking'>('catalog1688');
+  const [activeTab, setActiveTab] = useState<'catalog1688' | 'orderInvoice' | 'incoming' | 'tracking' | 'warehousePhotos'>('catalog1688');
 
   return (
     <div className="space-y-8">
@@ -336,6 +336,16 @@ export const BuyoutPlatformSection: React.FC<SectionProps> = ({ onOpenLeadModal 
             >
               Трекинг & Отчет
             </button>
+            <button
+              onClick={() => setActiveTab('warehousePhotos')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'warehousePhotos'
+                  ? 'bg-orange-500 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Фотоотчет со склада
+            </button>
           </div>
         </div>
 
@@ -357,23 +367,32 @@ export const BuyoutPlatformSection: React.FC<SectionProps> = ({ onOpenLeadModal 
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
-                    <div className="h-28 bg-slate-800/80 rounded-lg flex items-center justify-center text-slate-500 text-xs text-center p-2">
-                      [Скриншот товара 1688 в ЛК]
-                    </div>
-                    <div className="text-xs font-bold text-white truncate">Наушники TWS Pro ANC</div>
+                    <img
+                      src="/lk1688/lk1688-01.webp"
+                      alt="Наушники TWS Pro4 — карточка товара в каталоге 1688"
+                      loading="lazy"
+                      className="w-full h-36 object-cover rounded-lg border border-slate-800"
+                    />
+                    <div className="text-xs font-bold text-white truncate">Наушники TWS Pro4</div>
                     <div className="text-xs text-amber-400 font-bold">¥ 38.50 (~480 ₽)</div>
                   </div>
                   <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
-                    <div className="h-28 bg-slate-800/80 rounded-lg flex items-center justify-center text-slate-500 text-xs text-center p-2">
-                      [Скриншот товара 1688 в ЛК]
-                    </div>
-                    <div className="text-xs font-bold text-white truncate">Смарт-часы OLED IP68</div>
+                    <img
+                      src="/lk1688/lk1688-03.webp"
+                      alt="Смарт-часы ZONGXIN — карточка товара в каталоге 1688"
+                      loading="lazy"
+                      className="w-full h-36 object-cover rounded-lg border border-slate-800"
+                    />
+                    <div className="text-xs font-bold text-white truncate">Смарт-часы ZONGXIN</div>
                     <div className="text-xs text-amber-400 font-bold">¥ 65.00 (~810 ₽)</div>
                   </div>
                   <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
-                    <div className="h-28 bg-slate-800/80 rounded-lg flex items-center justify-center text-slate-500 text-xs text-center p-2">
-                      [Скриншот товара 1688 в ЛК]
-                    </div>
+                    <img
+                      src="/lk1688/lk1688-02.webp"
+                      alt="Портативный пауэрбанк 20000mAh — карточка товара в каталоге 1688"
+                      loading="lazy"
+                      className="w-full h-36 object-cover rounded-lg border border-slate-800"
+                    />
                     <div className="text-xs font-bold text-white truncate">Портативный Пауэрбанк 20000mAh</div>
                     <div className="text-xs text-amber-400 font-bold">¥ 42.00 (~525 ₽)</div>
                   </div>
@@ -402,8 +421,15 @@ export const BuyoutPlatformSection: React.FC<SectionProps> = ({ onOpenLeadModal 
                     </p>
                   </div>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-400 text-center py-6">
-                  [Скриншот карточки заказа и инвойса в ЛК]
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-400 text-center py-4">
+                  <div className="flex justify-center">
+                    <img
+                      src="/lk-screens/invoice-01.webp"
+                      alt="Скриншот карточки выкупа и инвойса в личном кабинете Express Today"
+                      loading="lazy"
+                      className="w-full max-w-md rounded-xl border border-slate-800"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -419,8 +445,15 @@ export const BuyoutPlatformSection: React.FC<SectionProps> = ({ onOpenLeadModal 
                 <p className="text-slate-300">
                   Вы выкупили товар самостоятельно? Укажите трек-номер по Китаю, и наш склад примет, замерит, проверит и консолидирует груз по вашему регламенту.
                 </p>
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-400 text-center py-6">
-                  [Скриншот формы «Входящая посылка» в ЛК]
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-400 text-center py-4">
+                  <div className="flex justify-center">
+                    <img
+                      src="/lk-screens/incoming-01.webp"
+                      alt="Скриншот формы «Входящая посылка» в личном кабинете Express Today"
+                      loading="lazy"
+                      className="w-full max-w-md rounded-xl border border-slate-800"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -439,10 +472,58 @@ export const BuyoutPlatformSection: React.FC<SectionProps> = ({ onOpenLeadModal 
                     Скачать финансовый отчет (.XLSX)
                   </button>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-400 text-center py-6">
-                  [Скриншот таблицы финансов и архивных отчетов в ЛК]
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-400 text-center py-4">
+                  <div className="flex justify-center">
+                    <img
+                      src="/lk-screens/tracking-01.webp"
+                      alt="Скриншот раздела «Мои заказы»: трекинг, архив и финансовые отчеты в личном кабинете Express Today"
+                      loading="lazy"
+                      className="w-full max-w-md rounded-xl border border-slate-800"
+                    />
+                  </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'warehousePhotos' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between text-xs text-slate-400 border-b border-slate-800 pb-3">
+                <span className="font-bold text-emerald-400">Модуль: «Фотоотчет приемки на складе Гуанчжоу»</span>
+                <span className="bg-emerald-900/40 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded-full text-[11px]">Фото готовы в ЛК</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <figure className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-2">
+                  <img
+                    src="/warehouse/wh01.webp"
+                    alt="Аккумуляторы 18650 — фотоотчет приемки на складе"
+                    loading="lazy"
+                    className="w-full h-40 object-cover rounded-lg border border-slate-800"
+                  />
+                  <figcaption className="text-xs text-slate-300 text-center">Аккумуляторы 18650</figcaption>
+                </figure>
+                <figure className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-2">
+                  <img
+                    src="/warehouse/wh02.webp"
+                    alt="Спортивные смарт-часы — фотоотчет приемки на складе"
+                    loading="lazy"
+                    className="w-full h-40 object-cover rounded-lg border border-slate-800"
+                  />
+                  <figcaption className="text-xs text-slate-300 text-center">Спортивные смарт-часы</figcaption>
+                </figure>
+                <figure className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-2">
+                  <img
+                    src="/warehouse/wh03.webp"
+                    alt="Наушники AirPods в коробке — фотоотчет приемки на складе"
+                    loading="lazy"
+                    className="w-full h-40 object-cover rounded-lg border border-slate-800"
+                  />
+                  <figcaption className="text-xs text-slate-300 text-center">Наушники AirPods</figcaption>
+                </figure>
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Так выглядит фотоотчет в личном кабинете: приемка, вскрытие, пересчет и проверка товара фиксируются на фото и подгружаются прямо в карточку выкупа.
+              </p>
             </div>
           )}
         </div>
@@ -543,11 +624,23 @@ export const ConsolidationInspectionSection: React.FC<SectionProps> = ({ onOpenL
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 text-center py-8 text-slate-500 text-xs">
-              [Скриншот карточки инспекции с фотофиксацией в ЛК]
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <img
+                src="/lk-screens/inspection-01.webp"
+                alt="Скриншот карточки инспекции с фотофиксацией в личном кабинете"
+                loading="lazy"
+                className="w-full rounded-lg border border-slate-800"
+              />
+              <p className="text-center text-xs text-slate-400">Карточка инспекции с фотофиксацией в ЛК</p>
             </div>
-            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 text-center py-8 text-slate-500 text-xs">
-              [Скриншот объединения коробов и весогабаритного акта в ЛК]
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <img
+                src="/lk-screens/consolidation-01.webp"
+                alt="Скриншот объединения коробов и весогабаритного акта в личном кабинете"
+                loading="lazy"
+                className="w-full rounded-lg border border-slate-800"
+              />
+              <p className="text-center text-xs text-slate-400">Объединение коробов и весогабаритный акт в ЛК</p>
             </div>
           </div>
         </div>
