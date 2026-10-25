@@ -12,6 +12,7 @@ export interface CalcFields {
   customsValueRub: string;
   weightKg: string;
   quantity: string;
+  volumeM3: string;
   eurRub: string;
   usdRub: string;
 }
@@ -32,7 +33,10 @@ export function buildCalculationRequest(
       if (w === null) errors.weightKg = 'Укажите вес брутто в кг.'; else request.weightKg = w;
     } else if (input === 'quantity') {
       const q = parsePositiveDecimal(fields.quantity);
-      if (q === null || !Number.isInteger(q)) errors.quantity = 'Укажите целое количество в штуках.'; else request.quantity = q;
+      if (q === null || !Number.isInteger(q)) errors.quantity = `Укажите целое количество (${card.estimation.measureUnit || 'шт'}).`; else request.quantity = q;
+    } else if (input === 'volumeM3') {
+      const v = parsePositiveDecimal(fields.volumeM3);
+      if (v === null) errors.volumeM3 = 'Укажите объём в м³.'; else request.volumeM3 = v;
     } else if (input === 'eurRate') {
       const r = parsePositiveDecimal(fields.eurRub);
       if (r === null) errors.eurRub = 'Укажите курс евро к рублю.'; else request.eurRub = r;
@@ -61,7 +65,7 @@ function CodePill({ code }: { code: string }) {
 
 function CardView({ card, rates }: { card: CardResponse; rates: ExchangeRatesResponse | null }) {
   const required = card.estimation.requiredInputs;
-  const [fields, setFields] = useState<CalcFields>({ customsValueRub: '', weightKg: '', quantity: '', eurRub: '', usdRub: '' });
+  const [fields, setFields] = useState<CalcFields>({ customsValueRub: '', weightKg: '', quantity: '', volumeM3: '', eurRub: '', usdRub: '' });
   const [confirmed, setConfirmed] = useState(false);
   const [manualRates, setManualRates] = useState(false);
   const [calculating, setCalculating] = useState(false);
@@ -153,8 +157,15 @@ function CardView({ card, rates }: { card: CardResponse; rates: ExchangeRatesRes
               )}
               {required.includes('quantity') && (
                 <label className="block">
-                  <span className="text-sm text-slate-700">Количество, шт</span>
+                  <span className="text-sm text-slate-700">Количество, {card.estimation.measureUnit || 'шт'}</span>
                   <input inputMode="numeric" value={fields.quantity} onChange={set('quantity')} placeholder="Например, 10"
+                    className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-orange-500 focus:outline-none" />
+                </label>
+              )}
+              {required.includes('volumeM3') && (
+                <label className="block">
+                  <span className="text-sm text-slate-700">Объём, м³</span>
+                  <input inputMode="decimal" value={fields.volumeM3} onChange={set('volumeM3')} placeholder="Например, 1,5"
                     className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-orange-500 focus:outline-none" />
                 </label>
               )}

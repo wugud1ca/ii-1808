@@ -4,8 +4,8 @@ import type { CardResponse } from './types';
 
 test('calculator requires server eligibility, all required inputs, and explicit base-rate consent', async () => {
   const { buildCalculationRequest } = await import('./TnvedApp');
-  const card = { code: '9401790009', estimation: { supported: true, reason: null, requiredInputs: ['weightKg', 'eurRate'], notes: [] } } as CardResponse;
-  const fields = { customsValueRub: '100000,50', weightKg: '25,5', quantity: '', eurRub: '99,25', usdRub: '' };
+  const card = { code: '9401790009', estimation: { supported: true, reason: null, requiredInputs: ['weightKg', 'eurRate'], measureUnit: 'кг', notes: [] } } as CardResponse;
+  const fields = { customsValueRub: '100000,50', weightKg: '25,5', quantity: '', volumeM3: '', eurRub: '99,25', usdRub: '' };
   assert.deepEqual(buildCalculationRequest(card, fields, true), {
     request: { code: '9401790009', customsValueRub: 100000.5, weightKg: 25.5, eurRub: 99.25, confirmedBaseRates: true }, errors: {},
   });

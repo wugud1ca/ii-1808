@@ -12,8 +12,8 @@ export class DomainError extends Error {
 }
 
 type Currency = 'EUR' | 'USD' | 'RUB';
-type MeasureInput = 'weightKg' | 'quantity';
-interface Measure { input: MeasureInput; factor: number }
+type MeasureInput = 'weightKg' | 'quantity' | 'volumeM3';
+interface Measure { input: MeasureInput; factor: number; unit: string }
 type DutyComponent =
   | { type: 'percent'; value: number; label: string }
   | { type: 'specific'; value: number; measure: Measure; currency: Currency; label: string };
@@ -22,12 +22,23 @@ const SCOPE = 'Предварительно: страна происхожден
 
 function measureToInput(short: string): Measure | null {
   const s = (short || '').trim().toUpperCase();
-  if (s === 'КГ') return { input: 'weightKg', factor: 1 };
-  if (s === 'Т') return { input: 'weightKg', factor: 1 / 1000 };
-  if (s === 'ШТ') return { input: 'quantity', factor: 1 };
-  if (s === '100 ШТ') return { input: 'quantity', factor: 100 };
-  if (s === '1000 ШТ') return { input: 'quantity', factor: 1000 };
+  if (s === 'КГ') return { input: 'weightKg', factor: 1, unit: 'кг' };
+  if (s === 'Т') return { input: 'weightKg', factor: 1 / 1000, unit: 'т' };
+  if (s === 'ШТ') return { input: 'quantity', factor: 1, unit: 'шт' };
+  if (s === '100 ШТ') return { input: 'quantity', factor: 100, unit: 'шт' };
+  if (s === '1000 ШТ') return { input: 'quantity', factor: 1000, unit: 'шт' };
+  if (s === 'ПАР') return { input: 'quantity', factor: 1, unit: 'пар' };
+  if (s === 'М3') return { input: 'volumeM3', factor: 1, unit: 'м³' };
   return null;
+}
+
+function describeUnsupportedUnit(unit: unknown): string {
+  const u = String(unit ?? '').trim();
+  const match = /^(\d+)(D|Р)?$/.exec(u);
+  if (match && MEASURE_SHORT[match[1]]) {
+    return `Ставка за единицу «${MEASURE_SHORT[match[1]]}» пока не поддерживается в предварительном расчёте.`;
+  }
+  return 'Неизвестная единица измерения ставки пошлины.';
 }
 
 function parseUnit(unit: unknown): { kind: 'percent' } | { kind: 'specific'; measure: Measure; currency: Currency } | null {
@@ -50,6 +61,10 @@ function rateUnitLabel(priznak: number, code: unknown): string {
   if (match) {
     const base = RATE_UNIT_LOOKUP[`${priznak}|${match[1]}`];
     if (base) return match[2] === 'D' ? base.replace(/^Евро/, 'ДолларСША') : match[2] === 'Р' ? base.replace(/^Евро/, 'Руб') : base;
+    if (MEASURE_SHORT[match[1]]) {
+      const currency = match[2] === 'D' ? 'ДолларСША' : match[2] === 'Р' ? 'Руб' : 'Евро';
+      return `${currency}/${MEASURE_SHORT[match[1]].toLowerCase()}`;
+    }
   }
   return c || '';
 }
@@ -84,8 +99,8 @@ function parseDuty(tnved: any): ParsedDuty {
     return { text: '0 %', components: [], unsupported: null };
   }
   const first = parseUnit(tnved?.IMPEDI);
-  const firstLabel = fmtNumber(imp) + (first?.kind === 'percent' ? ' %' : first?.kind === 'specific' ? ' ' + rateUnitLabel(1, tnved.IMPEDI) : '');
-  if (!first) return { text: firstLabel || String(imp), components: [], unsupported: 'Неизвестная единица измерения базовой ставки пошлины.' };
+  const firstLabel = fmtNumber(imp) + (first?.kind === 'percent' ? ' %' : ' ' + rateUnitLabel(1, tnved.IMPEDI));
+  if (!first) return { text: firstLabel || String(imp), components: [], unsupported: describeUnsupportedUnit(tnved?.IMPEDI) };
   const components: DutyComponent[] = [];
   if (first.kind === 'percent') components.push({ type: 'percent', value: imp, label: fmtNumber(imp) + ' %' });
   else components.push({ type: 'specific', value: imp, measure: first.measure, currency: first.currency, label: fmtNumber(imp) + ' ' + rateUnitLabel(1, tnved.IMPEDI) });
@@ -196,7 +211,8 @@ interface Analyzed {
   code: string; name: string; validFrom: string | null; validTo: string | null; active: boolean; version: string;
   duty: ParsedDuty; vat: { percent: number | null; text: string; notes: string[] }; excise: { present: boolean; text: string };
   requirements: RequirementGroup[];
-  requiredInputs: Array<'weightKg' | 'quantity' | 'eurRate' | 'usdRate'>;
+  requiredInputs: Array<'weightKg' | 'quantity' | 'volumeM3' | 'eurRate' | 'usdRate'>;
+  measureUnit: string | null;
   supported: boolean; reason: string | null;
 }
 
@@ -213,10 +229,12 @@ function analyzeCard(raw: unknown, now: Date): Analyzed {
   const duty = parseDuty(tnved);
   const vat = parseVat(tnved, tnvedAll);
   const excise = parseExcise(tnved);
-  const requiredInputs = new Set<'weightKg' | 'quantity' | 'eurRate' | 'usdRate'>();
+  const requiredInputs = new Set<'weightKg' | 'quantity' | 'volumeM3' | 'eurRate' | 'usdRate'>();
+  let measureUnit: string | null = null;
   for (const component of duty.components) {
     if (component.type !== 'specific') continue;
     requiredInputs.add(component.measure.input);
+    measureUnit = component.measure.unit;
     if (component.currency === 'EUR') requiredInputs.add('eurRate');
     else if (component.currency === 'USD') requiredInputs.add('usdRate');
   }
@@ -232,6 +250,7 @@ function analyzeCard(raw: unknown, now: Date): Analyzed {
     duty, vat, excise,
     requirements: buildRequirements(tnvedAll),
     requiredInputs: [...requiredInputs],
+    measureUnit,
     supported, reason,
   };
 }
@@ -241,8 +260,8 @@ export function normalizeCard(raw: unknown, fetchedAt: string, cached = false): 
   const warnings: string[] = [];
   if (!a.active) warnings.push('Срок действия кода ограничен — проверьте даты.');
   warnings.push(...a.vat.notes);
-  if (a.requiredInputs.includes('weightKg') || a.requiredInputs.includes('quantity')) {
-    warnings.push('Пошлина комбинированная: помимо процента включает ставку за единицу (вес или количество).');
+  if (a.requiredInputs.includes('weightKg') || a.requiredInputs.includes('quantity') || a.requiredInputs.includes('volumeM3')) {
+    warnings.push('Пошлина комбинированная: помимо процента включает ставку за единицу (вес, количество или объём).');
   }
   return {
     code: a.code, name: a.name, validFrom: a.validFrom, validTo: a.validTo, active: a.active,
@@ -258,6 +277,7 @@ export function normalizeCard(raw: unknown, fetchedAt: string, cached = false): 
       supported: a.supported,
       reason: a.reason,
       requiredInputs: a.requiredInputs,
+      measureUnit: a.measureUnit,
       notes: [SCOPE, 'В расчёт не входят: таможенные сборы за оформление, доставка, страхование, услуги брокера, утилизационный/экологический сбор, хранение.'],
     },
   };
@@ -312,9 +332,14 @@ export function estimatePayments(raw: unknown, input: CalculationRequest, now = 
       dutyRub += amount;
       breakdown.push({ label: 'Пошлина (адвалорная часть)', formula: `${fmtNumber(value)} ₽ × ${fmtNumber(component.value)} %`, amountRub: fmtRub(amount) });
     } else {
-      const measureValue = component.measure.input === 'weightKg' ? input?.weightKg : input?.quantity;
+      const measureValue = component.measure.input === 'weightKg' ? input?.weightKg
+        : component.measure.input === 'volumeM3' ? input?.volumeM3
+        : input?.quantity;
       if (typeof measureValue !== 'number' || !Number.isFinite(measureValue) || measureValue <= 0) {
-        throw new DomainError('INPUT_REQUIRED', component.measure.input === 'weightKg' ? 'Укажите вес брутто в кг.' : 'Укажите количество в штуках.', 422);
+        throw new DomainError('INPUT_REQUIRED',
+          component.measure.input === 'weightKg' ? 'Укажите вес брутто в кг.'
+          : component.measure.input === 'volumeM3' ? 'Укажите объём в м³.'
+          : `Укажите количество (${component.measure.unit}).`, 422);
       }
       if (component.measure.input === 'quantity' && !Number.isInteger(measureValue)) {
         throw new DomainError('INVALID_VALUE', 'Количество должно быть целым числом.', 422);

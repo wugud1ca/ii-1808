@@ -64,7 +64,8 @@ export interface CardResponse {
   estimation: {
     supported: boolean;
     reason: string | null;
-    requiredInputs: Array<'weightKg' | 'quantity' | 'eurRate' | 'usdRate'>;
+    requiredInputs: Array<'weightKg' | 'quantity' | 'volumeM3' | 'eurRate' | 'usdRate'>;
+    measureUnit: string | null;
     notes: string[];
   };
 }
@@ -74,6 +75,7 @@ export interface CalculationRequest {
   customsValueRub: number;
   weightKg?: number;
   quantity?: number;
+  volumeM3?: number;
   eurRub?: number;
   usdRub?: number;
   confirmedBaseRates: boolean;

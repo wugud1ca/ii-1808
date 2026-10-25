@@ -159,3 +159,34 @@ test('estimatePayments rejects malformed card before computing', () => {
   expectError(() => estimatePayments(null, request()), 'UPSTREAM_RESPONSE');
   expectError(() => estimatePayments(chairCard({ CODE: '123' }), request()), 'INVALID_CODE');
 });
+
+test('normalizeCard supports a specific duty per pair (ПАР), e.g. footwear', () => {
+  const raw = chairCard();
+  raw.TNVED.IMP = 0.28; raw.TNVED.IMPEDI = '715'; raw.TNVED.IMP2 = null; raw.TNVED.IMPEDI2 = null; raw.TNVED.IMPSIGN = null;
+  const card = normalizeCard(raw, fetchedAt);
+  assert.equal(card.rates.importDuty.text, '0,28 Евро/пар');
+  assert.deepEqual(card.estimation.requiredInputs, ['quantity', 'eurRate']);
+  assert.equal(card.estimation.measureUnit, 'пар');
+  assert.equal(card.estimation.supported, true);
+  assert.equal(estimatePayments(raw, request({ quantity: 12, eurRub: 100 })).dutyRub, 336); // 0.28 * 12 * 100
+});
+
+test('normalizeCard supports a specific duty per cubic meter (М3)', () => {
+  const raw = chairCard();
+  raw.TNVED.IMP = 1.5; raw.TNVED.IMPEDI = '113'; raw.TNVED.IMP2 = null; raw.TNVED.IMPEDI2 = null; raw.TNVED.IMPSIGN = null;
+  const card = normalizeCard(raw, fetchedAt);
+  assert.equal(card.rates.importDuty.text, '1,5 Евро/м3');
+  assert.deepEqual(card.estimation.requiredInputs, ['volumeM3', 'eurRate']);
+  assert.equal(card.estimation.measureUnit, 'м³');
+  assert.equal(card.estimation.supported, true);
+  assert.equal(estimatePayments(raw, request({ volumeM3: 2.5, eurRub: 100 })).dutyRub, 375); // 1.5 * 2.5 * 100
+});
+
+test('normalizeCard names known-but-unsupported units instead of a generic message', () => {
+  const raw = chairCard();
+  raw.TNVED.IMP = 5; raw.TNVED.IMPEDI = '251'; raw.TNVED.IMP2 = null; raw.TNVED.IMPEDI2 = null; raw.TNVED.IMPSIGN = null;
+  const card = normalizeCard(raw, fetchedAt);
+  assert.equal(card.estimation.supported, false);
+  assert.match(card.estimation.reason!, /Л\.С\./);
+  assert.equal(card.rates.importDuty.text, '5 Евро/л.с.');
+});
