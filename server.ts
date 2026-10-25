@@ -246,6 +246,11 @@ async function startServer() {
   const PORT = parseInt(process.env.PORT || '3000', 10);
   const BIND_ADDR = process.env.BIND_ADDR || '0.0.0.0';
 
+  // Behind the Cloudflare proxy (caddy appends the CF edge IP to
+  // X-Forwarded-For), trust one proxy hop so per-IP rate limits see the
+  // real client IP instead of the shared CF egress address.
+  app.set('trust proxy', 1);
+
   app.use(express.json());
 
   // Private TKS TN VED search/calculator (closed testing, /api/tnved/*).
