@@ -8,6 +8,14 @@ export { initializeSession, parsePositiveDecimal };
 
 const EXAMPLE_QUERIES = ['стул', 'кроссовки', '9401790009'];
 
+function pluralRu(n: number, one: string, few: string, many: string): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return one;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+  return many;
+}
+
 export interface CalcFields {
   customsValueRub: string;
   weightKg: string;
@@ -400,7 +408,7 @@ function SearchPane({ onOpenCard }: { onOpenCard: (code: string) => void }) {
         <div>
           <p className="text-sm text-slate-500">
             {result.kind === 'name'
-              ? <>Найдено {result.total} записей (показано {shownItems.length})</>
+              ? <>Найдено {result.total} {pluralRu(result.total, 'запись', 'записи', 'записей')} (показано {shownItems.length})</>
               : <>Совпадения по коду (показано {shownItems.length})</>}
           </p>
           {result.items.length === 0 && <p className="mt-2 text-sm text-slate-600">Ничего не найдено. Попробуйте иначе сформулировать запрос.</p>}

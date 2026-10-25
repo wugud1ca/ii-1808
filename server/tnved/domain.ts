@@ -261,7 +261,10 @@ export function normalizeCard(raw: unknown, fetchedAt: string, cached = false): 
   if (!a.active) warnings.push('Срок действия кода ограничен — проверьте даты.');
   warnings.push(...a.vat.notes);
   if (a.requiredInputs.includes('weightKg') || a.requiredInputs.includes('quantity') || a.requiredInputs.includes('volumeM3')) {
-    warnings.push('Пошлина комбинированная: помимо процента включает ставку за единицу (вес, количество или объём).');
+    const hasPercent = a.duty.components.some((c) => c.type === 'percent');
+    warnings.push(hasPercent
+      ? 'Пошлина комбинированная: помимо процента включает ставку за единицу (вес, количество или объём).'
+      : 'Пошлина специфическая: начисляется за единицу товара (вес, количество или объём).');
   }
   return {
     code: a.code, name: a.name, validFrom: a.validFrom, validTo: a.validTo, active: a.active,
