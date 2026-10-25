@@ -344,7 +344,7 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
                   </button>
                   <button
-                    onClick={() => { onNavigate('/tnved2'); setServicesDropdownOpen(false); }}
+                    onClick={() => { onNavigate('/tnved'); setServicesDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
@@ -403,7 +403,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </button>
 
                   <button
-                    onClick={() => { onNavigate('/tnved2'); setBusinessDropdownOpen(false); }}
+                    onClick={() => { onNavigate('/tnved'); setBusinessDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <ShieldCheck className="w-4 h-4 text-orange-600 shrink-0" />
@@ -859,7 +859,7 @@ export const Header: React.FC<HeaderProps> = ({
                         <span>Документы для ввоза (Честный Знак & Сертификация)</span>
                       </button>
                       <button
-                        onClick={() => { onNavigate('/tnved2'); setMobileMenuOpen(false); }}
+                        onClick={() => { onNavigate('/tnved'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
@@ -899,7 +899,7 @@ export const Header: React.FC<HeaderProps> = ({
                         <span>Калькулятор стоимости доставки</span>
                       </button>
                       <button
-                        onClick={() => { onNavigate('/tnved2'); setMobileMenuOpen(false); }}
+                        onClick={() => { onNavigate('/tnved'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <ShieldCheck className="w-4 h-4 text-orange-600 shrink-0" />

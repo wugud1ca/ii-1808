@@ -333,12 +333,8 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
       const card = await api.card(code);
       setActiveCard(card);
 
-      // Initialize all requirements accordions to open by default
-      const initialAccordions: Record<number, boolean> = {};
-      card.requirements.forEach((g) => {
-        initialAccordions[g.type] = true;
-      });
-      setOpenAccordions(initialAccordions);
+      // Requirements accordions stay collapsed until the user opens them
+      setOpenAccordions({});
 
       // Scroll to card section if requested
       if (shouldScroll && cardSectionRef.current) {
@@ -1400,7 +1396,7 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                       ) : (
                         <div className="space-y-3">
                           {activeCard.requirements.map((group) => {
-                            const isOpen = openAccordions[group.type] ?? true;
+                            const isOpen = openAccordions[group.type] ?? false;
                             return (
                               <div
                                 key={group.type}
