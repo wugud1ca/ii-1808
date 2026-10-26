@@ -1401,7 +1401,7 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                               )}
                             </p>
                             <p className="text-[11px] leading-relaxed text-amber-900/80 mt-1">
-                              Средняя цена мирового импорта по 6-значному коду {itsData.hs6}, данные за {itsData.period} год (UN Comtrade).
+                              Средняя цена импорта по 6-значному коду {itsData.hs6}, данные за {itsData.period} год (UN Comtrade).
                               Это ориентир для понимания уровня цен, а не индекс таможенной стоимости ФТС — точную оценку даст таможенный брокер по вашему товару.
                             </p>
                           </div>
