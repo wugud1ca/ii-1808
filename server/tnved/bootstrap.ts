@@ -2,6 +2,8 @@ import { TksClient } from './client';
 import { estimatePayments, normalizeCard, normalizeSearch } from './domain';
 import { createTnvedRouter, type TnvedDependencies } from './http';
 import { fetchExchangeRates } from './rates';
+import { itsForCode, loadItsDataset, type ItsDataset } from './its';
+import { ITS_DATASET } from './its-data.generated';
 
 /**
  * Builds the public /api/tnved router from environment variables.
@@ -11,11 +13,13 @@ import { fetchExchangeRates } from './rates';
  */
 export function createTnvedRouterFromEnv(env: NodeJS.ProcessEnv) {
   const key = (env.TKS_API_KEY || '').trim();
+  loadItsDataset(ITS_DATASET as ItsDataset);
   const deps: TnvedDependencies = {
     key,
     api: new TksClient(key),
     normalizeCard, normalizeSearch, estimatePayments,
     exchangeRates: fetchExchangeRates,
+    itsForCode,
   };
   return createTnvedRouter(deps);
 }

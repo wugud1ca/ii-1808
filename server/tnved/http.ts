@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from 'express';
 import type { CalculationRequest, CalculationResponse, CardResponse, ExchangeRatesResponse, SearchResponse } from '../../src/tnved/types';
 import { TnvedError, type TksApi } from './client';
+import type { ItsAnswer } from './its';
 
 export interface TnvedDependencies {
   key: string;
@@ -9,6 +10,7 @@ export interface TnvedDependencies {
   normalizeSearch: (raw: unknown, query: string, page: number, kind: 'name' | 'code', fetchedAt: string, cached?: boolean) => SearchResponse;
   estimatePayments: (raw: unknown, input: CalculationRequest, now?: Date) => CalculationResponse;
   exchangeRates: () => Promise<ExchangeRatesResponse>;
+  itsForCode: (code: string) => ItsAnswer;
 }
 
 export function apiHeaders(_req: Request, res: Response, next: () => void) {
@@ -93,6 +95,14 @@ export function createTnvedRouter(deps: TnvedDependencies) {
       const result = await deps.api.card(code);
       res.json(deps.normalizeCard(result.data, result.fetchedAt, result.cached));
     } catch (error) { fail(res, error); }
+  });
+  router.get('/its/:code', (req, res) => {
+    const code = String(req.params.code);
+    if (!/^\d{10}$/.test(code)) {
+      res.status(400).json({ error: 'INVALID_CODE', message: 'Выберите полный код из 10 цифр.' });
+      return;
+    }
+    res.json(deps.itsForCode(code));
   });
   router.get('/rates', async (_req, res) => {
     try { res.json(await deps.exchangeRates()); } catch (error) { fail(res, error); }

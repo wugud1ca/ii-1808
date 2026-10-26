@@ -106,3 +106,15 @@ export interface ApiFailure {
   message: string;
   retryAfter?: number;
 }
+
+/** Ориентировочная стоимость из UN Comtrade (см. server/tnved/its.ts). */
+export interface ItsResponse {
+  found: boolean;
+  hs6?: string;
+  period?: string;
+  price?: number;
+  unit?: string;
+  priceAlt?: number;
+  unitAlt?: string;
+  source?: string;
+}

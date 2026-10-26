@@ -25,6 +25,7 @@ import {
   RefreshCw,
   Clock,
   Scale,
+  TrendingUp,
   X,
 } from 'lucide-react';
 
@@ -39,6 +40,7 @@ import { api, formatCurrencyRub, formatDateTime, parsePositiveDecimal, ApiError 
 import type {
   CalculationRequest,
   CalculationResponse,
+  ItsResponse,
   CardResponse,
   ExchangeRatesResponse,
   SearchItem,
@@ -130,6 +132,10 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
   const [isCardLoading, setIsCardLoading] = useState(false);
   const [cardError, setCardError] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  // Indicative price (UN Comtrade) for the open card
+  const [itsData, setItsData] = useState<ItsResponse | null>(null);
+  const itsSeqRef = useRef(0);
 
   // Accordion state for Requirements
   const [openAccordions, setOpenAccordions] = useState<Record<number, boolean>>({});
@@ -332,6 +338,11 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
     try {
       const card = await api.card(code);
       setActiveCard(card);
+      setItsData(null);
+      const itsSeq = ++itsSeqRef.current;
+      api.its(code)
+        .then((d) => { if (d.found && itsSeqRef.current === itsSeq) setItsData(d); })
+        .catch(() => { /* ориентир — не критично */ });
 
       // Requirements accordions stay collapsed until the user opens them
       setOpenAccordions({});
@@ -1376,6 +1387,27 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                         </div>
                       )}
                     </div>
+
+                    {/* Oriентировочная стоимость (UN Comtrade) */}
+                    {itsData && itsData.found && (
+                      <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
+                        <div className="flex items-start gap-3">
+                          <TrendingUp className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+                          <div className="min-w-0">
+                            <p className="font-bold text-sm sm:text-base text-amber-950">
+                              Ориентировочная стоимость: ≈ {itsData.price.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} $/{itsData.unit}
+                              {itsData.priceAlt && (
+                                <span className="font-semibold text-amber-900/70"> · ≈ {itsData.priceAlt.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} $/{itsData.unitAlt}</span>
+                              )}
+                            </p>
+                            <p className="text-[11px] leading-relaxed text-amber-900/80 mt-1">
+                              Средняя цена мирового импорта по 6-значному коду {itsData.hs6}, данные за {itsData.period} год (UN Comtrade).
+                              Это ориентир для понимания уровня цен, а не индекс таможенной стоимости ФТС — точную оценку даст таможенный брокер по вашему товару.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* REQUIREMENTS ACCORDIONS (Section 3.2 & 7.4) */}
                     <div className="border-t border-slate-200 pt-6">

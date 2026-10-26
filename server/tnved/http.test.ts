@@ -16,6 +16,7 @@ async function harness(overrides: Partial<TnvedDependencies> = {}) {
     normalizeSearch: (_raw, q) => ({ query: q, items: [] }) as any,
     estimatePayments: (_raw, data) => ({ code: data.code, totalRub: 100 }) as any,
     exchangeRates: async () => ({ source: 'Банк России', date: '01.01.2026', eurRub: 100, usdRub: 90, cnyRub: 13, fetchedAt: new Date().toISOString() }),
+    itsForCode: () => ({ found: false }),
     ...overrides,
   };
   app.use('/api/tnved', createTnvedRouter(deps));
@@ -113,4 +114,26 @@ test('CBR nominal handling uses per-unit rates and rejects missing/invalid curre
   assert.equal(rates.cnyRub, 13); assert.equal(rates.eurRub, 100); assert.equal(rates.date, '24.10.2026');
   assert.throws(() => parseExchangeRates('<html>blocked</html>', '2026-10-25T00:00:00Z'));
   assert.throws(() => parseExchangeRates(xml.replace('100,00', 'NaN'), '2026-10-25T00:00:00Z'));
+});
+
+test('GET /its/:code validates format and passes through the lookup', async () => {
+  const h = await harness({
+    itsForCode: (code) => (code === '9401790009'
+      ? { found: true, hs6: '940179', period: '2024', price: 5, unit: 'кг', source: 'test' }
+      : { found: false }),
+  });
+  try {
+    const ok = await fetch(`${h.base}/its/9401790009`);
+    assert.equal(ok.status, 200);
+    const body: any = await ok.json();
+    assert.equal(body.price, 5);
+    assert.equal(body.unit, 'кг');
+    const miss = await fetch(`${h.base}/its/9999990000`);
+    assert.equal(miss.status, 200);
+    assert.equal((await miss.json() as any).found, false);
+    const bad = await fetch(`${h.base}/its/123`);
+    assert.equal(bad.status, 400);
+  } finally {
+    await h.close();
+  }
 });

@@ -1,5 +1,5 @@
 import type {
-  ApiFailure, CalculationRequest, CalculationResponse, CardResponse, ExchangeRatesResponse, SearchResponse, TnvedSession,
+  ApiFailure, CalculationRequest, CalculationResponse, CardResponse, ExchangeRatesResponse, ItsResponse, SearchResponse, TnvedSession,
 } from './types';
 
 export class ApiError extends Error {
@@ -51,6 +51,7 @@ export const api = {
   session: () => requestJson<TnvedSession>('/session'),
   search: (q: string, page: number) => requestJson<SearchResponse>(`/search?q=${encodeURIComponent(q)}&page=${page}`),
   card: (code: string) => requestJson<CardResponse>(`/card/${code}`),
+  its: (code: string) => requestJson<ItsResponse>(`/its/${code}`),
   rates: () => requestJson<ExchangeRatesResponse>('/rates'),
   calculate: (body: CalculationRequest) => requestJson<CalculationResponse>('/calculate', { method: 'POST', body: JSON.stringify(body) }),
 };
