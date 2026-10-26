@@ -47,16 +47,16 @@ export interface CustomsFeeTier {
   label: string;
 }
 
-// Ставки таможенных сборов за таможенное оформление (Постановление Правительства РФ № 342)
+// Ставки таможенных сборов с 01.01.2026 (ПП РФ от 28.11.2024 № 1637 в ред. ПП РФ от 23.10.2025 № 1638)
 export const CUSTOMS_FEES_TIERS: CustomsFeeTier[] = [
-  { minValueRub: 0, maxValueRub: 200000, feeRub: 1067, label: 'до 200 000 ₽' },
-  { minValueRub: 200000.01, maxValueRub: 450000, feeRub: 2134, label: '200 000 – 450 000 ₽' },
-  { minValueRub: 450000.01, maxValueRub: 1200000, feeRub: 4269, label: '450 000 – 1 200 000 ₽' },
-  { minValueRub: 1200000.01, maxValueRub: 2700000, feeRub: 11740, label: '1 200 000 – 2 700 000 ₽' },
-  { minValueRub: 2700000.01, maxValueRub: 4200000, feeRub: 16524, label: '2 700 000 – 4 200 000 ₽' },
-  { minValueRub: 4200000.01, maxValueRub: 5500000, feeRub: 21340, label: '4 200 000 – 5 500 000 ₽' },
-  { minValueRub: 5500000.01, maxValueRub: 7000000, feeRub: 26156, label: '5 500 000 – 7 000 000 ₽' },
-  { minValueRub: 7000000.01, maxValueRub: Infinity, feeRub: 30000, label: 'свыше 7 000 000 ₽' },
+  { minValueRub: 0, maxValueRub: 200000, feeRub: 1231, label: 'до 200 000 ₽' },
+  { minValueRub: 200000.01, maxValueRub: 450000, feeRub: 2462, label: '200 000 – 450 000 ₽' },
+  { minValueRub: 450000.01, maxValueRub: 1200000, feeRub: 4924, label: '450 000 – 1 200 000 ₽' },
+  { minValueRub: 1200000.01, maxValueRub: 2700000, feeRub: 13541, label: '1 200 000 – 2 700 000 ₽' },
+  { minValueRub: 2700000.01, maxValueRub: 4200000, feeRub: 18465, label: '2 700 000 – 4 200 000 ₽' },
+  { minValueRub: 4200000.01, maxValueRub: 5500000, feeRub: 21344, label: '4 200 000 – 5 500 000 ₽' },
+  { minValueRub: 5500000.01, maxValueRub: 10000000, feeRub: 49240, label: '5 500 000 – 10 000 000 ₽' },
+  { minValueRub: 10000000.01, maxValueRub: Infinity, feeRub: 73860, label: 'свыше 10 000 000 ₽' },
 ];
 
 export function calculateCustomsFee(customsValueRub: number): number {
@@ -66,7 +66,7 @@ export function calculateCustomsFee(customsValueRub: number): number {
       return tier.feeRub;
     }
   }
-  return 30000;
+  return 73860;
 }
 
 export const TNVED_CATEGORIES = [

@@ -2047,14 +2047,14 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                   Таможенные сборы 2026 и риски корректировки стоимости (КТС)
                 </h2>
                 <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                  Ставки сборов за таможенное оформление по Постановлению Правительства РФ № 342 и правила подтверждения цены по 1-му методу.
+                  Ставки сборов за таможенное оформление с 1 января 2026 года (постановление Правительства РФ от 28.11.2024 № 1637 в редакции постановления от 23.10.2025 № 1638) и правила подтверждения цены по 1-му методу.
                 </p>
               </div>
 
-              {/* Customs Fees Table (ПП РФ № 342) */}
+              {/* Customs Fees Table (ПП РФ № 1637 в ред. № 1638) */}
               <div className="mt-8">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3">
-                  Шкала сборов за совершение таможенных операций (Постановление № 342)
+                  Шкала сборов за совершение таможенных операций (с 01.01.2026)
                 </h3>
                 <div className="overflow-x-auto rounded-2xl border border-slate-200">
                   <table className="w-full text-left text-xs">
@@ -2076,6 +2076,9 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                     </tbody>
                   </table>
                 </div>
+                <p className="mt-2 text-[11px] text-slate-500 leading-relaxed">
+                  Верхний стоимостной порог партии повышен с 7 до 10 млн ₽. Для отдельных товаров радиоэлектроники установлен фиксированный сбор 73 860 ₽.
+                </p>
               </div>
 
               {/* KTS Risk Assessment */}
