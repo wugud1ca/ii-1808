@@ -52,6 +52,14 @@ export const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onClose, requestTy
           </div>
         </div>
 
+        {/* Видимый контекст заявки (тип запроса / коды ТН ВЭД) */}
+        {requestType && requestType !== 'Общий запрос на расчет логистики' && (
+          <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-2.5 text-xs text-blue-900 leading-relaxed">
+            <span className="font-semibold">Контекст заявки: </span>
+            <span>{requestType}</span>
+          </div>
+        )}
+
         {/* Form */}
         <LeadForm initialRequestType={requestType} onSuccessClose={onClose} />
       </div>
