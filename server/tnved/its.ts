@@ -69,8 +69,11 @@ export function itsForCode(code10: string): ItsAnswer {
   }
   const priceKg = rec.kg ? roundPrice(rec.value / rec.kg) : 0;
   const priceUnit = rec.units ? roundPrice(rec.value / rec.units) : 0;
+  if (priceKg <= 0 && priceUnit <= 0) {
+    return { found: false };
+  }
   const answer: ItsAnswer = {
-    found: priceKg > 0 || priceUnit > 0,
+    found: true,
     hs6,
     period: rec.period,
     source: dataset.meta.source,
