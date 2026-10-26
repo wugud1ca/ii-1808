@@ -9,6 +9,22 @@ export class ApiError extends Error {
   }
 }
 
+export const TNVED_PROD_DOMAIN = 'express-today.ru';
+export const TNVED_REMOTE_API_BASE = 'https://express-today.ru/api/tnved';
+
+export function getTnvedApiBaseUrl(): string {
+  if (typeof window !== 'undefined' && window.location) {
+    const hostname = window.location.hostname;
+    // В продакшен-сборке (на express-today.ru/tnved) используются относительные пути
+    if (hostname === TNVED_PROD_DOMAIN || hostname.endsWith(`.${TNVED_PROD_DOMAIN}`)) {
+      return '/api/tnved';
+    }
+    // В превью-среде — абсолютный адрес API
+    return TNVED_REMOTE_API_BASE;
+  }
+  return TNVED_REMOTE_API_BASE;
+}
+
 export async function requestJson<T>(path: string, options: RequestInit = {}): Promise<T> {
   const controller = new AbortController();
   const abort = () => controller.abort();
@@ -16,10 +32,13 @@ export async function requestJson<T>(path: string, options: RequestInit = {}): P
   options.signal?.addEventListener('abort', abort, { once: true });
   const timer = setTimeout(abort, 30_000);
   try {
-    const response = await fetch(`/api/tnved${path}`, {
+    const baseUrl = getTnvedApiBaseUrl();
+    const url = `${baseUrl}${path}`;
+    const isAbsolute = baseUrl.startsWith('http://') || baseUrl.startsWith('https://');
+    const response = await fetch(url, {
       ...options,
       signal: controller.signal,
-      credentials: 'same-origin',
+      ...(isAbsolute ? {} : { credentials: 'same-origin' }),
       cache: 'no-store',
       referrerPolicy: 'no-referrer',
       headers: { Accept: 'application/json', ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...options.headers },

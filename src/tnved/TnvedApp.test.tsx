@@ -119,3 +119,27 @@ test('history and favorites storage rules, deduplication, and limits', async () 
 
   delete (globalThis as any).localStorage;
 });
+
+test('getTnvedApiBaseUrl uses absolute URL in preview and relative URL in production', async () => {
+  const { getTnvedApiBaseUrl, TNVED_REMOTE_API_BASE } = await import('./api');
+
+  // Without window (SSR / node)
+  assert.equal(getTnvedApiBaseUrl(), TNVED_REMOTE_API_BASE);
+
+  // In preview environment (e.g. *.run.app or localhost)
+  (globalThis as any).window = { location: { hostname: 'ais-dev-o3s66nzlzu6rj73v7zkb3r-845548175011.europe-west2.run.app' } };
+  assert.equal(getTnvedApiBaseUrl(), 'https://express-today.ru/api/tnved');
+
+  (globalThis as any).window = { location: { hostname: 'localhost' } };
+  assert.equal(getTnvedApiBaseUrl(), 'https://express-today.ru/api/tnved');
+
+  // In production environment (express-today.ru or subdomains)
+  (globalThis as any).window = { location: { hostname: 'express-today.ru' } };
+  assert.equal(getTnvedApiBaseUrl(), '/api/tnved');
+
+  (globalThis as any).window = { location: { hostname: 'preview.express-today.ru' } };
+  assert.equal(getTnvedApiBaseUrl(), '/api/tnved');
+
+  delete (globalThis as any).window;
+});
+
