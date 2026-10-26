@@ -27,7 +27,22 @@ import {
   Scale,
   TrendingUp,
   X,
+  Star,
+  Trash2,
+  Send,
 } from 'lucide-react';
+import {
+  loadHistory,
+  addHistoryItem,
+  clearHistory,
+  loadFavorites,
+  toggleFavoriteItem,
+  removeFavoriteItem,
+  isFavoriteCode,
+  pluralizeCodes,
+  formatLeadContext,
+  type StorageCodeItem,
+} from './storage';
 
 import {
   POPULAR_TNVED_PRODUCTS,
@@ -166,6 +181,17 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
     usdRub: '',
     confirmedBaseRates: true,
   });
+
+  // History & Favorites state (Section 9)
+  const [history, setHistory] = useState<StorageCodeItem[]>([]);
+  const [favorites, setFavorites] = useState<StorageCodeItem[]>([]);
+  const [selectedHistoryCodes, setSelectedHistoryCodes] = useState<string[]>([]);
+  const [selectedFavoriteCodes, setSelectedFavoriteCodes] = useState<string[]>([]);
+
+  useEffect(() => {
+    setHistory(loadHistory());
+    setFavorites(loadFavorites());
+  }, []);
 
   const [eurRateModifiedByUser, setEurRateModifiedByUser] = useState(false);
   const [usdRateModifiedByUser, setUsdRateModifiedByUser] = useState(false);
@@ -341,6 +367,9 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
     try {
       const card = await api.card(code);
       setActiveCard(card);
+      // Section 9.1: Record to browsing history upon successful card load
+      const updatedHistory = addHistoryItem(card.code, card.name);
+      setHistory(updatedHistory);
       setItsData(null);
       const itsSeq = ++itsSeqRef.current;
       api.its(code)
@@ -975,6 +1004,238 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                     )}
                   </div>
                 )}
+
+                {/* БЛОК ИЗБРАННОЕ (Section 9.2) */}
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
+                      <span>Избранное</span>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                        {favorites.length}
+                      </span>
+                    </h3>
+                    {favorites.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (selectedFavoriteCodes.length === favorites.length) {
+                            setSelectedFavoriteCodes([]);
+                          } else {
+                            setSelectedFavoriteCodes(favorites.map((f) => f.code));
+                          }
+                        }}
+                        className="text-xs font-medium text-blue-600 hover:underline cursor-pointer"
+                      >
+                        {selectedFavoriteCodes.length === favorites.length ? 'Снять выбор' : 'Выбрать все'}
+                      </button>
+                    )}
+                  </div>
+
+                  {favorites.length === 0 ? (
+                    <p className="text-xs text-slate-500 py-1 leading-relaxed">
+                      Нажмите звёздочку на карточке товара, чтобы сохранить код в избранное для быстрого доступа.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
+                        {favorites.map((item) => {
+                          const isSelected = selectedFavoriteCodes.includes(item.code);
+                          const isActive = activeCard?.code === item.code;
+                          return (
+                            <div
+                              key={item.code}
+                              className={`flex items-start gap-2.5 rounded-xl border p-2.5 text-xs transition-colors ${
+                                isActive
+                                  ? 'border-blue-300 bg-blue-50/40'
+                                  : 'border-slate-200 bg-slate-50/60 hover:bg-slate-50'
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedFavoriteCodes((prev) => [...prev, item.code]);
+                                  } else {
+                                    setSelectedFavoriteCodes((prev) => prev.filter((c) => c !== item.code));
+                                  }
+                                }}
+                                className="mt-1 h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                aria-label={`Выбрать код ${item.code}`}
+                              />
+                              <div
+                                onClick={() => loadCard(item.code, true)}
+                                className="min-w-0 flex-1 cursor-pointer"
+                              >
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="font-mono font-bold text-blue-600 hover:underline">
+                                    {item.code}
+                                  </span>
+                                  {item.ts && (
+                                    <span className="text-[10px] text-slate-400">
+                                      {formatDateTime(item.ts)}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="mt-0.5 line-clamp-1 text-slate-700 font-medium">
+                                  {item.name}
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = removeFavoriteItem(item.code);
+                                  setFavorites(updated);
+                                  setSelectedFavoriteCodes((prev) => prev.filter((c) => c !== item.code));
+                                }}
+                                className="p-1 text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+                                title="Удалить из избранного"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                        <span className="text-[11px] text-slate-500">
+                          {selectedFavoriteCodes.length > 0
+                            ? `Выбрано: ${pluralizeCodes(selectedFavoriteCodes.length)}`
+                            : `Всего: ${pluralizeCodes(favorites.length)}`}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const codesToSend =
+                              selectedFavoriteCodes.length > 0
+                                ? selectedFavoriteCodes
+                                : favorites.map((f) => f.code);
+                            onOpenLeadModal?.(formatLeadContext(codesToSend));
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors cursor-pointer"
+                        >
+                          <Send className="h-3.5 w-3.5" />
+                          <span>Отправить заявку</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* БЛОК ИСТОРИЯ ПРОСМОТРОВ (Section 9.1) — показывается только если есть записи */}
+                {history.length > 0 && (
+                  <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-slate-500" />
+                        <span>История просмотров</span>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                          {history.length}
+                        </span>
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (selectedHistoryCodes.length === history.length) {
+                              setSelectedHistoryCodes([]);
+                            } else {
+                              setSelectedHistoryCodes(history.map((h) => h.code));
+                            }
+                          }}
+                          className="text-xs font-medium text-blue-600 hover:underline cursor-pointer"
+                        >
+                          {selectedHistoryCodes.length === history.length ? 'Снять выбор' : 'Выбрать все'}
+                        </button>
+                        <span className="text-slate-300">•</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            clearHistory();
+                            setHistory([]);
+                            setSelectedHistoryCodes([]);
+                          }}
+                          className="text-xs font-medium text-red-600 hover:underline cursor-pointer"
+                        >
+                          Очистить
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
+                      {history.map((item) => {
+                        const isSelected = selectedHistoryCodes.includes(item.code);
+                        const isActive = activeCard?.code === item.code;
+                        return (
+                          <div
+                            key={item.code}
+                            className={`flex items-start gap-2.5 rounded-xl border p-2.5 text-xs transition-colors ${
+                              isActive
+                                ? 'border-blue-300 bg-blue-50/40'
+                                : 'border-slate-200 bg-slate-50/60 hover:bg-slate-50'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedHistoryCodes((prev) => [...prev, item.code]);
+                                } else {
+                                  setSelectedHistoryCodes((prev) => prev.filter((c) => c !== item.code));
+                                }
+                              }}
+                              className="mt-1 h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                              aria-label={`Выбрать код ${item.code}`}
+                            />
+                            <div
+                              onClick={() => loadCard(item.code, true)}
+                              className="min-w-0 flex-1 cursor-pointer"
+                            >
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-mono font-bold text-blue-600 hover:underline">
+                                  {item.code}
+                                </span>
+                                {item.ts && (
+                                  <span className="text-[10px] text-slate-400">
+                                    {formatDateTime(item.ts)}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mt-0.5 line-clamp-1 text-slate-700 font-medium">
+                                {item.name}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                      <span className="text-[11px] text-slate-500">
+                        {selectedHistoryCodes.length > 0
+                          ? `Выбрано: ${pluralizeCodes(selectedHistoryCodes.length)}`
+                          : `Всего: ${pluralizeCodes(history.length)}`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const codesToSend =
+                            selectedHistoryCodes.length > 0
+                              ? selectedHistoryCodes
+                              : history.map((h) => h.code);
+                          onOpenLeadModal?.(formatLeadContext(codesToSend));
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors cursor-pointer"
+                      >
+                        <Send className="h-3.5 w-3.5" />
+                        <span>Отправить заявку</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* RIGHT COLUMN: Code Card & Calculator (Section 7.4) */}
@@ -1067,6 +1328,38 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                               <span>Скопировать код</span>
                             </>
                           )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const { items } = toggleFavoriteItem(activeCard.code, activeCard.name);
+                            setFavorites(items);
+                          }}
+                          className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
+                            isFavoriteCode(activeCard.code, favorites)
+                              ? 'border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100'
+                              : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                          }`}
+                          title={isFavoriteCode(activeCard.code, favorites) ? 'Удалить из избранного' : 'Добавить в избранное'}
+                        >
+                          <Star
+                            className={`h-4 w-4 ${
+                              isFavoriteCode(activeCard.code, favorites)
+                                ? 'fill-amber-400 text-amber-500'
+                                : 'text-slate-400'
+                            }`}
+                          />
+                          <span>
+                            {isFavoriteCode(activeCard.code, favorites) ? 'В избранном' : 'В избранное'}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onOpenLeadModal?.(`Просчёт поставки по кодам: ${activeCard.code}`)}
+                          className="inline-flex items-center gap-2 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 text-xs sm:text-sm font-semibold transition-colors shadow-md shadow-orange-600/20 cursor-pointer"
+                        >
+                          <Send className="h-4 w-4" />
+                          <span>Заявка на просчёт поставки</span>
                         </button>
                       </div>
                     </div>

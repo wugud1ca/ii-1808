@@ -118,3 +118,16 @@ export interface ItsResponse {
   unitAlt?: string;
   source?: string;
 }
+
+export interface HistoryRecord {
+  code: string;
+  name: string;
+  ts: string;
+}
+
+export interface FavoriteRecord {
+  code: string;
+  name: string;
+  ts: string;
+}
+
