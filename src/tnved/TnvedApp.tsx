@@ -137,6 +137,9 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
   const [itsData, setItsData] = useState<ItsResponse | null>(null);
   const itsSeqRef = useRef(0);
 
+  // Код, выбранный из подсказок/списка как группа (для заголовка «Подгруппы кода …»)
+  const [selectedGroup, setSelectedGroup] = useState<{ code: string; name: string } | null>(null);
+
   // Accordion state for Requirements
   const [openAccordions, setOpenAccordions] = useState<Record<number, boolean>>({});
 
@@ -368,6 +371,7 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
   const handleSearchSubmit = (e?: FormEvent) => {
     if (e) e.preventDefault();
     setSuggestionsOpen(false);
+    setSelectedGroup(null);
     if (!searchQuery.trim()) return;
     executeSearch(searchQuery, 1, true);
   };
@@ -398,8 +402,11 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
     setSearchQuery(item.code);
     setSuggestionsOpen(false);
     if (item.isLeaf) {
+      setSelectedGroup(null);
+      setSearchResults(null); // сброс прошлой выдачи
       loadCard(item.code, true);
     } else {
+      setSelectedGroup({ code: item.code, name: item.name });
       executeSearch(item.code, 1, true);
     }
   };
@@ -779,9 +786,14 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
               {/* LEFT COLUMN: Search Results (Section 7.3: First 5 items + "Показать ещё" + pagination) */}
               <div className="lg:col-span-5 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 flex-wrap">
                     <Layers className="h-5 w-5 text-blue-600" />
-                    <span>Результаты поиска</span>
+                    <span>{selectedGroup ? `Подгруппы кода ${selectedGroup.code}` : 'Результаты поиска'}</span>
+                    {selectedGroup && (
+                      <span className="text-xs font-medium text-slate-500 max-w-[260px] truncate" title={selectedGroup.name}>
+                        {selectedGroup.name}
+                      </span>
+                    )}
                     {searchResults && (
                       <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
                         {searchResults.total}
@@ -844,6 +856,7 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                               if (item.isLeaf) {
                                 loadCard(item.code, true);
                               } else {
+                                setSelectedGroup({ code: item.code, name: item.name });
                                 executeSearch(item.code, 1, true);
                               }
                             }}
