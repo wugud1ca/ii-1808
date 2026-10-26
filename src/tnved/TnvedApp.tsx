@@ -873,9 +873,10 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                           <div
                             key={item.code}
                             onClick={() => {
-                              setSelectedItem(item);
+                              // Клик по списку результатов НЕ сбрасывает выдачу:
+                              // лист — открываем карточку, список остаётся;
+                              // группа — углубляемся в её подгруппы.
                               if (item.isLeaf) {
-                                setSearchResults(null);
                                 loadCard(item.code, true);
                               } else {
                                 executeSearch(item.code, 1, true, false);
