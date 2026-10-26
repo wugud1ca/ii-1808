@@ -137,8 +137,8 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
   const [itsData, setItsData] = useState<ItsResponse | null>(null);
   const itsSeqRef = useRef(0);
 
-  // Код, выбранный из подсказок/списка как группа (для заголовка «Подгруппы кода …»)
-  const [selectedGroup, setSelectedGroup] = useState<{ code: string; name: string } | null>(null);
+  // Позиция, выбранная клиентом в подсказках/списке (показывается первой в результатах)
+  const [selectedItem, setSelectedItem] = useState<SearchItem | null>(null);
 
   // Accordion state for Requirements
   const [openAccordions, setOpenAccordions] = useState<Record<number, boolean>>({});
@@ -295,7 +295,7 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
   }, []);
 
   // 3. Search Executor
-  const executeSearch = async (queryText: string, page = 1, scrollToCard = false) => {
+  const executeSearch = async (queryText: string, page = 1, scrollToCard = false, autoOpenCard = true) => {
     const q = queryText.trim();
     if (!q) return;
 
@@ -309,7 +309,7 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
       setSearchResults(res);
 
       // If exact 10-digit code search or single leaf result, automatically load its card
-      if (res.items.length > 0) {
+      if (autoOpenCard && res.items.length > 0) {
         const exact = res.items.find((item) => item.code === q && item.isLeaf);
         const target = exact || (page === 1 && res.items[0].isLeaf ? res.items[0] : null);
         if (target) {
@@ -371,7 +371,7 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
   const handleSearchSubmit = (e?: FormEvent) => {
     if (e) e.preventDefault();
     setSuggestionsOpen(false);
-    setSelectedGroup(null);
+    setSelectedItem(null);
     if (!searchQuery.trim()) return;
     executeSearch(searchQuery, 1, true);
   };
@@ -401,13 +401,12 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
   const selectSuggestion = (item: SearchItem) => {
     setSearchQuery(item.code);
     setSuggestionsOpen(false);
+    setSelectedItem(item); // выбранная позиция попадает в результаты первой
     if (item.isLeaf) {
-      setSelectedGroup(null);
-      setSearchResults(null); // сброс прошлой выдачи
+      setSearchResults(null); // подгрупп у кода нет — список ниже очищается
       loadCard(item.code, true);
     } else {
-      setSelectedGroup({ code: item.code, name: item.name });
-      executeSearch(item.code, 1, true);
+      executeSearch(item.code, 1, true, false); // ниже выбранной позиции — её подгруппы, карточку не перебиваем
     }
   };
 
@@ -788,12 +787,7 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 flex-wrap">
                     <Layers className="h-5 w-5 text-blue-600" />
-                    <span>{selectedGroup ? `Подгруппы кода ${selectedGroup.code}` : 'Результаты поиска'}</span>
-                    {selectedGroup && (
-                      <span className="text-xs font-medium text-slate-500 max-w-[260px] truncate" title={selectedGroup.name}>
-                        {selectedGroup.name}
-                      </span>
-                    )}
+                    <span>Результаты поиска</span>
                     {searchResults && (
                       <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
                         {searchResults.total}
@@ -839,6 +833,32 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                   </div>
                 )}
 
+                {/* Выбранная клиентом позиция — первой в результатах */}
+                {!isSearchLoading && selectedItem && (
+                  <div className="rounded-2xl border-2 border-blue-600 bg-blue-50/60 p-4 shadow-md">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono font-bold text-sm tracking-wider text-slate-900">
+                        {selectedItem.code}
+                      </span>
+                      {selectedItem.isLeaf ? (
+                        <span className="text-[10px] font-semibold uppercase text-emerald-700 bg-emerald-100/70 px-1.5 py-0.5 rounded">
+                          Код товара
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-semibold uppercase text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
+                          Группа
+                        </span>
+                      )}
+                      <span className="text-[10px] font-semibold uppercase text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded">
+                        Выбрано
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs sm:text-sm font-medium text-slate-700 leading-relaxed">
+                      {selectedItem.name}
+                    </p>
+                  </div>
+                )}
+
                 {/* Items List (Initial 5 items visible + "Показать ещё" button) */}
                 {!isSearchLoading && searchResults && searchResults.items.length > 0 && (
                   <div className="space-y-3">
@@ -853,11 +873,12 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                           <div
                             key={item.code}
                             onClick={() => {
+                              setSelectedItem(item);
                               if (item.isLeaf) {
+                                setSearchResults(null);
                                 loadCard(item.code, true);
                               } else {
-                                setSelectedGroup({ code: item.code, name: item.name });
-                                executeSearch(item.code, 1, true);
+                                executeSearch(item.code, 1, true, false);
                               }
                             }}
                             className={`group cursor-pointer rounded-2xl border p-4 transition-all ${
