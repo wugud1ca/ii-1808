@@ -137,3 +137,20 @@ test('GET /its/:code validates format and passes through the lookup', async () =
     await h.close();
   }
 });
+
+test('CORS headers and preflight allow external studio previews', async () => {
+  const h = await harness();
+  try {
+    const res = await fetch(`${h.base}/session`);
+    assert.equal(res.headers.get('access-control-allow-origin'), '*');
+    const preflight = await fetch(`${h.base}/card/9401790009`, {
+      method: 'OPTIONS',
+      headers: { Origin: 'https://preview.studio.example', 'Access-Control-Request-Method': 'GET' },
+    });
+    assert.equal(preflight.status, 204);
+    assert.equal(preflight.headers.get('access-control-allow-origin'), '*');
+    assert.ok(preflight.headers.get('access-control-allow-methods')?.includes('GET'));
+  } finally {
+    await h.close();
+  }
+});

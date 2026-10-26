@@ -19,6 +19,11 @@ export function apiHeaders(_req: Request, res: Response, next: () => void) {
     'X-Robots-Tag': 'noindex, nofollow, noarchive',
     'Referrer-Policy': 'no-referrer',
     'X-Content-Type-Options': 'nosniff',
+    // CORS: API публичный, разрешаем вызовы из превью-сред внешних студий
+    // (AI Studio и т.п.). Данные и так отдаются без авторизации.
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
   });
   next();
 }
@@ -52,6 +57,11 @@ export function createTnvedRouter(deps: TnvedDependencies) {
 
   router.use(apiHeaders);
   router.use(express.json({ limit: '4kb' }));
+
+  // CORS preflight — до 503-гейта и лимитов, чтобы превью внешних студий работало.
+  router.options('*', (_req, res) => {
+    res.status(204).end();
+  });
 
   router.get('/session', (_req, res) => {
     res.json({ ready, mode: 'public' });
