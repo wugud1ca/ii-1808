@@ -15,10 +15,12 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PREVIEW = 'https://comtradeapi.un.org/public/v1/preview/C/A/HS';
-const API = 'https://comtradeapi.un.org/v1/C/A/HS';
+const API = 'https://comtradeapi.un.org/data/v1/get/C/A/HS';
 const KEY = process.env.COMTRADE_API_KEY || '';
 const OUT = path.join(__dirname, '..', 'server', 'tnved', 'its-data.generated.ts');
 const SPACING_MS = 15000; // preview API агрессивно лимитирует (429)
+const BATCH_REPORTERS = 10;
+const REQ_SPACING_MS = 3500;
 
 function writeOut(out) {
   const body = `/* Автогенерировано: scripts/fetch-its.mjs — не редактировать вручную. */\nimport type { ItsDataset } from './its';\n\nexport const ITS_DATASET: ItsDataset = ${JSON.stringify(out, null, 2)} as ItsDataset;\n`;
@@ -59,7 +61,7 @@ async function fetchHs6(hs6, year, reporter) {
     period: String(year),
     cmdCode: hs6,
     flowCode: 'M',
-    ...(KEY ? { subscription_key: KEY } : {}),
+    ...(KEY ? { 'subscription-key': KEY, partnerCode: '0' } : {}),
   })}`;
   const d = await getJson(url);
   const rows = (d.data || []).filter((r) => Number(r.primaryValue) > 0);
@@ -92,41 +94,74 @@ async function runPilot(codes, year, reporter) {
   console.log(`\nзаписано в ${OUT}: ${Object.keys(out.codes).length} кодов`);
 }
 
+/** Полная база: мировой импорт за год, агрегация по HS6. */
 async function runFull(year) {
   if (!KEY) throw new Error('нужен COMTRADE_API_KEY для полной генерации');
-  const out = { codes: {}, meta: { period: String(year), source: 'UN Comtrade: средняя цена мирового импорта (HS6)', generatedAt: new Date().toISOString() } };
-  // Список всех HS6 из справочника
-  const refs = await getJson(`https://comtradeapi.un.org/v1/refs/da/HS?subscription_key=${KEY}`);
-  const hs6List = (refs.data || []).filter((r) => /^\d{6}$/.test(r.id)).map((r) => r.id);
-  console.log(`кодов HS6 в справочнике: ${hs6List.length}`);
-  // По 5 кодов на запрос
-  for (let i = 0; i < hs6List.length; i += 5) {
-    const batch = hs6List.slice(i, i + 5);
-    const url = `${API}?${new URLSearchParams({
-      reporterCode: '0', period: String(year), flowCode: 'M',
-      cmdCode: batch.join(','), subscription_key: KEY,
-    })}`;
-    try {
-      const d = await getJson(url);
-      const byCode = {};
-      for (const r of d.data || []) {
-        const c6 = r.cmdCode;
-        byCode[c6] = byCode[c6] || { value: 0, kg: 0, units: 0 };
-        byCode[c6].value += Number(r.primaryValue) || 0;
-        byCode[c6].kg += Number(r.netWgt) || 0;
-        byCode[c6].units += Number(r.qty) || 0;
+  // Стандартный список стран-репортёров UN Comtrade (M49, без агрегатов)
+  const reporters = [
+    '4','8','12','16','20','24','28','31','32','36','40','44','48','50','51','52','56','60','64','68','70','72','76','84','90','92','96','100','104','108','112','116','120','124','132','136','140','144','148','152','156','158','162','166','170','174','175','178','180','184','188','191','192','196','203','204','208','212','214','218','222','226','231','232','233','234','238','242','246','248','250','254','258','260','262','266','268','270','275','276','288','292','296','300','304','308','312','316','320','324','328','332','336','340','344','348','352','356','360','364','368','372','376','380','384','388','392','398','400','404','408','410','414','417','418','422','426','428','430','434','438','440','442','446','450','454','458','462','466','470','474','478','480','484','492','496','498','499','500','504','508','512','516','520','524','528','531','533','534','535','540','548','554','558','562','566','570','574','578','580','583','584','585','586','591','598','600','604','608','612','616','620','624','626','630','634','638','642','643','646','652','654','659','660','662','663','666','670','674','678','682','686','688','690','694','702','703','704','705','706','710','716','724','728','729','732','740','748','752','756','760','762','764','768','772','776','780','784','788','792','795','796','798','800','804','807','818','826','831','832','833','834','840','850','854','858','860','862','866','868','870','872','876','882','887','894',
+  ];
+  console.log(`репортёров: ${reporters.length}`);
+
+  const acc = new Map(); // hs6 → {value, kg, units, unitAbbr}
+  const add = (c6, r) => {
+    const rec = acc.get(c6) || { value: 0, kg: 0, units: 0, unitAbbr: null };
+    rec.value += Number(r.primaryValue) || 0;
+    rec.kg += Number(r.netWgt) || 0;
+    rec.units += Number(r.qty) || 0;
+    if (!rec.unitAbbr && r.qtyUnitAbbr) rec.unitAbbr = String(r.qtyUnitAbbr).toLowerCase();
+    acc.set(c6, rec);
+  };
+
+  let batches = 0, rows = 0;
+  for (let i = 0; i < reporters.length; i += BATCH_REPORTERS) {
+    const batch = reporters.slice(i, i + BATCH_REPORTERS);
+    for (let attempt = 0; attempt < 4; attempt++) {
+      try {
+        const url = `${API}?${new URLSearchParams({
+          period: String(year), flowCode: 'M',
+          reporterCode: batch.join(','), partnerCode: '0',
+          'subscription-key': KEY,
+        })}`;
+        const d = await getJson(url);
+        for (const r of d.data || []) {
+          const c6 = String(r.cmdCode);
+          if (/^\d{6}$/.test(c6)) add(c6, r);
+        }
+        rows += (d.data || []).length;
+        batches++;
+        console.log(`батч ${i}-${i + batch.length - 1}: ok (строк всего: ${rows})`);
+        break;
+      } catch (e) {
+        const backoff = 5000 * (attempt + 1);
+        console.log(`батч ${i}: ${e.message} — пауза ${backoff / 1000}с`);
+        await sleep(backoff);
+        if (attempt === 3) throw e;
       }
-      for (const [c6, v] of Object.entries(byCode)) {
-        if (v.value > 0) out.codes[c6] = { hs6: c6, period: String(year), value: Math.round(v.value * 100) / 100, ...(v.kg > 0 ? { kg: Math.round(v.kg) } : {}), ...(v.units > 0 ? { units: Math.round(v.units) } : {}) };
-      }
-      if (i % 500 === 0) console.log(`${i}/${hs6List.length} готово`);
-    } catch (e) {
-      console.log(`batch ${i} FAILED: ${e.message}`);
     }
-    await sleep(1200);
+    await sleep(REQ_SPACING_MS);
   }
+
+  const codes = {};
+  for (const [c6, v] of acc) {
+    codes[c6] = {
+      hs6: c6, period: String(year),
+      value: Math.round(v.value * 100) / 100,
+      ...(v.kg > 0 ? { kg: Math.round(v.kg) } : {}),
+      ...(v.units > 0 ? { units: Math.round(v.units) } : {}),
+      ...(v.unitAbbr ? { unitAbbr: v.unitAbbr } : {}),
+    };
+  }
+  const out = {
+    codes,
+    meta: {
+      period: String(year),
+      source: 'UN Comtrade: средняя цена мирового импорта (HS6, все репортёры)',
+      generatedAt: new Date().toISOString(),
+    },
+  };
   writeOut(out);
-  console.log(`записано в ${OUT}: ${Object.keys(out.codes).length} кодов`);
+  console.log(`\nготово: ${batches} батчей, ${Object.keys(codes).length} кодов HS6 → ${OUT}`);
 }
 
 (async () => {
