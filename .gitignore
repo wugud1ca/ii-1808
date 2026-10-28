@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# пререндер-снапшоты для ботов (генерируются, см. PRERENDER.md)
+prerendered/
