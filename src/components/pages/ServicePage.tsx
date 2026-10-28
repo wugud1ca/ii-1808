@@ -33,13 +33,14 @@ export const ServicePage: React.FC<ServicePageProps> = ({ slug, onNavigate, onOp
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
       
       {/* Back button */}
-      <button
-        onClick={() => onNavigate('/')}
+      <a
+        href="/"
+        onClick={(e) => { e.preventDefault(); onNavigate('/'); }}
         className="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Вернуться на главную</span>
-      </button>
+      </a>
 
       {/* Hero Header */}
       <div className="bg-gradient-to-br from-amber-50/80 via-white to-orange-50/80 text-slate-900 rounded-3xl p-6 sm:p-12 border border-orange-200/80 shadow-md space-y-6">

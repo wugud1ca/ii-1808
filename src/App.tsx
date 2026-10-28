@@ -5,6 +5,13 @@ import { LeadModal } from './components/common/LeadModal';
 import { CalculationChoiceModal } from './components/common/CalculationChoiceModal';
 import { ScrollToTop } from './components/common/ScrollToTop';
 import { Direction } from './types';
+import {
+  SEO_ROUTES,
+  KNOWN_PREFIXES,
+  FALLBACK_TITLE,
+  FALLBACK_DESCRIPTION,
+  SITE_URL,
+} from './seo/routes';
 
 // Pages
 import { HomePage } from './components/pages/HomePage';
@@ -23,25 +30,48 @@ import TnvedApp from './tnved/TnvedApp';
 // Всё остальное считается 404 и редиректится на выкуп с 1688.
 function isKnownRoute(path: string): boolean {
   if (path === '/') return true;
-  const exact = [
-    '/tnved', '/tnved2', '/tnved3', '/tamozhnya-tnved', '/podbor-koda-tnved',
-    '/online-tariffs', '/tariffs', '/turkey', '/world', '/faq', '/kontakti', '/test2', '/original19102026',
-    '/raschet-stoimosti-dostavki-gruza-iz-kitaja',
-    '/publichnaya-oferta',
-    '/soglashenie-o-konfidencialnosti-i-polzovatelskoe-soglashenie',
-    '/partnerskoye-referalnoye-soglasheniye-oferta',
-    '/oferta-dostavka',
-    '/vikup-1688-alibaba', '/1688-alibaba', '/1688', '/alibaba',
-    '/vikup-optom', '/optoviy-vikup-1688-alibaba',
-    '/vikup-poizon-tmall-taobao', '/poizon-tmall-taobao', '/poizon',
-    '/tmall', '/taobao', '/vikup-roznica', '/roznichniy-vikup-poizon-tmall-taobao',
-  ];
-  if (exact.includes(path)) return true;
-  const prefixes = [
-    '/vikup', '/poisk', '/konsolidaciya', '/belaya', '/kargo', '/dostavka',
-    '/1688', '/fulfilment', '/stat-importerom', '/dokumenty-dlya-vvoza',
-  ];
-  return prefixes.some((p) => path.startsWith(p));
+  if (SEO_ROUTES[path]) return true;
+  return KNOWN_PREFIXES.some((p) => path.startsWith(p));
+}
+
+// Per-route SEO: title, description, canonical, lang, robots.
+function applySeo(route: string) {
+  if (typeof document === 'undefined') return;
+  const entry = SEO_ROUTES[route];
+
+  document.title = entry?.title || FALLBACK_TITLE;
+
+  const desc = entry?.description || FALLBACK_DESCRIPTION;
+  let meta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'description';
+    document.head.appendChild(meta);
+  }
+  meta.content = desc;
+
+  const canonicalPath = entry?.canonical || route;
+  let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'canonical';
+    document.head.appendChild(link);
+  }
+  link.href = SITE_URL + canonicalPath;
+
+  document.documentElement.lang = entry?.lang || 'ru';
+
+  let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+  if (entry?.robots) {
+    if (!robots) {
+      robots = document.createElement('meta');
+      robots.name = 'robots';
+      document.head.appendChild(robots);
+    }
+    robots.content = entry.robots;
+  } else if (robots) {
+    robots.remove();
+  }
 }
 
 export default function App() {
@@ -91,6 +121,20 @@ export default function App() {
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
+
+  // SEO: уникальные title/description/canonical/lang на каждом маршруте.
+  // Keitaro js.client (кампания INDEX JS) переписывает title на клиенте —
+  // переприменяем мета с задержкой, чтобы наши title гарантированно победили.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    applySeo(currentRoute);
+    const t1 = window.setTimeout(() => applySeo(currentRoute), 1500);
+    const t2 = window.setTimeout(() => applySeo(currentRoute), 4000);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [currentRoute]);
 
   // Keitaro: отправляем просмотр каждой страницы в трекер при SPA-навигации.
   // Первый заход уже отправлен inline-скриптом в <head>, поэтому его пропускаем.

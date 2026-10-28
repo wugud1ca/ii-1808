@@ -109,44 +109,44 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLeadModal }) =
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">Услуги</h3>
             <ul className="space-y-2 text-xs text-slate-400">
               <li>
-                <button onClick={() => onNavigate('/vikup-tovara-iz-kitaya')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/vikup-tovara-iz-kitaya" onClick={(e) => { e.preventDefault(); onNavigate('/vikup-tovara-iz-kitaya'); }} className="hover:text-white transition-colors cursor-pointer">
                   Выкуп товаров (1688, Taobao)
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/poisk-proizvodstva-tovarov-v-kitae-optom')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/poisk-proizvodstva-tovarov-v-kitae-optom" onClick={(e) => { e.preventDefault(); onNavigate('/poisk-proizvodstva-tovarov-v-kitae-optom'); }} className="hover:text-white transition-colors cursor-pointer">
                   Поиск поставщиков и фабрик
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/konsolidaciya-tovara-v-kitaye')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/konsolidaciya-tovara-v-kitaye" onClick={(e) => { e.preventDefault(); onNavigate('/konsolidaciya-tovara-v-kitaye'); }} className="hover:text-white transition-colors cursor-pointer">
                   Консолидация и склад в КНР
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/belaya-dostavka')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/belaya-dostavka" onClick={(e) => { e.preventDefault(); onNavigate('/belaya-dostavka'); }} className="hover:text-white transition-colors cursor-pointer">
                   Официальная «белая» доставка
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/kargo-dostavka-iz-kitaia')} className="hover:text-white transition-colors cursor-pointer">
-                  Карго-доставка из Китая
-                </button>
+                <a  href="/kargo-dostavka-iz-kitaia" onClick={(e) => { e.preventDefault(); onNavigate('/kargo-dostavka-iz-kitaia'); }} className="hover:text-white transition-colors cursor-pointer">
+                  Доставка сборных грузов из Китая
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/stat-importerom')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/stat-importerom" onClick={(e) => { e.preventDefault(); onNavigate('/stat-importerom'); }} className="hover:text-white transition-colors cursor-pointer">
                   Стать импортером (На своё Юр. лицо)
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/dokumenty-dlya-vvoza')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/dokumenty-dlya-vvoza" onClick={(e) => { e.preventDefault(); onNavigate('/dokumenty-dlya-vvoza'); }} className="hover:text-white transition-colors cursor-pointer">
                   Документы для ввоза (Честный Знак & Сертификация)
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/dostavka-kontejnera-iz-kitaja')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/dostavka-kontejnera-iz-kitaja" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-kontejnera-iz-kitaja'); }} className="hover:text-white transition-colors cursor-pointer">
                   Контейнеры 20ft / 40ft & Оборудование
-                </button>
+                </a>
               </li>
             </ul>
           </div>
@@ -156,29 +156,29 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLeadModal }) =
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">Для бизнеса</h3>
             <ul className="space-y-2 text-xs text-slate-400">
               <li>
-                <button onClick={() => onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/dostavka-tovarov-iz-kitaia-dlia-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov'); }} className="hover:text-white transition-colors cursor-pointer">
                   Доставка для маркетплейсов
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/fulfilment-dlya-marketpleisov')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/fulfilment-dlya-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/fulfilment-dlya-marketpleisov'); }} className="hover:text-white transition-colors cursor-pointer">
                   Фулфилмент & Маркировка ЧЗ
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/1688')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/1688" onClick={(e) => { e.preventDefault(); onNavigate('/1688'); }} className="hover:text-white transition-colors cursor-pointer">
                   Закупки на 1688 / POIZON
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/world')} className="hover:text-orange-400 transition-colors font-bold text-orange-300 cursor-pointer text-sm">
+                <a  href="/world" onClick={(e) => { e.preventDefault(); onNavigate('/world'); }} className="hover:text-orange-400 transition-colors font-bold text-orange-300 cursor-pointer text-sm">
                   🌍 Выкуп и доставка по всему миру
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja')} className="hover:text-white transition-colors cursor-pointer">
+                <a  href="/raschet-stoimosti-dostavki-gruza-iz-kitaja" onClick={(e) => { e.preventDefault(); onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja'); }} className="hover:text-white transition-colors cursor-pointer">
                   Калькулятор доставки
-                </button>
+                </a>
               </li>
             </ul>
           </div>
@@ -231,12 +231,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLeadModal }) =
             © {new Date().getFullYear()} {siteConfig.brandName}. Все права защищены. Все расчеты являются предварительными.
           </div>
           <div className="flex items-center gap-4">
-            <button onClick={() => onNavigate('/faq')} className="hover:text-slate-300 transition-colors cursor-pointer">
+            <a  href="/faq" onClick={(e) => { e.preventDefault(); onNavigate('/faq'); }} className="hover:text-slate-300 transition-colors cursor-pointer">
               База знаний FAQ
-            </button>
-            <button onClick={() => onNavigate('/kontakti')} className="hover:text-slate-300 transition-colors cursor-pointer">
+            </a>
+            <a  href="/kontakti" onClick={(e) => { e.preventDefault(); onNavigate('/kontakti'); }} className="hover:text-slate-300 transition-colors cursor-pointer">
               Контакты
-            </button>
+            </a>
           </div>
         </div>
 

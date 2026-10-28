@@ -1,8 +1,15 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import 'dotenv/config';
 import { createTnvedRouterFromEnv } from './server/tnved/bootstrap';
+import {
+  SEO_ROUTES,
+  KNOWN_PREFIXES,
+  OLD_REDIRECTS,
+  SITE_URL,
+} from './src/seo/routes';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const DEFAULT_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '614478298';
@@ -246,6 +253,103 @@ async function startServer() {
   const PORT = parseInt(process.env.PORT || '3000', 10);
   const BIND_ADDR = process.env.BIND_ADDR || '0.0.0.0';
 
+  // ---- SEO: robots.txt / sitemap.xml / llms.txt (генерируются из src/seo/routes.ts) ----
+
+  const robotsTxt = [
+    'User-agent: *',
+    'Allow: /',
+    'Disallow: /api/',
+    'Disallow: /test2',
+    'Disallow: /original19102026',
+    '',
+    '# AI-краулеры (поиск и цитирование) — разрешены',
+    'User-agent: GPTBot',
+    'Allow: /',
+    '',
+    'User-agent: OAI-SearchBot',
+    'Allow: /',
+    '',
+    'User-agent: ChatGPT-User',
+    'Allow: /',
+    '',
+    'User-agent: ClaudeBot',
+    'Allow: /',
+    '',
+    'User-agent: Claude-SearchBot',
+    'Allow: /',
+    '',
+    'User-agent: PerplexityBot',
+    'Allow: /',
+    '',
+    'User-agent: Google-Extended',
+    'Allow: /',
+    '',
+    'Sitemap: ' + SITE_URL + '/sitemap.xml',
+    '',
+  ].join('\n');
+
+  function buildSitemapXml(): string {
+    const lastmod = new Date().toISOString().slice(0, 10);
+    const urls: string[] = [];
+    const added = new Set<string>();
+    const push = (loc: string, priority?: string) => {
+      if (added.has(loc)) return;
+      added.add(loc);
+      urls.push(
+        '  <url>' +
+          `<loc>${SITE_URL}${loc}</loc>` +
+          `<lastmod>${lastmod}</lastmod>` +
+          (priority ? `<priority>${priority}</priority>` : '') +
+          '</url>'
+      );
+    };
+    for (const [route, entry] of Object.entries(SEO_ROUTES)) {
+      if (entry.sitemap === false) continue;
+      if (entry.robots === 'noindex') continue;
+      if (entry.canonical && entry.canonical !== route) continue; // алиасы — не дублируем
+      push(route, entry.priority || '0.7');
+    }
+    return (
+      '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+      urls.join('\n') +
+      '\n</urlset>\n'
+    );
+  }
+
+  const llmsTxt = [
+    '# Express Today',
+    '',
+    '> Официальная доставка и выкуп товаров из Китая в Россию под ключ: 1688, Taobao, Alibaba, POIZON, склад в Гуанчжоу, таможенное оформление, полный пакет документов (белая схема ВЭД, Честный Знак, фулфилмент для маркетплейсов). Работаем с 2015 года, собственная компания в КНР (佛山星科拓贸易有限公司, г. Фошань).',
+    '',
+    '## Ключевые страницы',
+    `- [Главная](${SITE_URL}/): выкуп, проверка, консолидация, доставка из Китая для бизнеса`,
+    `- [Доставка из Китая](${SITE_URL}/dostavka): авиа 9–15 дней, авто ускоренное 13–20 дней, ЖД, море`,
+    `- [Белая доставка / ВЭД](${SITE_URL}/belaya-dostavka): 9 шагов легального импорта, ДТ (ГТД), УПД с НДС`,
+    `- [Выкуп с 1688 и Alibaba](${SITE_URL}/vikup-1688-alibaba): оптовый выкуп за 24 часа`,
+    `- [Выкуп с POIZON, Tmall, Taobao](${SITE_URL}/vikup-poizon-tmall-taobao): розничный выкуп`,
+    `- [Поиск поставщиков в Китае](${SITE_URL}/poisk-proizvodstva-tovarov-v-kitae-optom)`,
+    `- [Консолидация на складе в Гуанчжоу](${SITE_URL}/konsolidaciya-tovara-v-kitaye)`,
+    `- [Фулфилмент для маркетплейсов](${SITE_URL}/fulfilment-dlya-marketpleisov): WB, Ozon, Яндекс.Маркет`,
+    `- [Честный Знак и сертификация](${SITE_URL}/dokumenty-dlya-vvoza)`,
+    `- [Стать импортёром](${SITE_URL}/stat-importerom): ВЭД-контракт на ваше юрлицо`,
+    `- [ТН ВЭД: подбор кода и пошлины](${SITE_URL}/tnved)`,
+    `- [Онлайн-тарифы на доставку](${SITE_URL}/online-tariffs)`,
+    `- [Калькулятор доставки](${SITE_URL}/raschet-stoimosti-dostavki-gruza-iz-kitaja)`,
+    `- [FAQ](${SITE_URL}/faq)`,
+    '',
+    '## Контакты',
+    '- Телефон: 8 (800) 555-94-25 (бесплатно по РФ)',
+    '- Email: hello@express-today.ru',
+    '- Склад в Китае: г. Гуанчжоу; выдача в Москве, доставка по РФ через транспортные компании',
+    '',
+    '## Примечания',
+    '- Работаем с юридическими и физическими лицами; оплата по договору или через личный кабинет.',
+    '- Доставка: авиа, авто (ускоренное/обычное), ж/д, морские контейнеры 20ft/40ft.',
+    '- Последнее обновление: ' + new Date().toISOString().slice(0, 10),
+    '',
+  ].join('\n');
+
   // Behind the Cloudflare proxy (caddy appends the CF edge IP to
   // X-Forwarded-For), trust one proxy hop so per-IP rate limits see the
   // real client IP instead of the shared CF egress address.
@@ -294,7 +398,25 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    const prerenderDir = path.join(process.cwd(), 'prerendered');
+
+    // Поисковые и AI-боты, которым отдаём пререндеренные HTML-снапшоты
+    const BOT_UA =
+      /googlebot|google-extended|bingbot|yandex|baiduspider|duckduckbot|facebookexternalhit|twitterbot|linkedinbot|gptbot|oai-searchbot|chatgpt-user|perplexitybot|claudebot|claude-searchbot|anthropic-ai|bytespider|amazonbot|applebot|petalbot|mj12bot|ahrefsbot|semrushbot|ccbot|ia_archiver|slurp/i;
+
+    // Хэшированные ассеты кэшируем навсегда, остальное — revalidate
+    app.use(
+      express.static(distPath, {
+        setHeaders: (res, filePath) => {
+          if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          } else {
+            res.setHeader('Cache-Control', 'no-cache');
+          }
+        },
+      })
+    );
+
     app.get('/tnved', (_req, res) => {
       res.sendFile(path.join(distPath, 'tnved.html'));
     });
@@ -304,7 +426,52 @@ async function startServer() {
     app.get('/tnved3', (_req, res) => {
       res.sendFile(path.join(distPath, 'tnved3.html'));
     });
-    app.get('*', (_req, res) => {
+
+    // SEO-файлы
+    app.get('/robots.txt', (_req, res) => {
+      res.type('text/plain; charset=utf-8').send(robotsTxt);
+    });
+    app.get('/sitemap.xml', (_req, res) => {
+      res.type('application/xml; charset=utf-8').send(buildSitemapXml());
+    });
+    app.get('/llms.txt', (_req, res) => {
+      res.type('text/plain; charset=utf-8').send(llmsTxt);
+    });
+
+    // 301 для старых URL (старый сайт): сохраняем накопленный поисковый вес
+    for (const [from, to] of Object.entries(OLD_REDIRECTS)) {
+      app.get(from, (_req, res) => {
+        res.redirect(301, to);
+      });
+    }
+
+    const knownExact = new Set(Object.keys(SEO_ROUTES).concat(['/tnved', '/tnved2', '/tnved3']));
+    const isKnownPath = (p: string): boolean => {
+      if (p === '/') return true;
+      if (knownExact.has(p)) return true;
+      return KNOWN_PREFIXES.some((pre) => p.startsWith(pre));
+    };
+
+    // SPA-fallback: ботам отдаём пререндер (если есть), неизвестным URL — честный 404
+    app.get('*', (req, res) => {
+      const p = req.path;
+      if (p.startsWith('/api')) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+      const ua = String(req.headers['user-agent'] || '');
+      const wantPrerender = BOT_UA.test(ua) || req.query.__prerender !== undefined;
+      if (wantPrerender) {
+        const rel = p === '/' ? 'index.html' : p.replace(/^\/+/, '').replace(/\/+$/, '') + '.html';
+        const snap = path.join(prerenderDir, rel);
+        if (fs.existsSync(snap) && !fs.statSync(snap).isDirectory()) {
+          res.setHeader('Vary', 'User-Agent');
+          return res.status(200).sendFile(snap);
+        }
+      }
+      if (!isKnownPath(p)) {
+        res.status(404);
+        return res.sendFile(path.join(distPath, 'index.html'));
+      }
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }

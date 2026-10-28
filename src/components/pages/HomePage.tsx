@@ -126,54 +126,54 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate,
               </div>
 
               {/* 1688 Badge */}
-              <button
-                onClick={() => onNavigate('/vikup-1688-alibaba')}
+              <a
+                 href="/vikup-1688-alibaba" onClick={(e) => { e.preventDefault(); onNavigate('/vikup-1688-alibaba'); }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 hover:border-orange-300 text-slate-900 text-xs font-extrabold uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95 group"
                 title="Оптовый выкуп с 1688.com"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                 <span className="group-hover:text-orange-600 transition-colors">1688</span>
-              </button>
+              </a>
 
               {/* ALIBABA Badge */}
-              <button
-                onClick={() => onNavigate('/vikup-1688-alibaba')}
+              <a
+                 href="/vikup-1688-alibaba" onClick={(e) => { e.preventDefault(); onNavigate('/vikup-1688-alibaba'); }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 hover:border-orange-300 text-slate-900 text-xs font-extrabold uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95 group"
                 title="Оптовый выкуп с Alibaba.com"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                 <span className="group-hover:text-orange-600 transition-colors">ALIBABA</span>
-              </button>
+              </a>
 
               {/* POIZON Badge */}
-              <button
-                onClick={() => onNavigate('/vikup-poizon-tmall-taobao')}
+              <a
+                 href="/vikup-poizon-tmall-taobao" onClick={(e) => { e.preventDefault(); onNavigate('/vikup-poizon-tmall-taobao'); }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 hover:border-emerald-300 text-slate-900 text-xs font-extrabold uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95 group"
                 title="Выкуп с POIZON (Dewu)"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                 <span className="group-hover:text-emerald-600 transition-colors">POIZON</span>
-              </button>
+              </a>
 
               {/* TMALL Badge */}
-              <button
-                onClick={() => onNavigate('/vikup-poizon-tmall-taobao')}
+              <a
+                 href="/vikup-poizon-tmall-taobao" onClick={(e) => { e.preventDefault(); onNavigate('/vikup-poizon-tmall-taobao'); }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 hover:border-red-300 text-slate-900 text-xs font-extrabold uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95 group"
                 title="Выкуп с TMALL.com"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                 <span className="group-hover:text-red-600 transition-colors">TMALL</span>
-              </button>
+              </a>
 
               {/* TAOBAO Badge */}
-              <button
-                onClick={() => onNavigate('/vikup-poizon-tmall-taobao')}
+              <a
+                 href="/vikup-poizon-tmall-taobao" onClick={(e) => { e.preventDefault(); onNavigate('/vikup-poizon-tmall-taobao'); }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 hover:border-orange-300 text-slate-900 text-xs font-extrabold uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95 group"
                 title="Выкуп с TAOBAO.com"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                 <span className="group-hover:text-orange-600 transition-colors">TAOBAO</span>
-              </button>
+              </a>
             </div>
 
             {/* H1 Headline */}
@@ -217,27 +217,29 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate,
 
             {/* Trust Block - 4 Interactive Facts */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-6">
-              <div 
-                onClick={() => onNavigate('/vikup-tovara-iz-kitaya')}
-                className="bg-white/90 hover:bg-orange-50/80 backdrop-blur-xs p-4 rounded-2xl border border-slate-200/90 hover:border-orange-400 shadow-xs hover:shadow-md text-left space-y-1 transition-all cursor-pointer active:scale-98 group"
+              <a
+                href="/vikup-tovara-iz-kitaya"
+                onClick={(e) => { e.preventDefault(); onNavigate('/vikup-tovara-iz-kitaya'); }}
+                className="block bg-white/90 hover:bg-orange-50/80 backdrop-blur-xs p-4 rounded-2xl border border-slate-200/90 hover:border-orange-400 shadow-xs hover:shadow-md text-left space-y-1 transition-all cursor-pointer active:scale-98 group"
               >
                 <div className="w-8 h-8 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 text-emerald-700 flex items-center justify-center transition-colors">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div className="text-sm font-bold text-slate-900 group-hover:text-orange-600 transition-colors">Выкуп за 24 часа</div>
                 <div className="text-sm text-slate-600">После подтверждения оплаты</div>
-              </div>
+              </a>
 
-              <div 
-                onClick={() => onNavigate('/konsolidaciya-tovara-v-kitaye')}
-                className="bg-white/90 hover:bg-orange-50/80 backdrop-blur-xs p-4 rounded-2xl border border-slate-200/90 hover:border-orange-400 shadow-xs hover:shadow-md text-left space-y-1 transition-all cursor-pointer active:scale-98 group"
+              <a
+                href="/konsolidaciya-tovara-v-kitaye"
+                onClick={(e) => { e.preventDefault(); onNavigate('/konsolidaciya-tovara-v-kitaye'); }}
+                className="block bg-white/90 hover:bg-orange-50/80 backdrop-blur-xs p-4 rounded-2xl border border-slate-200/90 hover:border-orange-400 shadow-xs hover:shadow-md text-left space-y-1 transition-all cursor-pointer active:scale-98 group"
               >
                 <div className="w-8 h-8 rounded-lg bg-orange-100 group-hover:bg-orange-200 text-orange-700 flex items-center justify-center transition-colors">
                   <PackageCheck className="w-5 h-5" />
                 </div>
                 <div className="text-sm font-bold text-slate-900 group-hover:text-orange-600 transition-colors">Фото, вес и объем в ЛК</div>
                 <div className="text-sm text-slate-600">Точные замеры со склада КНР</div>
-              </div>
+              </a>
 
               <div 
                 onClick={() => {
@@ -305,9 +307,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate,
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {customerScenarios.map(scen => (
-              <div
+              <a
                 key={scen.id}
-                onClick={() => {
+                href={scen.targetSlug || '/raschet-stoimosti-dostavki-gruza-iz-kitaja'}
+                onClick={(e) => {
+                  e.preventDefault();
                   trackEvent('select_request_type', { requestType: scen.requestType });
                   if (scen.targetSlug && scen.targetSlug !== '/raschet-stoimosti-dostavki-gruza-iz-kitaja') {
                     onNavigate(scen.targetSlug);
@@ -340,7 +344,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate,
                   <span>Выбрать сценарий</span>
                   <ChevronRight className="w-4 h-4" />
                 </div>
-              </div>
+              </a>
             ))}
           </div>
 
@@ -425,13 +429,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate,
                 </div>
 
                 <div className="pt-2">
-                  <button
-                    onClick={() => onNavigate(`/${srv.slug}`)}
+                  <a
+                    href={`/${srv.slug}`}
+                    onClick={(e) => { e.preventDefault(); onNavigate(`/${srv.slug}`); }}
                     className="w-full bg-slate-100 hover:bg-orange-600 hover:text-white text-slate-800 font-semibold text-sm py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1"
                   >
                     <span>Подробнее об услуге</span>
                     <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </a>
                 </div>
               </div>
             ))}

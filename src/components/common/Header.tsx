@@ -121,10 +121,8 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Direction Selector */}
               <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-xs shrink-0">
-                <button
-                  onClick={() => {
-                    onDirectionChange('china');
-                    onNavigate('/');
+                <a
+                   href="/" onClick={(e) => { e.preventDefault(); onDirectionChange('china'); onNavigate('/');
                     trackEvent('select_direction', { direction: 'china' });
                   }}
                   className={`px-2.5 py-1 rounded-md font-bold transition-all cursor-pointer text-xs ${
@@ -134,11 +132,9 @@ export const Header: React.FC<HeaderProps> = ({
                   }`}
                 >
                   🇨🇳 Китай
-                </button>
-                <button
-                  onClick={() => {
-                    onDirectionChange('world');
-                    onNavigate('/world');
+                </a>
+                <a
+                   href="/world" onClick={(e) => { e.preventDefault(); onDirectionChange('world'); onNavigate('/world');
                     trackEvent('select_direction', { direction: 'world' });
                   }}
                   className={`px-2.5 py-1 rounded-md font-bold transition-all cursor-pointer text-xs ${
@@ -148,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({
                   }`}
                 >
                   🌍 Весь мир
-                </button>
+                </a>
               </div>
             </div>
 
@@ -235,12 +231,12 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Desktop Main Navigation Bar */}
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <button 
-            onClick={() => onNavigate('/')} 
+          <a 
+             href="/" onClick={(e) => { e.preventDefault(); onNavigate('/'); }} 
             className="text-left cursor-pointer focus:outline-hidden shrink-0"
           >
             <Logo />
-          </button>
+          </a>
 
           {/* Desktop Nav Links */}
           <nav className="flex items-center gap-1 xl:gap-2 text-sm font-medium text-slate-700">
@@ -266,15 +262,15 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="absolute top-full left-0 w-80 bg-white border border-orange-200/80 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 flex items-center justify-between">
                     <span>Основные услуги</span>
-                    <button 
-                      onClick={() => { onNavigate('/dostavka'); setServicesDropdownOpen(false); }}
+                    <a 
+                       href="/dostavka" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka'); setServicesDropdownOpen(false); }}
                       className="text-orange-600 hover:underline normal-case font-semibold text-xs cursor-pointer"
                     >
                       Все услуги →
-                    </button>
+                    </a>
                   </div>
-                  <button
-                    onClick={() => { onNavigate('/vikup-tovara-iz-kitaya'); setServicesDropdownOpen(false); }}
+                  <a
+                     href="/vikup-tovara-iz-kitaya" onClick={(e) => { e.preventDefault(); onNavigate('/vikup-tovara-iz-kitaya'); setServicesDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <Package className="w-4 h-4 text-orange-600 shrink-0" />
@@ -282,9 +278,9 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="font-semibold">Выкуп товаров</div>
                       <div className="text-xs text-slate-500">1688, Taobao, POIZON за 24ч</div>
                     </div>
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/poisk-proizvodstva-tovarov-v-kitae-optom'); setServicesDropdownOpen(false); }}
+                  </a>
+                  <a
+                     href="/poisk-proizvodstva-tovarov-v-kitae-optom" onClick={(e) => { e.preventDefault(); onNavigate('/poisk-proizvodstva-tovarov-v-kitae-optom'); setServicesDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <Search className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -292,9 +288,9 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="font-semibold">Поиск фабрик и поставщиков</div>
                       <div className="text-xs text-slate-500">Переговоры и аудит в Китае</div>
                     </div>
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/konsolidaciya-tovara-v-kitaye'); setServicesDropdownOpen(false); }}
+                  </a>
+                  <a
+                     href="/konsolidaciya-tovara-v-kitaye" onClick={(e) => { e.preventDefault(); onNavigate('/konsolidaciya-tovara-v-kitaye'); setServicesDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <Truck className="w-4 h-4 text-amber-600 shrink-0" />
@@ -302,9 +298,9 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="font-semibold">Консолидация на складе</div>
                       <div className="text-xs text-slate-500">Склад Гуанчжоу, упаковка и фото</div>
                     </div>
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/belaya-dostavka'); setServicesDropdownOpen(false); }}
+                  </a>
+                  <a
+                     href="/belaya-dostavka" onClick={(e) => { e.preventDefault(); onNavigate('/belaya-dostavka'); setServicesDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <Globe2 className="w-4 h-4 text-orange-600 shrink-0" />
@@ -312,19 +308,19 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="font-semibold">Официальная «белая» доставка</div>
                       <div className="text-xs text-slate-500">ГТД, закрывающие документы, НДС</div>
                     </div>
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/kargo-dostavka-iz-kitaia'); setServicesDropdownOpen(false); }}
+                  </a>
+                  <a
+                     href="/kargo-dostavka-iz-kitaia" onClick={(e) => { e.preventDefault(); onNavigate('/kargo-dostavka-iz-kitaia'); setServicesDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <Truck className="w-4 h-4 text-purple-600 shrink-0" />
                     <div>
-                      <div className="font-semibold">Карго-доставка из Китая</div>
+                      <div className="font-semibold">Доставка сборных грузов из Китая</div>
                       <div className="text-xs text-slate-500">Для оперативных коммерческих партий</div>
                     </div>
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/stat-importerom'); setServicesDropdownOpen(false); }}
+                  </a>
+                  <a
+                     href="/stat-importerom" onClick={(e) => { e.preventDefault(); onNavigate('/stat-importerom'); setServicesDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer border-t border-slate-100/80"
                   >
                     <Building2 className="w-4 h-4 text-blue-600 shrink-0" />
@@ -332,9 +328,9 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="font-semibold">Стать импортером</div>
                       <div className="text-xs text-slate-500">Оформить все на своё Юр. лицо</div>
                     </div>
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/dokumenty-dlya-vvoza'); setServicesDropdownOpen(false); }}
+                  </a>
+                  <a
+                     href="/dokumenty-dlya-vvoza" onClick={(e) => { e.preventDefault(); onNavigate('/dokumenty-dlya-vvoza'); setServicesDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -342,9 +338,9 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="font-semibold">Документы для ввоза</div>
                       <div className="text-xs text-slate-500">Честный Знак & Сертификация под ключ</div>
                     </div>
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/tnved'); setServicesDropdownOpen(false); }}
+                  </a>
+                  <a
+                     href="/tnved" onClick={(e) => { e.preventDefault(); onNavigate('/tnved'); setServicesDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
@@ -355,7 +351,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                       <div className="text-xs text-slate-500">Подбор кода, пошлины, Честный ЗНАК</div>
                     </div>
-                  </button>
+                  </a>
                 </div>
               )}
             </div>
@@ -380,8 +376,8 @@ export const Header: React.FC<HeaderProps> = ({
 
               {businessDropdownOpen && (
                 <div className="absolute top-full left-0 w-80 bg-white border border-orange-200/80 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <button
-                    onClick={() => { onNavigate('/world'); setBusinessDropdownOpen(false); }}
+                  <a
+                     href="/world" onClick={(e) => { e.preventDefault(); onNavigate('/world'); setBusinessDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <Globe2 className="w-4 h-4 text-orange-600 shrink-0" />
@@ -389,10 +385,10 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="font-semibold">Направления (Весь мир)</div>
                       <div className="text-xs text-slate-500">Турция, ОАЭ, Европа, Азия, Америка</div>
                     </div>
-                  </button>
+                  </a>
 
-                  <button
-                    onClick={() => { onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja'); setBusinessDropdownOpen(false); }}
+                  <a
+                     href="/raschet-stoimosti-dostavki-gruza-iz-kitaja" onClick={(e) => { e.preventDefault(); onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja'); setBusinessDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
@@ -400,10 +396,10 @@ export const Header: React.FC<HeaderProps> = ({
                       <div className="font-semibold">Калькулятор доставки</div>
                       <div className="text-xs text-slate-500">Расчет ориентировочной стоимости</div>
                     </div>
-                  </button>
+                  </a>
 
-                  <button
-                    onClick={() => { onNavigate('/tnved'); setBusinessDropdownOpen(false); }}
+                  <a
+                     href="/tnved" onClick={(e) => { e.preventDefault(); onNavigate('/tnved'); setBusinessDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
                     <ShieldCheck className="w-4 h-4 text-orange-600 shrink-0" />
@@ -414,62 +410,62 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                       <div className="text-xs text-slate-500">Подбор кода, пошлины, Честный ЗНАК</div>
                     </div>
-                  </button>
+                  </a>
 
                   <div className="my-1 border-t border-slate-100" />
 
-                  <button
-                    onClick={() => { onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov'); setBusinessDropdownOpen(false); }}
+                  <a
+                     href="/dostavka-tovarov-iz-kitaia-dlia-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov'); setBusinessDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors"
                   >
                     Маркетплейсы (WB, Ozon, Я.Маркет)
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/fulfilment-dlya-marketpleisov'); setBusinessDropdownOpen(false); }}
+                  </a>
+                  <a
+                     href="/fulfilment-dlya-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/fulfilment-dlya-marketpleisov'); setBusinessDropdownOpen(false); }}
                     className="w-full text-left px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors"
                   >
                     Фулфилмент & Маркировка ЧЗ
-                  </button>
+                  </a>
                 </div>
               )}
             </div>
 
-            <button
-              onClick={() => onNavigate('/online-tariffs')}
+            <a
+               href="/online-tariffs" onClick={(e) => { e.preventDefault(); onNavigate('/online-tariffs'); }}
               className={`px-3 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeNav === '/online-tariffs' ? 'text-orange-600 font-bold bg-orange-50' : 'hover:text-orange-600 hover:bg-slate-50'
               }`}
             >
               <Zap className="w-4 h-4 text-orange-600" />
               <span>Тарифы онлайн ⚡</span>
-            </button>
+            </a>
 
-            <button
-              onClick={() => onNavigate('/#tracking')}
+            <a
+               href="/#tracking" onClick={(e) => { e.preventDefault(); onNavigate('/#tracking'); }}
               className={`px-3 py-2 rounded-lg transition-colors cursor-pointer ${
                 activeNav === '/#tracking' ? 'text-orange-600 font-semibold bg-orange-50' : 'hover:text-orange-600 hover:bg-slate-50'
               }`}
             >
               Трекинг
-            </button>
+            </a>
 
-            <button
-              onClick={() => onNavigate('/faq')}
+            <a
+               href="/faq" onClick={(e) => { e.preventDefault(); onNavigate('/faq'); }}
               className={`px-3 py-2 rounded-lg transition-colors cursor-pointer ${
                 activeNav === '/faq' ? 'text-orange-600 font-semibold bg-orange-50' : 'hover:text-orange-600 hover:bg-slate-50'
               }`}
             >
               FAQ
-            </button>
+            </a>
 
-            <button
-              onClick={() => onNavigate('/kontakti')}
+            <a
+               href="/kontakti" onClick={(e) => { e.preventDefault(); onNavigate('/kontakti'); }}
               className={`px-3 py-2 rounded-lg transition-colors cursor-pointer ${
                 activeNav === '/kontakti' ? 'text-orange-600 font-semibold bg-orange-50' : 'hover:text-orange-600 hover:bg-slate-50'
               }`}
             >
               Контакты
-            </button>
+            </a>
           </nav>
 
           {/* Desktop CTA */}
@@ -507,10 +503,8 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Direction Selector */}
             <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-xs shrink-0">
-              <button
-                onClick={() => {
-                  onDirectionChange('china');
-                  onNavigate('/');
+              <a
+                 href="/" onClick={(e) => { e.preventDefault(); onDirectionChange('china'); onNavigate('/');
                   trackEvent('select_direction', { direction: 'china' });
                 }}
                 className={`px-2.5 py-1 rounded-md font-bold transition-all cursor-pointer text-xs ${
@@ -520,11 +514,9 @@ export const Header: React.FC<HeaderProps> = ({
                 }`}
               >
                 🇨🇳 Китай
-              </button>
-              <button
-                onClick={() => {
-                  onDirectionChange('world');
-                  onNavigate('/world');
+              </a>
+              <a
+                 href="/world" onClick={(e) => { e.preventDefault(); onDirectionChange('world'); onNavigate('/world');
                   trackEvent('select_direction', { direction: 'world' });
                 }}
                 className={`px-2.5 py-1 rounded-md font-bold transition-all cursor-pointer text-xs ${
@@ -534,7 +526,7 @@ export const Header: React.FC<HeaderProps> = ({
                 }`}
               >
                 🌍 Весь мир
-              </button>
+              </a>
             </div>
 
             {/* LK Login & Accessibility */}
@@ -562,12 +554,12 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Tablet Brand & Main Bar */}
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           {/* Logo (Always fully visible) */}
-          <button 
-            onClick={() => onNavigate('/')} 
+          <a 
+             href="/" onClick={(e) => { e.preventDefault(); onNavigate('/'); }} 
             className="text-left cursor-pointer focus:outline-hidden shrink-0"
           >
             <Logo />
-          </button>
+          </a>
 
           {/* Tablet Right Controls */}
           <div className="flex items-center gap-3 shrink-0">
@@ -616,10 +608,8 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Compact Direction Toggle */}
           <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-[11px] shrink-0">
-            <button
-              onClick={() => {
-                onDirectionChange('china');
-                onNavigate('/');
+            <a
+               href="/" onClick={(e) => { e.preventDefault(); onDirectionChange('china'); onNavigate('/');
                 trackEvent('select_direction', { direction: 'china' });
               }}
               className={`px-2 py-0.5 rounded font-bold transition-all cursor-pointer ${
@@ -629,11 +619,9 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               🇨🇳 Китай
-            </button>
-            <button
-              onClick={() => {
-                onDirectionChange('world');
-                onNavigate('/world');
+            </a>
+            <a
+               href="/world" onClick={(e) => { e.preventDefault(); onDirectionChange('world'); onNavigate('/world');
                 trackEvent('select_direction', { direction: 'world' });
               }}
               className={`px-2 py-0.5 rounded font-bold transition-all cursor-pointer ${
@@ -643,19 +631,19 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               🌍 Весь мир
-            </button>
+            </a>
           </div>
         </div>
 
         {/* Row 2: Mobile Brand Bar (ALWAYS VISIBLE) */}
         <div className="bg-white px-3 py-2.5 border-b border-slate-200 flex items-center justify-between gap-2 min-h-[64px]">
           {/* Brand Logo */}
-          <button 
-            onClick={() => onNavigate('/')} 
+          <a 
+             href="/" onClick={(e) => { e.preventDefault(); onNavigate('/'); }} 
             className="text-left cursor-pointer focus:outline-hidden shrink-0"
           >
             <Logo />
-          </button>
+          </a>
 
           {/* Cabinet & Burger Buttons */}
           <div className="flex items-center gap-2 shrink-0">
@@ -740,10 +728,8 @@ export const Header: React.FC<HeaderProps> = ({
               
               {/* Direction Switcher inside Drawer */}
               <div className="flex items-center justify-between p-1 bg-slate-100 rounded-xl border border-slate-200">
-                <button
-                  onClick={() => {
-                    onDirectionChange('china');
-                    onNavigate('/');
+                <a
+                   href="/" onClick={(e) => { e.preventDefault(); onDirectionChange('china'); onNavigate('/');
                     setMobileMenuOpen(false);
                     trackEvent('select_direction', { direction: 'china' });
                   }}
@@ -754,11 +740,9 @@ export const Header: React.FC<HeaderProps> = ({
                   }`}
                 >
                   🇨🇳 Доставка из Китая
-                </button>
-                <button
-                  onClick={() => {
-                    onDirectionChange('world');
-                    onNavigate('/world');
+                </a>
+                <a
+                   href="/world" onClick={(e) => { e.preventDefault(); onDirectionChange('world'); onNavigate('/world');
                     setMobileMenuOpen(false);
                     trackEvent('select_direction', { direction: 'world' });
                   }}
@@ -769,7 +753,7 @@ export const Header: React.FC<HeaderProps> = ({
                   }`}
                 >
                   🌍 Весь мир
-                </button>
+                </a>
               </div>
 
               {/* Quick Calculate Banner */}
@@ -786,13 +770,13 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Main Navigation Links */}
               <div className="space-y-1">
-                <button
-                  onClick={() => { onNavigate('/'); setMobileMenuOpen(false); }}
+                <a
+                   href="/" onClick={(e) => { e.preventDefault(); onNavigate('/'); setMobileMenuOpen(false); }}
                   className="w-full p-3 rounded-xl hover:bg-orange-50/60 text-slate-900 font-bold text-sm text-left flex items-center justify-between cursor-pointer min-h-[48px]"
                 >
                   <span>Главная страница</span>
                   <ChevronRight className="w-4 h-4 text-slate-400" />
-                </button>
+                </a>
 
                 {/* Services Collapsible Accordion */}
                 <div className="border rounded-xl border-slate-200 overflow-hidden bg-slate-50/50">
@@ -809,62 +793,62 @@ export const Header: React.FC<HeaderProps> = ({
 
                   {mobileServicesOpen && (
                     <div className="bg-white border-t border-slate-200 p-2 space-y-1 text-xs">
-                      <button
-                        onClick={() => { onNavigate('/vikup-tovara-iz-kitaya'); setMobileMenuOpen(false); }}
+                      <a
+                         href="/vikup-tovara-iz-kitaya" onClick={(e) => { e.preventDefault(); onNavigate('/vikup-tovara-iz-kitaya'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <Package className="w-4 h-4 text-orange-600 shrink-0" />
                         <span>Выкуп товаров (1688, Taobao, POIZON)</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/poisk-proizvodstva-tovarov-v-kitae-optom'); setMobileMenuOpen(false); }}
+                      </a>
+                      <a
+                         href="/poisk-proizvodstva-tovarov-v-kitae-optom" onClick={(e) => { e.preventDefault(); onNavigate('/poisk-proizvodstva-tovarov-v-kitae-optom'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <Search className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>Поиск фабрик и поставщиков</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/konsolidaciya-tovara-v-kitaye'); setMobileMenuOpen(false); }}
+                      </a>
+                      <a
+                         href="/konsolidaciya-tovara-v-kitaye" onClick={(e) => { e.preventDefault(); onNavigate('/konsolidaciya-tovara-v-kitaye'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <Truck className="w-4 h-4 text-amber-600 shrink-0" />
                         <span>Консолидация на складе в КНР</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/belaya-dostavka'); setMobileMenuOpen(false); }}
+                      </a>
+                      <a
+                         href="/belaya-dostavka" onClick={(e) => { e.preventDefault(); onNavigate('/belaya-dostavka'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <Globe2 className="w-4 h-4 text-orange-600 shrink-0" />
                         <span>Официальная «белая» доставка</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/kargo-dostavka-iz-kitaia'); setMobileMenuOpen(false); }}
+                      </a>
+                      <a
+                         href="/kargo-dostavka-iz-kitaia" onClick={(e) => { e.preventDefault(); onNavigate('/kargo-dostavka-iz-kitaia'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <Truck className="w-4 h-4 text-purple-600 shrink-0" />
-                        <span>Карго-доставка из Китая</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/stat-importerom'); setMobileMenuOpen(false); }}
+                        <span>Доставка сборных грузов из Китая</span>
+                      </a>
+                      <a
+                         href="/stat-importerom" onClick={(e) => { e.preventDefault(); onNavigate('/stat-importerom'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <Building2 className="w-4 h-4 text-blue-600 shrink-0" />
                         <span>Стать импортером (На своё Юр. лицо)</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/dokumenty-dlya-vvoza'); setMobileMenuOpen(false); }}
+                      </a>
+                      <a
+                         href="/dokumenty-dlya-vvoza" onClick={(e) => { e.preventDefault(); onNavigate('/dokumenty-dlya-vvoza'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>Документы для ввоза (Честный Знак & Сертификация)</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/tnved'); setMobileMenuOpen(false); }}
+                      </a>
+                      <a
+                         href="/tnved" onClick={(e) => { e.preventDefault(); onNavigate('/tnved'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
                         <span>ТН ВЭД & Таможенный расчёт (Честный ЗНАК, пошлины)</span>
-                      </button>
+                      </a>
                     </div>
                   )}
                 </div>
@@ -884,46 +868,46 @@ export const Header: React.FC<HeaderProps> = ({
 
                   {mobileBusinessOpen && (
                     <div className="bg-white border-t border-slate-200 p-2 space-y-1 text-xs">
-                      <button
-                        onClick={() => { onNavigate('/world'); setMobileMenuOpen(false); }}
+                      <a
+                         href="/world" onClick={(e) => { e.preventDefault(); onNavigate('/world'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <Globe2 className="w-4 h-4 text-orange-600 shrink-0" />
                         <span>Направления (Весь мир)</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja'); setMobileMenuOpen(false); }}
+                      </a>
+                      <a
+                         href="/raschet-stoimosti-dostavki-gruza-iz-kitaja" onClick={(e) => { e.preventDefault(); onNavigate('/raschet-stoimosti-dostavki-gruza-iz-kitaja'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <CalcIcon className="w-4 h-4 text-orange-600 shrink-0" />
                         <span>Калькулятор стоимости доставки</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/tnved'); setMobileMenuOpen(false); }}
+                      </a>
+                      <a
+                         href="/tnved" onClick={(e) => { e.preventDefault(); onNavigate('/tnved'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <ShieldCheck className="w-4 h-4 text-orange-600 shrink-0" />
                         <span>ТН ВЭД & Таможенный расчёт</span>
-                      </button>
+                      </a>
                       <div className="my-1 border-t border-slate-100" />
-                      <button
-                        onClick={() => { onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov'); setMobileMenuOpen(false); }}
+                      <a
+                         href="/dostavka-tovarov-iz-kitaia-dlia-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <span>Маркетплейсы (WB, Ozon, Я.Маркет)</span>
-                      </button>
-                      <button
-                        onClick={() => { onNavigate('/fulfilment-dlya-marketpleisov'); setMobileMenuOpen(false); }}
+                      </a>
+                      <a
+                         href="/fulfilment-dlya-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/fulfilment-dlya-marketpleisov'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
                         <span>Фулфилмент & Маркировка ЧЗ</span>
-                      </button>
+                      </a>
                     </div>
                   )}
                 </div>
 
-                <button
-                  onClick={() => { onNavigate('/online-tariffs'); setMobileMenuOpen(false); }}
+                <a
+                   href="/online-tariffs" onClick={(e) => { e.preventDefault(); onNavigate('/online-tariffs'); setMobileMenuOpen(false); }}
                   className="w-full p-3 rounded-xl bg-orange-50/70 border border-orange-200 text-orange-950 font-bold text-sm text-left flex items-center justify-between cursor-pointer min-h-[48px]"
                 >
                   <span className="flex items-center gap-2">
@@ -931,10 +915,10 @@ export const Header: React.FC<HeaderProps> = ({
                     <span>Тарифы онлайн ⚡ (Aviasales-стиль)</span>
                   </span>
                   <ChevronRight className="w-4 h-4 text-orange-600" />
-                </button>
+                </a>
 
-                <button
-                  onClick={() => { onNavigate('/#tracking'); setMobileMenuOpen(false); }}
+                <a
+                   href="/#tracking" onClick={(e) => { e.preventDefault(); onNavigate('/#tracking'); setMobileMenuOpen(false); }}
                   className="w-full p-3 rounded-xl hover:bg-orange-50/60 text-slate-900 font-bold text-sm text-left flex items-center justify-between cursor-pointer min-h-[48px]"
                 >
                   <span className="flex items-center gap-2">
@@ -942,10 +926,10 @@ export const Header: React.FC<HeaderProps> = ({
                     <span>Трекинг накладных</span>
                   </span>
                   <ChevronRight className="w-4 h-4 text-slate-400" />
-                </button>
+                </a>
 
-                <button
-                  onClick={() => { onNavigate('/faq'); setMobileMenuOpen(false); }}
+                <a
+                   href="/faq" onClick={(e) => { e.preventDefault(); onNavigate('/faq'); setMobileMenuOpen(false); }}
                   className="w-full p-3 rounded-xl hover:bg-orange-50/60 text-slate-900 font-bold text-sm text-left flex items-center justify-between cursor-pointer min-h-[48px]"
                 >
                   <span className="flex items-center gap-2">
@@ -953,10 +937,10 @@ export const Header: React.FC<HeaderProps> = ({
                     <span>База знаний (FAQ)</span>
                   </span>
                   <ChevronRight className="w-4 h-4 text-slate-400" />
-                </button>
+                </a>
 
-                <button
-                  onClick={() => { onNavigate('/kontakti'); setMobileMenuOpen(false); }}
+                <a
+                   href="/kontakti" onClick={(e) => { e.preventDefault(); onNavigate('/kontakti'); setMobileMenuOpen(false); }}
                   className="w-full p-3 rounded-xl hover:bg-orange-50/60 text-slate-900 font-bold text-sm text-left flex items-center justify-between cursor-pointer min-h-[48px]"
                 >
                   <span className="flex items-center gap-2">
@@ -964,7 +948,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <span>Контакты и офисы</span>
                   </span>
                   <ChevronRight className="w-4 h-4 text-slate-400" />
-                </button>
+                </a>
               </div>
 
               {/* Action Buttons Section */}

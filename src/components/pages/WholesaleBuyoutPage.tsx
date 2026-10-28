@@ -535,7 +535,7 @@ export const WholesaleBuyoutPage: React.FC<WholesaleBuyoutPageProps> = ({
               <div className="text-xs text-slate-300">Проверка на складе КНР</div>
             </div>
             <div className="bg-slate-800/60 backdrop-blur-xs p-3 rounded-xl border border-slate-700/80">
-              <div className="text-amber-400 font-black text-sm">Белая & Карго</div>
+              <div className="text-amber-400 font-black text-sm">Белая & Сборная</div>
               <div className="text-xs text-slate-300">ГТД, УПД, маркировка ЧЗ</div>
             </div>
           </div>
