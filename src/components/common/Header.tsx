@@ -21,6 +21,8 @@ import {
   MapPin,
   Building2,
   ShieldCheck,
+  ShoppingBag,
+  Boxes,
   Zap
 } from 'lucide-react';
 import { siteConfig } from '../../siteConfig';
@@ -416,15 +418,23 @@ export const Header: React.FC<HeaderProps> = ({
 
                   <a
                      href="/dostavka-tovarov-iz-kitaia-dlia-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov'); setBusinessDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors"
+                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
-                    Маркетплейсы (WB, Ozon, Я.Маркет)
+                    <ShoppingBag className="w-4 h-4 text-orange-600 shrink-0" />
+                    <div>
+                      <div className="font-semibold">Маркетплейсы</div>
+                      <div className="text-xs text-slate-500">WB, Ozon, Я.Маркет — сдача на склады FBS/FBO</div>
+                    </div>
                   </a>
                   <a
                      href="/fulfilment-dlya-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/fulfilment-dlya-marketpleisov'); setBusinessDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors"
+                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-orange-50/60 flex items-center gap-2.5 text-slate-800 hover:text-orange-600 transition-colors cursor-pointer"
                   >
-                    Фулфилмент & Маркировка ЧЗ
+                    <Boxes className="w-4 h-4 text-orange-600 shrink-0" />
+                    <div>
+                      <div className="font-semibold">Фулфилмент & Маркировка ЧЗ</div>
+                      <div className="text-xs text-slate-500">Стикеровка, упаковка, отгрузка на маркетплейсы</div>
+                    </div>
                   </a>
                 </div>
               )}
@@ -894,12 +904,14 @@ export const Header: React.FC<HeaderProps> = ({
                          href="/dostavka-tovarov-iz-kitaia-dlia-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-tovarov-iz-kitaia-dlia-marketpleisov'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
+                        <ShoppingBag className="w-4 h-4 text-orange-600 shrink-0" />
                         <span>Маркетплейсы (WB, Ozon, Я.Маркет)</span>
                       </a>
                       <a
                          href="/fulfilment-dlya-marketpleisov" onClick={(e) => { e.preventDefault(); onNavigate('/fulfilment-dlya-marketpleisov'); setMobileMenuOpen(false); }}
                         className="w-full text-left p-3 rounded-lg hover:bg-orange-50 text-slate-800 font-semibold flex items-center gap-2 min-h-[44px]"
                       >
+                        <Boxes className="w-4 h-4 text-orange-600 shrink-0" />
                         <span>Фулфилмент & Маркировка ЧЗ</span>
                       </a>
                     </div>

@@ -24,6 +24,11 @@ import { CalculatorWidget } from './components/common/CalculatorWidget';
 import { OnlineTariffSearchPage } from './components/pages/OnlineTariffSearchPage';
 import { WholesaleBuyoutPage } from './components/pages/WholesaleBuyoutPage';
 import { RetailBuyoutPage } from './components/pages/RetailBuyoutPage';
+import { AirDeliveryPage } from './components/pages/AirDeliveryPage';
+import { AvtoDeliveryPage } from './components/pages/AvtoDeliveryPage';
+import { MoreDeliveryPage } from './components/pages/MoreDeliveryPage';
+import { PoezdDeliveryPage } from './components/pages/PoezdDeliveryPage';
+import { ExpressDeliveryPage } from './components/pages/ExpressDeliveryPage';
 import TnvedApp from './tnved/TnvedApp';
 
 // Известные маршруты сайта: всё, что рендерит renderCurrentView.
@@ -174,11 +179,16 @@ export default function App() {
     prevPathRef.current = currentPath;
   }, [currentRoute]);
 
-  // 404: неизвестный адрес редиректим на страницу выкупа с 1688
+  // 404: неизвестный адрес редиректим на страницу выкупа с 1688.
+  // На заглушке add.* — полный переход на основной домен.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const path = window.location.pathname;
     if (!isKnownRoute(path)) {
+      if (window.location.hostname === 'add.express-today.ru') {
+        window.location.href = 'https://express-today.ru/vikup-1688-alibaba' + window.location.search;
+        return;
+      }
       window.history.replaceState({}, '', '/vikup-1688-alibaba' + window.location.search);
       setCurrentRoute('/vikup-1688-alibaba');
     }
@@ -187,6 +197,12 @@ export default function App() {
   // Handle client-side route navigation (updates the URL so each page is linkable)
   const handleNavigate = (route: string) => {
     if (typeof window === 'undefined') return;
+    // На заглушке add.express-today.ru все переходы уходят на основной домен
+    if (window.location.hostname === 'add.express-today.ru') {
+      const target = route.startsWith('/#') ? '/' : route;
+      window.location.href = 'https://express-today.ru' + target + window.location.search;
+      return;
+    }
     if (route.startsWith('/#')) {
       // In-page anchor (e.g. /#tracking): go to home first, then scroll to the section
       const id = route.replace('/#', '');
@@ -279,6 +295,51 @@ export default function App() {
           </div>
           <CalculatorWidget onOpenLeadModal={handleOpenCalculationFlow} fullPage />
         </div>
+      );
+    }
+
+    if (currentRoute === '/dostavka-avia-iz-kitaja') {
+      return (
+        <AirDeliveryPage
+          onNavigate={handleNavigate}
+          onOpenLeadModal={handleOpenCalculationFlow}
+        />
+      );
+    }
+
+    if (currentRoute === '/dostavka-avto-iz-kitaja') {
+      return (
+        <AvtoDeliveryPage
+          onNavigate={handleNavigate}
+          onOpenLeadModal={handleOpenCalculationFlow}
+        />
+      );
+    }
+
+    if (currentRoute === '/dostavka-morem-iz-kitaja') {
+      return (
+        <MoreDeliveryPage
+          onNavigate={handleNavigate}
+          onOpenLeadModal={handleOpenCalculationFlow}
+        />
+      );
+    }
+
+    if (currentRoute === '/dostavka-poezdom-iz-kitaja') {
+      return (
+        <PoezdDeliveryPage
+          onNavigate={handleNavigate}
+          onOpenLeadModal={handleOpenCalculationFlow}
+        />
+      );
+    }
+
+    if (currentRoute === '/express-dostavka-iz-kitaia') {
+      return (
+        <ExpressDeliveryPage
+          onNavigate={handleNavigate}
+          onOpenLeadModal={handleOpenCalculationFlow}
+        />
       );
     }
 

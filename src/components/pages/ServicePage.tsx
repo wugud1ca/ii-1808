@@ -11,6 +11,7 @@ import {
   MarketplaceFulfillmentSection,
   ContainersAndEquipmentSection,
 } from '../services/ServiceDetailSections';
+import { DeliveryStatusSection } from '../services/DeliveryStatusSection';
 
 interface ServicePageProps {
   slug: string;
@@ -80,6 +81,9 @@ export const ServicePage: React.FC<ServicePageProps> = ({ slug, onNavigate, onOp
 
           {/* Фото-галерея грузов для страницы карго-доставки */}
           {slug === 'kargo-dostavka-iz-kitaia' && <CargoGallery />}
+
+          {/* Статусы каналов доставки и график сроков для страницы dostavka */}
+          {slug === 'dostavka' && <DeliveryStatusSection onOpenLeadModal={onOpenLeadModal} />}
 
           {/* Render dedicated full detailed sections according to the requested service */}
           {isPoisk && <SupplierSearchSection onOpenLeadModal={onOpenLeadModal} />}
