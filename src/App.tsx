@@ -29,6 +29,8 @@ import { AvtoDeliveryPage } from './components/pages/AvtoDeliveryPage';
 import { MoreDeliveryPage } from './components/pages/MoreDeliveryPage';
 import { PoezdDeliveryPage } from './components/pages/PoezdDeliveryPage';
 import { ExpressDeliveryPage } from './components/pages/ExpressDeliveryPage';
+import { SeoLandingPage } from './components/pages/SeoLandingPage';
+import { seoLandingBySlug } from './data/seoLandingData';
 import TnvedApp from './tnved/TnvedApp';
 
 // Известные маршруты сайта: всё, что рендерит renderCurrentView.
@@ -337,6 +339,17 @@ export default function App() {
     if (currentRoute === '/express-dostavka-iz-kitaia') {
       return (
         <ExpressDeliveryPage
+          onNavigate={handleNavigate}
+          onOpenLeadModal={handleOpenCalculationFlow}
+        />
+      );
+    }
+
+    const landing = seoLandingBySlug[currentRoute];
+    if (landing) {
+      return (
+        <SeoLandingPage
+          data={landing}
           onNavigate={handleNavigate}
           onOpenLeadModal={handleOpenCalculationFlow}
         />

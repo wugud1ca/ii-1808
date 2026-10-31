@@ -5,6 +5,8 @@
  * Правки: добавлять новые маршруты сюда, а не дублировать в App.tsx / server.ts.
  */
 
+import { SEO_LANDING } from '../data/seoLandingData';
+
 export const SITE_URL = 'https://express-today.ru';
 
 export interface SeoEntry {
@@ -297,6 +299,16 @@ export const SEO_ROUTES: Record<string, SeoEntry> = {
   },
 };
 
+// SEO-посадочные страницы (виды доставки, города, статьи): title/description
+// берутся из H1 и подзаголовка каждой страницы в src/data/seoLandingData.ts.
+for (const p of SEO_LANDING) {
+  SEO_ROUTES[p.slug] = {
+    title: `${p.h1} — Express Today`,
+    description: p.subtitle,
+    priority: p.kind === 'city' ? '0.7' : p.kind === 'article' ? '0.6' : '0.8',
+  };
+}
+
 /** Префиксы, под которые попадают страницы услуг ServicePage (slug-роутинг). */
 export const KNOWN_PREFIXES = [
   '/vikup',
@@ -313,9 +325,7 @@ export const KNOWN_PREFIXES = [
 
 /** Старые URL (старый сайт / старые версии), которых больше нет — 301 на актуальные. */
 export const OLD_REDIRECTS: Record<string, string> = {
-  '/dostavka-zootovarov-iz-kitaja': '/dostavka',
-  '/tovary-iz-kitaja-optom': '/vikup-optom',
-  '/dostavka-opt': '/dostavka',
+  '/dostavka-Oborudovanija-iz-kitaja': '/dostavka-oborudovaniya-iz-kitaja',
   '/ch': '/vikup-1688-alibaba',
   '/services': '/dostavka',
   '/session': '/',
