@@ -4,36 +4,24 @@ import { X, ChevronLeft, ChevronRight, Truck, ZoomIn, ArrowDownRight } from 'luc
 import { dailyArrivals, DailyArrival } from '../../data/dailyArrivals';
 
 const INITIAL_COUNT = 8;               // показываем сразу
-const TOTAL_APPEAR_MS = 2.5 * 60 * 1000; // оставшиеся растягиваем на 2.5 минуты (ускорено в 2 раза)
-const FIRST_WINDOW_MS = 30 * 1000;     // первые 4 груза — в первые 30 секунд
-const FIRST_IN_WINDOW = 4;
+const FIRST_EXACT_COUNT = 3;           // первые грузы — ровно каждые 5 секунд
+const BASE_STEP_MS = 5000;             // базовый интервал появления
+const RAND_STEP_MS = 5000;             // + случайная добавка до 5 секунд
 const SKELETON_MS = 1300;              // сколько «прорисовывается» скелетон
 const TOAST_MS = 8000;                 // автоскрытие пуша
 
-// Накопительные моменты появления: случайные интервалы.
-// Первые FIRST_IN_WINDOW грузов — в течение первой минуты, остальные — до конца TOTAL_APPEAR_MS.
-function buildAppearSchedule(count: number, totalMs: number): number[] {
+// Накопительные моменты появления: первые FIRST_EXACT_COUNT грузов — ровно
+// каждые BASE_STEP_MS, остальные — BASE_STEP_MS + случайная добавка до RAND_STEP_MS.
+function buildAppearSchedule(count: number): number[] {
   const delays: number[] = [];
-  const inWindow = Math.min(count, FIRST_IN_WINDOW);
-
-  const ws1 = Array.from({ length: inWindow }, () => 0.35 + Math.random());
-  const sum1 = ws1.reduce((a, b) => a + b, 0);
-  let acc = 0;
-  for (const w of ws1) {
-    acc += (w / sum1) * FIRST_WINDOW_MS;
-    delays.push(Math.round(acc));
+  const firstN = Math.min(count, FIRST_EXACT_COUNT);
+  for (let i = 0; i < firstN; i++) {
+    delays.push(BASE_STEP_MS * (i + 1));
   }
-
-  const rest = count - inWindow;
-  if (rest > 0) {
-    const restMs = Math.max(totalMs - FIRST_WINDOW_MS, rest * 4000);
-    const ws2 = Array.from({ length: rest }, () => 0.35 + Math.random());
-    const sum2 = ws2.reduce((a, b) => a + b, 0);
-    let acc2 = FIRST_WINDOW_MS;
-    for (const w of ws2) {
-      acc2 += (w / sum2) * restMs;
-      delays.push(Math.round(acc2));
-    }
+  let acc = firstN * BASE_STEP_MS;
+  for (let i = firstN; i < count; i++) {
+    acc += BASE_STEP_MS + Math.random() * RAND_STEP_MS;
+    delays.push(Math.round(acc));
   }
   return delays;
 }
@@ -44,11 +32,17 @@ export const DailyArrivalsBlock: React.FC = () => {
   const [active, setActive] = useState<number | null>(null);
   const [toastItem, setToastItem] = useState<DailyArrival | null>(null);
   const [highlightTtn, setHighlightTtn] = useState<string | null>(null);
+  const [suppressToasts, setSuppressToasts] = useState<boolean>(() => {
+    try { return localStorage.getItem('et-no-arrival-toasts') === '1'; } catch { return false; }
+  });
 
   const blockRef = useRef<HTMLDivElement>(null);
   const scheduleRef = useRef<number[]>([]);
+  const showAllRef = useRef(false);
+  const suppressRef = useRef(suppressToasts);
+  suppressRef.current = suppressToasts;
   if (scheduleRef.current.length === 0) {
-    scheduleRef.current = buildAppearSchedule(dailyArrivals.length - INITIAL_COUNT, TOTAL_APPEAR_MS);
+    scheduleRef.current = buildAppearSchedule(dailyArrivals.length - INITIAL_COUNT);
   }
 
   const isBlockVisible = () => {
@@ -63,15 +57,17 @@ export const DailyArrivalsBlock: React.FC = () => {
     scheduleRef.current.forEach((at, idx) => {
       timers.push(
         window.setTimeout(() => {
+          if (showAllRef.current) return;
           // Шаг 1: показываем скелетон
           setSkeletonCount((c) => c + 1);
           timers.push(
             window.setTimeout(() => {
+              if (showAllRef.current) { setSkeletonCount((c) => Math.max(0, c - 1)); return; }
               // Шаг 2: скелетон «прорисовывается» в реальную карточку
               setSkeletonCount((c) => c - 1);
               setRenderedCount((r) => r + 1);
               const item = dailyArrivals[INITIAL_COUNT + idx];
-              if (item && !isBlockVisible()) {
+              if (item && !isBlockVisible() && !suppressRef.current && !showAllRef.current) {
                 setToastItem(item);
               }
             }, SKELETON_MS)
@@ -81,6 +77,21 @@ export const DailyArrivalsBlock: React.FC = () => {
     });
     return () => timers.forEach((t) => window.clearTimeout(t));
   }, []);
+
+  // «Вывести примеры ТТН» — показать все сразу, без пушей
+  const handleShowAll = () => {
+    showAllRef.current = true;
+    setToastItem(null);
+    setSkeletonCount(0);
+    setRenderedCount(dailyArrivals.length);
+  };
+
+  // Галочка «Не показывать сообщения о примерах ТТН»
+  const handleSuppressChange = (v: boolean) => {
+    setSuppressToasts(v);
+    if (v) setToastItem(null);
+    try { localStorage.setItem('et-no-arrival-toasts', v ? '1' : '0'); } catch { /* noop */ }
+  };
 
   // Автоскрытие пуша
   useEffect(() => {
@@ -145,6 +156,15 @@ export const DailyArrivalsBlock: React.FC = () => {
           <p className="text-xs sm:text-sm text-slate-500">
             Реальные партии, полученные клиентам в России. Нажмите на груз, чтобы рассмотреть фото.
           </p>
+          <label className="inline-flex items-center gap-2 text-xs text-slate-500 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={suppressToasts}
+              onChange={(e) => handleSuppressChange(e.target.checked)}
+              className="w-4 h-4 accent-orange-600 cursor-pointer"
+            />
+            <span>Не показывать сообщения о примерах ТТН</span>
+          </label>
         </div>
         <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-3.5 py-1.5">
           <span className="relative flex h-2.5 w-2.5">
@@ -254,9 +274,17 @@ export const DailyArrivalsBlock: React.FC = () => {
       </div>
 
       {renderedCount < dailyArrivals.length && (
-        <p className="text-center text-xs text-slate-400 animate-pulse">
-          Информация обновляется по мере обработки грузов...
-        </p>
+        <div className="text-center space-y-1.5">
+          <p className="text-xs text-slate-400 animate-pulse">
+            Информация обновляется по мере обработки грузов...
+          </p>
+          <button
+            onClick={handleShowAll}
+            className="text-xs font-bold text-orange-600 hover:text-orange-500 hover:underline cursor-pointer"
+          >
+            Вывести примеры ТТН
+          </button>
+        </div>
       )}
 
       {/* Lightbox */}

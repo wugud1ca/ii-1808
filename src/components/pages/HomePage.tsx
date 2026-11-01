@@ -47,6 +47,18 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate, showDailyArrivals = false }) => {
   const [openFaqId, setOpenFaqId] = useState<string | null>('faq-1');
 
+  // Живые дата/время для бейджа «Статусы поставок»
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(t);
+  }, []);
+
+  const fmtNow = (d: Date) => {
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  };
+
   // Typewriter effect state for the Hero cabinet button
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
@@ -270,14 +282,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate,
               </div>
             </div>
 
-            {/* Compact Anchor Widget: "Уже есть накладная?" */}
+            {/* Бейдж-ссылка: «Статусы поставок Express Today на: {дата время}» */}
             <div className="pt-2">
               <a
-                href="#tracking"
-                className="inline-flex items-center gap-2 bg-slate-100 hover:bg-orange-50 text-slate-800 px-4 py-2.5 rounded-xl text-sm font-semibold border border-slate-200 transition-colors cursor-pointer"
+                href="/dostavka"
+                onClick={(e) => { e.preventDefault(); onNavigate('/dostavka'); }}
+                className="inline-flex items-center gap-2.5 bg-slate-900 hover:bg-slate-800 text-white pl-4 pr-3.5 py-2.5 rounded-xl text-sm font-semibold border border-slate-700/60 shadow-md hover:shadow-lg transition-all cursor-pointer group"
               >
-                <span>Уже есть накладная? Перейти к отслеживанию</span>
-                <ChevronDown className="w-4 h-4 text-orange-600 animate-bounce" />
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                </span>
+                <span className="text-slate-300">Статусы поставок Express Today на:</span>
+                <span className="font-bold text-white tabular-nums">{fmtNow(now)}</span>
+                <ChevronRight className="w-4 h-4 text-orange-400 group-hover:translate-x-0.5 transition-transform" />
               </a>
             </div>
 

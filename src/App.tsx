@@ -28,6 +28,7 @@ import { AirDeliveryPage } from './components/pages/AirDeliveryPage';
 import { AvtoDeliveryPage } from './components/pages/AvtoDeliveryPage';
 import { MoreDeliveryPage } from './components/pages/MoreDeliveryPage';
 import { PoezdDeliveryPage } from './components/pages/PoezdDeliveryPage';
+import { SitemapPage } from './components/pages/SitemapPage';
 import { ExpressDeliveryPage } from './components/pages/ExpressDeliveryPage';
 import { SeoLandingPage } from './components/pages/SeoLandingPage';
 import { seoLandingBySlug } from './data/seoLandingData';
@@ -284,6 +285,10 @@ export default function App() {
 
     if (currentRoute === '/kontakti') {
       return <ContactsPage />;
+    }
+
+    if (currentRoute === '/karta-sajta') {
+      return <SitemapPage onNavigate={handleNavigate} />;
     }
 
     if (currentRoute === '/raschet-stoimosti-dostavki-gruza-iz-kitaja') {

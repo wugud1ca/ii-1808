@@ -50,7 +50,22 @@ export const ServicePage: React.FC<ServicePageProps> = ({ slug, onNavigate, onOp
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight">{service.title}</h1>
-        <p className="text-sm sm:text-base text-slate-700 max-w-3xl leading-relaxed">{service.fullDesc}</p>
+        {slug === 'dostavka' ? (
+          <p className="text-sm sm:text-base text-slate-700 max-w-3xl leading-relaxed">
+            Индивидуальный подбор маршрута в зависимости от бюджета, срочности и категории товара.
+            Все каналы официальной доставки —{' '}
+            <a href="/dostavka-avia-iz-kitaja" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-avia-iz-kitaja'); }} className="text-orange-600 font-semibold hover:underline">авиа</a>,{' '}
+            <a href="/dostavka-avto-iz-kitaja" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-avto-iz-kitaja'); }} className="text-orange-600 font-semibold hover:underline">авто</a>,{' '}
+            <a href="/dostavka-poezdom-iz-kitaja" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-poezdom-iz-kitaja'); }} className="text-orange-600 font-semibold hover:underline">ж/д</a>{' '}
+            и{' '}
+            <a href="/dostavka-morem-iz-kitaja" onClick={(e) => { e.preventDefault(); onNavigate('/dostavka-morem-iz-kitaja'); }} className="text-orange-600 font-semibold hover:underline">море</a>{' '}
+            — на <strong className="text-slate-900">{new Date().toLocaleDateString('ru-RU')}</strong> работают стабильно:
+            грузы поступают без задержек по выбранным клиентами тарифам. Полное сопровождение на всем пути следования —
+            от производителей или наших складов в Китае, до вашего склада в России.
+          </p>
+        ) : (
+          <p className="text-sm sm:text-base text-slate-700 max-w-3xl leading-relaxed">{service.fullDesc}</p>
+        )}
 
         <div className="pt-2 flex flex-wrap items-center gap-3">
           <button

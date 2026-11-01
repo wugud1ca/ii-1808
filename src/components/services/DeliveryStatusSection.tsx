@@ -15,15 +15,15 @@ export const DeliveryStatusSection: React.FC<DeliveryStatusSectionProps> = ({ on
           <Ship className="w-6 h-6 text-emerald-600" />
         </div>
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Официальная доставка работает стабильно</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Выпуск деклараций компании таможенными органами осуществляется в штатном порядке</h2>
           <p className="text-sm text-slate-500 mt-1">Авиа · Авто ускоренное · Авто обычное · Ж/Д · Море</p>
         </div>
       </div>
 
       <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-        Все каналы официальной доставки работают в штатном режиме: грузы поступают клиентам{' '}
-        <strong className="text-slate-900">без задержек, точно по выбранным тарифам</strong> и в согласованные сроки.
-        Отправки идут ежедневно — от момента выкупа на фабрике в Китае до передачи получателю в России.
+        Разрешительная документация, сертификаты и маркировка, подготовленные нашей компанией как по договорам
+        поставки, так и по прямым контрактам клиентов, принимаются таможенными органами без корректировок
+        и необходимости перевыпуска.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -63,16 +63,16 @@ export const DeliveryStatusSection: React.FC<DeliveryStatusSectionProps> = ({ on
           <TrendingUp className="w-6 h-6 text-orange-600" />
         </div>
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Карго-доставка: кризис конца 2025 года позади</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Трафик через ЕАЭС и Дальний Восток: кризис конца 2025 года позади</h2>
           <p className="text-sm text-slate-500 mt-1">Сроки вернулись к докризисному уровню</p>
         </div>
       </div>
 
       <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-        Карго-грузы идут стабильно. Влияние кризиса конца 2025 года полностью нивелировано:{' '}
+        Сборные грузы идут и доходят - стабильно. Влияние кризиса конца 2025 года полностью нивелировано:{' '}
         <strong className="text-slate-900">100% отправлений доставлены</strong> — включая проблемные партии сентября 2025.
-        Средний срок карго-доставки вернулся к докризисному уровню и составляет{' '}
-        <strong className="text-slate-900">21 день</strong>, максимальный срок сейчас — 54 дня вместо пиковых 303 дней
+        Средний срок доставки вернулся к докризисному уровню и составляет{' '}
+        <strong className="text-slate-900">21 день</strong>, максимальный срок сейчас — 32 дня вместо пиковых 100 дней
         в августе 2025.
       </p>
 

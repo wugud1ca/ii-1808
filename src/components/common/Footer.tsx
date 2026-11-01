@@ -148,6 +148,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLeadModal }) =
                   Контейнеры 20ft / 40ft & Оборудование
                 </a>
               </li>
+              <li>
+                <a  href="/karta-sajta" onClick={(e) => { e.preventDefault(); onNavigate('/karta-sajta'); }} className="hover:text-white transition-colors cursor-pointer">
+                  Карта сайта
+                </a>
+              </li>
             </ul>
           </div>
 
