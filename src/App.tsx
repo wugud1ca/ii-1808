@@ -32,6 +32,7 @@ import { SitemapPage } from './components/pages/SitemapPage';
 import { ExpressDeliveryPage } from './components/pages/ExpressDeliveryPage';
 import { SeoLandingPage } from './components/pages/SeoLandingPage';
 import { seoLandingBySlug } from './data/seoLandingData';
+import { SupportingDocumentsPage } from './components/pages/SupportingDocumentsPage';
 import TnvedApp from './tnved/TnvedApp';
 
 // Известные маршруты сайта: всё, что рендерит renderCurrentView.
@@ -350,6 +351,15 @@ export default function App() {
       );
     }
 
+    if (currentRoute === '/dokumenty-soprovozhdayushchie-postavku-gruzov') {
+      return (
+        <SupportingDocumentsPage
+          onNavigate={handleNavigate}
+          onOpenLeadModal={handleOpenCalculationFlow}
+        />
+      );
+    }
+
     const landing = seoLandingBySlug[currentRoute];
     if (landing) {
       return (
@@ -431,16 +441,16 @@ export default function App() {
 
     // Default Home Page
     if (currentRoute === '/test2') {
-      return <HomePage onOpenLeadModal={handleOpenCalculationFlow} onNavigate={handleNavigate} showDailyArrivals />;
+      return <HomePage onOpenLeadModal={handleOpenCalculationFlow} onOpenDirectLeadModal={handleOpenDirectLeadModal} onNavigate={handleNavigate} showDailyArrivals />;
     }
 
     // Сохранённая версия главной без блока приходов (original19102026)
     if (currentRoute === '/original19102026') {
-      return <HomePage onOpenLeadModal={handleOpenCalculationFlow} onNavigate={handleNavigate} />;
+      return <HomePage onOpenLeadModal={handleOpenCalculationFlow} onOpenDirectLeadModal={handleOpenDirectLeadModal} onNavigate={handleNavigate} />;
     }
 
     // Главная: теперь с блоком «Грузы получаемые нами ежедневно»
-    return <HomePage onOpenLeadModal={handleOpenCalculationFlow} onNavigate={handleNavigate} showDailyArrivals />;
+    return <HomePage onOpenLeadModal={handleOpenCalculationFlow} onOpenDirectLeadModal={handleOpenDirectLeadModal} onNavigate={handleNavigate} showDailyArrivals />;
   };
 
   return (

@@ -30,6 +30,7 @@ import { TrackingWidget } from '../common/TrackingWidget';
 import { CalculatorWidget } from '../common/CalculatorWidget';
 import { OfficialLegalEntitySection } from '../home/OfficialLegalEntitySection';
 import { DailyArrivalsBlock } from '../common/DailyArrivalsBlock';
+import { ToastCenter } from '../common/ToastCenter';
 import { trackEvent } from '../../utils/analytics';
 
 const TYPEWRITER_PHRASES = [
@@ -40,11 +41,12 @@ const TYPEWRITER_PHRASES = [
 
 interface HomePageProps {
   onOpenLeadModal: (requestType?: string) => void;
+  onOpenDirectLeadModal?: (requestType?: string) => void;
   onNavigate: (route: string) => void;
   showDailyArrivals?: boolean;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate, showDailyArrivals = false }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onOpenDirectLeadModal, onNavigate, showDailyArrivals = false }) => {
   const [openFaqId, setOpenFaqId] = useState<string | null>('faq-1');
 
   // Живые дата/время для бейджа «Статусы поставок»
@@ -230,15 +232,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate,
             {/* Trust Block - 4 Interactive Facts */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-6">
               <a
-                href="/vikup-tovara-iz-kitaya"
-                onClick={(e) => { e.preventDefault(); onNavigate('/vikup-tovara-iz-kitaya'); }}
+                href="/dokumenty-soprovozhdayushchie-postavku-gruzov"
+                onClick={(e) => { e.preventDefault(); onNavigate('/dokumenty-soprovozhdayushchie-postavku-gruzov'); }}
                 className="block bg-white/90 hover:bg-orange-50/80 backdrop-blur-xs p-4 rounded-2xl border border-slate-200/90 hover:border-orange-400 shadow-xs hover:shadow-md text-left space-y-1 transition-all cursor-pointer active:scale-98 group"
               >
                 <div className="w-8 h-8 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 text-emerald-700 flex items-center justify-center transition-colors">
-                  <CheckCircle2 className="w-5 h-5" />
+                  <FileCheck2 className="w-5 h-5" />
                 </div>
-                <div className="text-sm font-bold text-slate-900 group-hover:text-orange-600 transition-colors">Выкуп за 24 часа</div>
-                <div className="text-sm text-slate-600">После подтверждения оплаты</div>
+                <div className="text-sm font-bold text-slate-900 group-hover:text-orange-600 transition-colors">Документы поставок</div>
+                <div className="text-sm text-slate-600">Полный пакет, включая ГТД</div>
               </a>
 
               <a
@@ -407,6 +409,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onNavigate,
           <DailyArrivalsBlock />
         </div>
       )}
+
+      {/* Центр сообщений: промо «Отсрочка платежа» + ТТН-пуши единой колонкой */}
+      <ToastCenter onOpenLeadModal={onOpenDirectLeadModal || onOpenLeadModal} />
 
       {/* Official Chinese Legal Entity Block ("Мы работаем официально") */}
       <OfficialLegalEntitySection onOpenLeadModal={onOpenLeadModal} />

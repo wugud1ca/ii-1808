@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  ShoppingCart, Store, Globe2, ScrollText, Layers, MapPin, ArrowLeft,
+  ShoppingCart, Store, Globe2, ScrollText, Layers, MapPin, ArrowLeft, BookOpen,
 } from 'lucide-react';
 
 interface SitemapPageProps {
@@ -57,6 +57,7 @@ const GROUPS: SitemapGroup[] = [
       { href: '/fulfilment-dlya-marketpleisov', title: 'Фулфилмент и маркировка ЧЗ', desc: 'Подготовка товаров, маркировка «Честный знак»' },
       { href: '/stat-importerom', title: 'Стать импортёром', desc: 'Импорт на ваше юридическое лицо, ВЭД-сопровождение' },
       { href: '/dokumenty-dlya-vvoza', title: 'Документы для ввоза', desc: 'Сертификация, декларации, «Честный знак»' },
+      { href: '/dokumenty-soprovozhdayushchie-postavku-gruzov', title: 'Документы, сопровождающие поставку', desc: 'Полный пакет документов по каждой отправке, включая ГТД' },
       { href: '/world', title: 'Закупки в других странах', desc: 'Турция и другие направления: выкуп и доставка' },
       { href: '/turkey', title: 'Доставка из Турции', desc: 'Выкуп и перевозка турецких товаров' },
     ],
@@ -78,6 +79,33 @@ const GROUPS: SitemapGroup[] = [
       { href: '/soglashenie-o-konfidencialnosti-i-polzovatelskoe-soglashenie', title: 'Политика конфиденциальности', desc: 'Обработка персональных данных' },
       { href: '/partnerskoye-referalnoye-soglasheniye-oferta', title: 'Партнёрское соглашение', desc: 'Условия реферальной программы' },
       { href: '/oferta-dostavka', title: 'Оферта на доставку', desc: 'Условия услуг перевозки' },
+    ],
+  },
+  {
+    icon: BookOpen,
+    title: 'Статьи и направления',
+    links: [
+      { href: '/dostavka-opt', title: 'Доставка оптом под ключ', desc: 'Оптовые партии из Гуанчжоу и Шэньчжэня' },
+      { href: '/dostavka-zootovarov-iz-kitaja', title: 'Доставка зоотоваров', desc: 'Корма, игрушки, амуниция для питомцев' },
+      { href: '/dostavka-melkih-gruzov-iz-kitaja', title: 'Доставка мелких грузов', desc: 'Небольшие партии и образцы' },
+      { href: '/dostavka-iz-kitaja-krupnogabaritnyh-gruzov', title: 'Крупногабаритные грузы', desc: 'Габаритное оборудование и конструкции' },
+      { href: '/dostavka-oborudovaniya-iz-kitaja', title: 'Оборудование и станки', desc: 'Станки и промышленное оборудование' },
+      { href: '/oficial-delivery', title: 'Сборные грузы под ключ', desc: 'Официальная сборная доставка' },
+      { href: '/dostavka-iz-kitaja-v-moskvu', title: 'В Москву', desc: 'Сроки и маршруты до Москвы' },
+      { href: '/dostavka-iz-kitaja-v-sankt-peterburg', title: 'В Санкт-Петербург', desc: 'Сроки и маршруты до СПб' },
+      { href: '/dostavka-iz-kitaja-v-kazan', title: 'В Казань', desc: 'Сроки и маршруты до Казани' },
+      { href: '/dostavka-iz-kitaja-v-novosibirsk', title: 'В Новосибирск', desc: 'Сроки и маршруты до Новосибирска' },
+      { href: '/dostavka-iz-kitaja-v-ekaterinburg', title: 'В Екатеринбург', desc: 'Сроки и маршруты до Екатеринбурга' },
+      { href: '/dostavka-iz-kitaja-v-nizhnij-novgorod', title: 'В Нижний Новгород', desc: 'Сроки и маршруты до Н. Новгорода' },
+      { href: '/dostavka-iz-kitaja-v-omsk', title: 'В Омск', desc: 'Сроки и маршруты до Омска' },
+      { href: '/dostavka-iz-kitaja-v-krasnodar', title: 'В Краснодар', desc: 'Сроки и маршруты до Краснодара' },
+      { href: '/dostavka-iz-kitaja-v-vladivostok', title: 'Во Владивосток', desc: 'Сроки и маршруты до Владивостока' },
+      { href: '/dostavka-iz-kitaja-v-samaru', title: 'В Самару', desc: 'Сроки и маршруты до Самары' },
+      { href: '/skolko-stoit-dostavka-iz-kitaia-2025', title: 'Сколько стоит доставка', desc: 'Актуальные тарифы и калькуляция' },
+      { href: '/skolko-idet-dostavka-iz-kitaia-v-rossiyu', title: 'Сколько идёт доставка', desc: 'Сроки по всем каналам' },
+      { href: '/dostavka-iz-kitaia-5-prostih-shagov', title: 'Доставка: 5 простых шагов', desc: 'Пошаговая инструкция для новичков' },
+      { href: '/tovary-iz-kitaja-optom', title: 'Товары из Китая оптом', desc: 'Какие товары выгодно везти' },
+      { href: '/optovye-postavshhiki-iz-kitaja', title: 'Оптовые поставщики', desc: 'Как найти и проверить поставщика' },
     ],
   },
 ];

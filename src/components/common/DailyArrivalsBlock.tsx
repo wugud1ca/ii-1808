@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import { X, ChevronLeft, ChevronRight, Truck, ZoomIn, ArrowDownRight } from 'lucide-react';
-import { dailyArrivals, DailyArrival } from '../../data/dailyArrivals';
+import { X, ChevronLeft, ChevronRight, Truck, ZoomIn } from 'lucide-react';
+import { dailyArrivals } from '../../data/dailyArrivals';
+import { toastCenter } from '../../utils/toastCenter';
 
 const INITIAL_COUNT = 8;               // показываем сразу
-const FIRST_EXACT_COUNT = 3;           // первые грузы — ровно каждые 5 секунд
-const BASE_STEP_MS = 5000;             // базовый интервал появления
-const RAND_STEP_MS = 5000;             // + случайная добавка до 5 секунд
+const FIRST_EXACT_COUNT = 3;           // первые грузы — ровно каждые 10 секунд
+const BASE_STEP_MS = 10000;            // базовый интервал появления (в 2 раза медленнее)
+const RAND_STEP_MS = 10000;            // + случайная добавка до 10 секунд
 const SKELETON_MS = 1300;              // сколько «прорисовывается» скелетон
-const TOAST_MS = 8000;                 // автоскрытие пуша
 
 // Накопительные моменты появления: первые FIRST_EXACT_COUNT грузов — ровно
 // каждые BASE_STEP_MS, остальные — BASE_STEP_MS + случайная добавка до RAND_STEP_MS.
@@ -30,11 +29,22 @@ export const DailyArrivalsBlock: React.FC = () => {
   const [renderedCount, setRenderedCount] = useState<number>(INITIAL_COUNT);
   const [skeletonCount, setSkeletonCount] = useState<number>(0);
   const [active, setActive] = useState<number | null>(null);
-  const [toastItem, setToastItem] = useState<DailyArrival | null>(null);
   const [highlightTtn, setHighlightTtn] = useState<string | null>(null);
   const [suppressToasts, setSuppressToasts] = useState<boolean>(() => {
     try { return localStorage.getItem('et-no-arrival-toasts') === '1'; } catch { return false; }
   });
+
+  // Регистрируем обработчик «Показать груз» из ТТН-пуша: подсветка + скролл
+  useEffect(() => {
+    toastCenter.setHighlightHandler((t) => {
+      setHighlightTtn(t);
+      const el = document.getElementById(`arrival-${t}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+    return () => toastCenter.setHighlightHandler(null);
+  }, []);
 
   const blockRef = useRef<HTMLDivElement>(null);
   const scheduleRef = useRef<number[]>([]);
@@ -68,7 +78,7 @@ export const DailyArrivalsBlock: React.FC = () => {
               setRenderedCount((r) => r + 1);
               const item = dailyArrivals[INITIAL_COUNT + idx];
               if (item && !isBlockVisible() && !suppressRef.current && !showAllRef.current) {
-                setToastItem(item);
+                toastCenter.setTtn(item);
               }
             }, SKELETON_MS)
           );
@@ -81,7 +91,7 @@ export const DailyArrivalsBlock: React.FC = () => {
   // «Вывести примеры ТТН» — показать все сразу, без пушей
   const handleShowAll = () => {
     showAllRef.current = true;
-    setToastItem(null);
+    toastCenter.setTtn(null);
     setSkeletonCount(0);
     setRenderedCount(dailyArrivals.length);
   };
@@ -89,16 +99,9 @@ export const DailyArrivalsBlock: React.FC = () => {
   // Галочка «Не показывать сообщения о примерах ТТН»
   const handleSuppressChange = (v: boolean) => {
     setSuppressToasts(v);
-    if (v) setToastItem(null);
+    if (v) toastCenter.setTtn(null);
     try { localStorage.setItem('et-no-arrival-toasts', v ? '1' : '0'); } catch { /* noop */ }
   };
-
-  // Автоскрытие пуша
-  useEffect(() => {
-    if (!toastItem) return;
-    const t = window.setTimeout(() => setToastItem(null), TOAST_MS);
-    return () => window.clearTimeout(t);
-  }, [toastItem]);
 
   // Подсветка при переходе к грузу из пуша
   useEffect(() => {
@@ -106,15 +109,6 @@ export const DailyArrivalsBlock: React.FC = () => {
     const t = window.setTimeout(() => setHighlightTtn(null), 3000);
     return () => window.clearTimeout(t);
   }, [highlightTtn]);
-
-  const handleGoToCargo = (ttn: string) => {
-    setToastItem(null);
-    setHighlightTtn(ttn);
-    const el = document.getElementById(`arrival-${ttn}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
 
   const close = useCallback(() => setActive(null), []);
   const prev = useCallback(
@@ -282,7 +276,7 @@ export const DailyArrivalsBlock: React.FC = () => {
             onClick={handleShowAll}
             className="text-xs font-bold text-orange-600 hover:text-orange-500 hover:underline cursor-pointer"
           >
-            Вывести примеры ТТН
+            Вывести примеры грузов
           </button>
         </div>
       )}
@@ -345,67 +339,6 @@ export const DailyArrivalsBlock: React.FC = () => {
           </button>
         </div>
       )}
-
-      {/* Пуш слева внизу о полученном грузе (как на странице 1688) */}
-      <AnimatePresence>
-        {toastItem && (
-          <motion.aside
-            initial={{ opacity: 0, y: 40, x: -20, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9, transition: { duration: 0.2 } }}
-            transition={{ type: 'spring', damping: 24, stiffness: 280 }}
-            className="fixed bottom-6 left-4 sm:left-6 z-50 max-w-sm w-[calc(100vw-2rem)] sm:w-[380px] bg-slate-900/95 backdrop-blur-md text-white rounded-2xl p-3.5 shadow-2xl border border-slate-700/80 ring-1 ring-white/10"
-            role="alert"
-            aria-live="polite"
-          >
-            <div className="flex items-start gap-3">
-              <img
-                src={toastItem.photo}
-                alt={`Груз ${toastItem.ttn}`}
-                className="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-700/80 shadow-xs"
-              />
-
-              <div className="flex-1 min-w-0 pr-1">
-                <div className="flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-400">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-                  <span className="truncate">Груз получен в России · ТТН {toastItem.ttn}</span>
-                </div>
-
-                {(toastItem.places !== null || toastItem.weight !== null || toastItem.volume !== null) && (
-                  <div className="text-[11px] text-slate-400 flex items-center gap-1.5 mt-1">
-                    {[
-                      toastItem.places !== null ? `Мест: ${toastItem.places}` : null,
-                      toastItem.weight !== null ? `${toastItem.weight} кг` : null,
-                      toastItem.volume !== null ? `${toastItem.volume} м³` : null,
-                    ].filter(Boolean).map((part, i, arr) => (
-                      <React.Fragment key={part}>
-                        {i > 0 && <span>•</span>}
-                        <span>{part}</span>
-                      </React.Fragment>
-                    ))}
-                  </div>
-                )}
-
-                <button
-                  onClick={() => handleGoToCargo(toastItem.ttn)}
-                  className="mt-2 text-xs font-extrabold text-orange-400 hover:text-orange-300 flex items-center gap-1 cursor-pointer transition-colors bg-orange-500/10 hover:bg-orange-500/20 px-2.5 py-1 rounded-lg border border-orange-500/30"
-                >
-                  <span>Показать груз</span>
-                  <ArrowDownRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              <button
-                onClick={() => setToastItem(null)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
-                aria-label="Закрыть уведомление"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
