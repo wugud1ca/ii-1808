@@ -390,10 +390,6 @@ async function startServer() {
 
   // Vite development middleware or static production serving
   if (process.env.NODE_ENV !== 'production') {
-    app.get(['/tnved2', '/tnved2/'], (_req, _res, next) => {
-      _req.url = '/tnved2.html';
-      next();
-    });
     app.get(['/tnved3', '/tnved3/'], (_req, _res, next) => {
       _req.url = '/tnved3.html';
       next();
@@ -431,9 +427,6 @@ async function startServer() {
     app.get('/tnved', (_req, res) => {
       res.sendFile(path.join(distPath, 'tnved.html'));
     });
-    app.get('/tnved2', (_req, res) => {
-      res.sendFile(path.join(distPath, 'tnved2.html'));
-    });
     app.get('/tnved3', (_req, res) => {
       res.sendFile(path.join(distPath, 'tnved3.html'));
     });
@@ -456,7 +449,7 @@ async function startServer() {
       });
     }
 
-    const knownExact = new Set(Object.keys(SEO_ROUTES).concat(['/tnved', '/tnved2', '/tnved3']));
+    const knownExact = new Set(Object.keys(SEO_ROUTES).concat(['/tnved', '/tnved3']));
     const isKnownPath = (p: string): boolean => {
       if (p === '/') return true;
       if (knownExact.has(p)) return true;

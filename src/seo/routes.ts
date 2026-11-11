@@ -211,11 +211,6 @@ export const SEO_ROUTES: Record<string, SeoEntry> = {
       'Онлайн-подбор кода ТН ВЭД: поиск по названию товара, ставки пошлин, НДС и таможенные сборы. Калькулятор таможенных платежей из Китая.',
     priority: '0.8',
   },
-  '/tnved2': {
-    title: 'ТН ВЭД: подбор кода товара | Express Today',
-    description: 'Подбор кода ТН ВЭД по названию товара с расчётом пошлин и НДС.',
-    canonical: '/tnved',
-  },
   '/tnved3': {
     title: 'ТН ВЭД: подбор кода товара | Express Today',
     description: 'Подбор кода ТН ВЭД по названию товара с расчётом пошлин и НДС.',
@@ -342,6 +337,7 @@ export const OLD_REDIRECTS: Record<string, string> = {
   '/ch': '/vikup-1688-alibaba',
   '/services': '/dostavka',
   '/session': '/',
+  '/tnved2': '/tnved',
 };
 
 export const FALLBACK_TITLE =

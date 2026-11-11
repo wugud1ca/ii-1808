@@ -48,7 +48,7 @@ function Tnved3Page() {
         onNavigate={onNavigate}
       />
       <main className="flex-1">
-        <TnvedApp embedded onOpenLeadModal={onOpenLeadModal} />
+        <TnvedApp embedded currencyMode onOpenLeadModal={onOpenLeadModal} />
       </main>
       <Footer onNavigate={onNavigate} onOpenLeadModal={onOpenLeadModal} />
       <LeadModal

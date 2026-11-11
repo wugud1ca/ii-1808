@@ -51,7 +51,7 @@ import {
   calculateCustomsFee,
   type TnvedProductItem,
 } from './tnvedData';
-import { api, formatCurrencyRub, formatDateTime, parsePositiveDecimal, ApiError } from './api';
+import { api, formatCurrencyRub, formatCurrencyForeign, formatDateTime, parsePositiveDecimal, ApiError } from './api';
 import type {
   CalculationRequest,
   CalculationResponse,
@@ -109,6 +109,7 @@ export function buildCalculationRequest(
 
 interface TnvedAppProps {
   embedded?: boolean;
+  currencyMode?: boolean;
   onOpenLeadModal?: (requestType?: string) => void;
 }
 
@@ -124,7 +125,7 @@ const EXAMPLE_CHIPS = [
   { label: '6109100000 (футболки)', query: '6109100000' },
 ];
 
-export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedAppProps) {
+export default function TnvedApp({ embedded = false, currencyMode = false, onOpenLeadModal }: TnvedAppProps) {
   // Navigation tabs
   const [activeTab, setActiveTab] = useState<MainTab>('calculator');
 
@@ -198,6 +199,11 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
   const [isCalculating, setIsCalculating] = useState(false);
   const [calcResult, setCalcResult] = useState<CalculationResponse | null>(null);
   const [calcError, setCalcError] = useState<string | null>(null);
+
+  // Мультивалютность: валюта ввода стоимости товара (режим currencyMode)
+  const [valueCurrency, setValueCurrency] = useState<'RUB' | 'USD' | 'EUR'>('RUB');
+
+  const currencySymbol = valueCurrency === 'RUB' ? '₽' : valueCurrency === 'USD' ? '$' : '€';
 
   // KTS interactive risk state
   const [ktsPriceUsd, setKtsPriceUsd] = useState<string>('6000');
@@ -475,13 +481,26 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
 
     const customsVal = parsePositiveDecimal(calcInputs.customsValueRub);
     if (customsVal === null) {
-      setCalcError('Укажите корректную таможенную стоимость в рублях.');
+      setCalcError('Укажите корректную стоимость товара.');
       return;
+    }
+
+    // Конвертация в рубли при выборе $/€ (курс ЦБ)
+    let customsValueRub = customsVal;
+    if (currencyMode && valueCurrency !== 'RUB') {
+      const rate = exchangeRates
+        ? (valueCurrency === 'USD' ? exchangeRates.usdRub : exchangeRates.eurRub)
+        : null;
+      if (rate === null) {
+        setCalcError('Курс ЦБ не загрузился. Обновите страницу или укажите стоимость в рублях.');
+        return;
+      }
+      customsValueRub = customsVal * rate;
     }
 
     const req: CalculationRequest = {
       code: activeCard.code,
-      customsValueRub: customsVal,
+      customsValueRub,
       confirmedBaseRates: true,
     };
 
@@ -1462,9 +1481,29 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {/* 1. Customs Value (Always required) */}
                             <div className="sm:col-span-2">
-                              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                Таможенная стоимость товара, ₽ *
-                              </label>
+                              <div className="flex items-center justify-between mb-1 gap-3">
+                                <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                                  Стоимость товара, {currencySymbol} *
+                                </label>
+                                {currencyMode && (
+                                  <div className="flex rounded-lg border border-slate-300 overflow-hidden shrink-0" role="group" aria-label="Валюта стоимости">
+                                    {(['RUB', 'USD', 'EUR'] as const).map((c) => (
+                                      <button
+                                        key={c}
+                                        type="button"
+                                        onClick={() => setValueCurrency(c)}
+                                        className={`px-3 py-1 text-xs font-bold transition-colors cursor-pointer ${
+                                          valueCurrency === c
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-white text-slate-600 hover:bg-slate-100'
+                                        }`}
+                                      >
+                                        {c === 'RUB' ? '₽' : c === 'USD' ? '$' : '€'}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                               <div className="relative">
                                 <input
                                   type="text"
@@ -1476,11 +1515,37 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                                   className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
                                   required
                                 />
-                                <span className="absolute right-4 top-2.5 text-sm font-bold text-slate-400">₽</span>
+                                <span className="absolute right-4 top-2.5 text-sm font-bold text-slate-400">{currencySymbol}</span>
                               </div>
                               <p className="mt-1 text-[11px] text-slate-500">
                                 Стоимость товара по инвойсу + стоимость доставки и страховки до границы ЕАЭС/РФ.
                               </p>
+
+                              {/* Пересчёт в рубли при выборе $/€ */}
+                              {currencyMode && valueCurrency !== 'RUB' && (() => {
+                                const v = parsePositiveDecimal(calcInputs.customsValueRub);
+                                const r = exchangeRates
+                                  ? (valueCurrency === 'USD' ? exchangeRates.usdRub : exchangeRates.eurRub)
+                                  : null;
+                                return (
+                                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                                    {v !== null && r !== null ? (
+                                      <>
+                                        <span className="text-lg font-black text-emerald-800">
+                                          = {formatCurrencyRub(v * r)}
+                                        </span>
+                                        <span className="text-[11px] font-medium text-emerald-700">
+                                          по курсу ЦБ {valueCurrency} {r.toFixed(4)} ₽ от {exchangeRates ? exchangeRates.date : ''}
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <span className="text-xs text-slate-500">
+                                        {exchangeRates ? 'Введите стоимость товара' : 'Курс ЦБ загружается…'}
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })()}
                             </div>
 
                             {/* 2. Weight in kg (if in requiredInputs) */}
@@ -1659,6 +1724,14 @@ export default function TnvedApp({ embedded = false, onOpenLeadModal }: TnvedApp
                               <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-0.5">
                                 {formatCurrencyRub(calcResult.totalRub)}
                               </p>
+                              {currencyMode && valueCurrency !== 'RUB' && exchangeRates && (() => {
+                                const r = valueCurrency === 'USD' ? exchangeRates.usdRub : exchangeRates.eurRub;
+                                return r ? (
+                                  <p className="text-sm font-semibold text-slate-600 mt-0.5">
+                                    ≈ {formatCurrencyForeign(calcResult.totalRub / r, valueCurrency)}
+                                  </p>
+                                ) : null;
+                              })()}
                             </div>
                             <span className="text-xs text-slate-500 self-start sm:self-auto">
                               Без сборов и доставки

@@ -15,7 +15,6 @@ export default defineConfig(() => {
       rollupOptions: {
         input: {
           main: path.resolve(__dirname, 'index.html'),
-          tnved2: path.resolve(__dirname, 'tnved2.html'),
           tnved3: path.resolve(__dirname, 'tnved3.html'),
           tnved: path.resolve(__dirname, 'tnved.html'),
         },

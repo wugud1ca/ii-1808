@@ -1,6 +1,6 @@
 import { StrictMode, useCallback, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import TnvedApp from './TnvedApp';
+import TnvedApp from '../tnved/TnvedApp';
 import { Header } from '../components/common/Header';
 import { Footer } from '../components/common/Footer';
 import { LeadModal } from '../components/common/LeadModal';
@@ -8,11 +8,10 @@ import type { Direction } from '../types';
 import '../index.css';
 
 /**
- * /tnved — the TN VED calculator embedded in the main site chrome
- * (site Header + Footer, site styles). Navigation goes to the main SPA
- * pages via full page loads.
+ * /tnved3 — the TN VED calculator embedded in the main site chrome
+ * (site Header + Footer, site styles), complete copy of /tnved2.
  */
-function TnvedPage() {
+function Tnved3Page() {
   const [direction, setDirection] = useState<Direction>('china');
   const [accessibilityMode, setAccessibilityMode] = useState(false);
   const [leadModalOpen, setLeadModalOpen] = useState(false);
@@ -45,11 +44,11 @@ function TnvedPage() {
         accessibilityMode={accessibilityMode}
         onToggleAccessibility={onToggleAccessibility}
         onOpenLeadModal={onOpenLeadModal}
-        activeNav="/tnved"
+        activeNav="/tnved3"
         onNavigate={onNavigate}
       />
       <main className="flex-1">
-        <TnvedApp embedded onOpenLeadModal={onOpenLeadModal} />
+        <TnvedApp embedded currencyMode onOpenLeadModal={onOpenLeadModal} />
       </main>
       <Footer onNavigate={onNavigate} onOpenLeadModal={onOpenLeadModal} />
       <LeadModal
@@ -65,7 +64,7 @@ const root = document.getElementById('root');
 if (root) {
   createRoot(root).render(
     <StrictMode>
-      <TnvedPage />
+      <Tnved3Page />
     </StrictMode>,
   );
 }

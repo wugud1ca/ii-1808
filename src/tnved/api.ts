@@ -89,3 +89,11 @@ export function formatCurrencyRub(amount: number): string {
   }).format(amount) + ' ₽';
 }
 
+export function formatCurrencyForeign(amount: number, currency: 'USD' | 'EUR'): string {
+  const symbol = currency === 'USD' ? '$' : '€';
+  return new Intl.NumberFormat('ru-RU', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount) + ' ' + symbol;
+}
+

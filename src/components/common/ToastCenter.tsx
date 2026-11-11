@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { X, ArrowRight, ArrowDownRight } from 'lucide-react';
+import { X, ArrowRight, ArrowDownRight, RussianRuble } from 'lucide-react';
 import { toastCenter } from '../../utils/toastCenter';
 import type { DailyArrival } from '../../data/dailyArrivals';
 
@@ -104,13 +104,16 @@ export const ToastCenter: React.FC<ToastCenterProps> = ({ onOpenLeadModal }) => 
             {/* Мобильная: компактная версия; тап по ней раскрывает полную форму */}
             {!promoExpanded ? (
               <motion.div
-                className="sm:hidden flex items-center justify-between gap-2.5 cursor-pointer"
+                className="sm:hidden flex items-center gap-2.5 cursor-pointer"
                 onTap={(e) => {
                   if ((e.target as HTMLElement).closest('button')) return;
                   setPromoExpanded(true);
                 }}
               >
-                <div className="text-base font-black leading-tight min-w-0">
+                <span className="w-9 h-9 rounded-xl bg-white/25 flex items-center justify-center shrink-0">
+                  <RussianRuble className="w-5 h-5" />
+                </span>
+                <div className="text-base font-black leading-tight min-w-0 flex-1">
                   <span className="underline decoration-white/90 decoration-2 underline-offset-4">Отсрочка платежа</span>{' '}
                   <span className="font-bold text-orange-100">поставок из Китая</span>
                 </div>

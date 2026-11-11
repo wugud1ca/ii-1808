@@ -104,7 +104,7 @@ export const DeliveryStatusSection: React.FC<DeliveryStatusSectionProps> = ({ on
             { value: 'с 2015', label: 'работаем для клиентов' },
             { value: '10 000+', label: 'клиентов доверяют нам' },
             { value: '1 500+', label: 'заказов ежемесячно' },
-            { value: '100 тонн', label: 'привозим каждый месяц' },
+            { value: '>100 тонн', label: 'привозим каждый месяц' },
           ].map((item, idx) => (
             <div key={idx} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-center">
               <div className="text-xl sm:text-2xl font-black">{item.value}</div>

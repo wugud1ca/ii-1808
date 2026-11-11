@@ -263,7 +263,6 @@ export default function App() {
 
     if (
       currentRoute === '/tnved' ||
-      currentRoute === '/tnved2' ||
       currentRoute === '/tnved3' ||
       currentRoute === '/tamozhnya-tnved' ||
       currentRoute === '/podbor-koda-tnved'
@@ -271,6 +270,7 @@ export default function App() {
       return (
         <TnvedApp
           embedded
+          currencyMode
           onOpenLeadModal={handleOpenDirectLeadModal}
         />
       );
