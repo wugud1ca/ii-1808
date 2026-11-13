@@ -1,0 +1,6 @@
+SEO: заголовки под CTR, 301 для старых URL, удаление tnved2
+
+- title/og:title главной, /dostavka, /express-dostavka, /alibaba — ключевая фраза первым словом + хук
+- 301: /jekspress-dostavka-iz-kitaja-v-rossiju -> /express-dostavka-iz-kitaia, /kak-zakazat-avto -> /dostavka
+- HomePage: «Статусы и сроки доставки Express Today»
+- удаление тестовой /tnved2 (301 на /tnved уже в OLD_REDIRECTS)

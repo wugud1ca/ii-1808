@@ -28,13 +28,13 @@ export interface SeoEntry {
 
 export const SEO_ROUTES: Record<string, SeoEntry> = {
   '/': {
-    title: 'Express Today — доставка и выкуп товаров из Китая для бизнеса: склад в Гуанчжоу, белая схема ВЭД',
+    title: 'Доставка и выкуп товаров из Китая под ключ — склад в Гуанчжоу, белая схема ВЭД | Express Today',
     description:
       'Официальная доставка и выкуп товаров из Китая в Россию под ключ: 1688, Taobao, Alibaba, POIZON, склад в Гуанчжоу, таможенное оформление, полный пакет документов. Онлайн-калькулятор и тарифы.',
     priority: '1.0',
   },
   '/dostavka': {
-    title: 'Международная доставка из Китая в Россию: авиа, авто, ЖД, море — Express Today',
+    title: 'Доставка из Китая в Россию под ключ: авиа, авто, ЖД, море — растаможка и документы | Express Today',
     description:
       'Доставка грузов из Китая в Россию: авиа 9–15 дней, ускоренное авто 13–20 дней, обычное авто, ЖД и морские контейнеры. Таможенное оформление и полный пакет документов. Расчёт онлайн.',
     priority: '0.9',
@@ -64,7 +64,7 @@ export const SEO_ROUTES: Record<string, SeoEntry> = {
     priority: '0.8',
   },
   '/express-dostavka-iz-kitaia': {
-    title: 'Экспресс-доставка из Китая в Россию: срочные грузы от 5 дней — Express Today',
+    title: 'Экспресс-доставка из Китая в Россию авиа: от 5 дней до двери — Express Today',
     description:
       'Экспресс-доставка из Китая: срочные партии, образцы и документы авиа от 5 дней до двери. Консолидация на складе в Гуанчжоу, приоритетная обработка, таможенное оформление, отслеживание в личном кабинете.',
     priority: '0.8',
@@ -119,7 +119,7 @@ export const SEO_ROUTES: Record<string, SeoEntry> = {
     priority: '0.8',
   },
   '/alibaba': {
-    title: 'Посредник Alibaba: выкуп товаров с доставкой в Россию — Express Today',
+    title: 'Выкуп с Alibaba под ключ: проверка поставщика, доставка в Россию — Express Today',
     description:
       'Выкуп с Alibaba.com: аудит поставщика, переговоры, заказ образцов, доставка в Россию с таможенным оформлением.',
     canonical: '/vikup-1688-alibaba',
@@ -338,6 +338,8 @@ export const OLD_REDIRECTS: Record<string, string> = {
   '/services': '/dostavka',
   '/session': '/',
   '/tnved2': '/tnved',
+  '/jekspress-dostavka-iz-kitaja-v-rossiju': '/express-dostavka-iz-kitaia',
+  '/kak-zakazat-avto-iz-kitaia-pod-klyuch': '/dostavka',
 };
 
 export const FALLBACK_TITLE =

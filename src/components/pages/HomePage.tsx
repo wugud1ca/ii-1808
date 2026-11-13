@@ -284,7 +284,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onOpenDirec
               </div>
             </div>
 
-            {/* Бейдж-ссылка: «Статусы поставок Express Today на: {дата время}» */}
+            {/* Бейдж-ссылка: «Статусы и сроки доставки Express Today {дата время}» */}
             <div className="pt-2">
               <a
                 href="/dostavka"
@@ -295,7 +295,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onOpenDirec
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
                 </span>
-                <span className="text-slate-300">Статусы поставок Express Today на:</span>
+                <span className="text-slate-300">Статусы и сроки доставки Express Today</span>
                 <span className="font-bold text-white tabular-nums">{fmtNow(now)}</span>
                 <ChevronRight className="w-4 h-4 text-orange-400 group-hover:translate-x-0.5 transition-transform" />
               </a>
