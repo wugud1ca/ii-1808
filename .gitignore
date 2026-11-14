@@ -9,4 +9,3 @@ coverage/
 
 # пререндер-снапшоты для ботов (генерируются, см. PRERENDER.md)
 prerendered/
-.commitmsg
