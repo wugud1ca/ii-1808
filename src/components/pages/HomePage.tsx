@@ -31,6 +31,8 @@ import { CalculatorWidget } from '../common/CalculatorWidget';
 import { OfficialLegalEntitySection } from '../home/OfficialLegalEntitySection';
 import { DailyArrivalsBlock } from '../common/DailyArrivalsBlock';
 import { ToastCenter } from '../common/ToastCenter';
+import { DeliveryStatusSection } from '../services/DeliveryStatusSection';
+import { IndividualDeliveryCalculation } from '../home/IndividualDeliveryCalculation';
 import { trackEvent } from '../../utils/analytics';
 
 const TYPEWRITER_PHRASES = [
@@ -44,9 +46,16 @@ interface HomePageProps {
   onOpenDirectLeadModal?: (requestType?: string) => void;
   onNavigate: (route: string) => void;
   showDailyArrivals?: boolean;
+  showDeliveryProofBlocks?: boolean;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onOpenDirectLeadModal, onNavigate, showDailyArrivals = false }) => {
+export const HomePage: React.FC<HomePageProps> = ({
+  onOpenLeadModal,
+  onOpenDirectLeadModal,
+  onNavigate,
+  showDailyArrivals = false,
+  showDeliveryProofBlocks = false,
+}) => {
   const [openFaqId, setOpenFaqId] = useState<string | null>('faq-1');
 
   // Живые дата/время для бейджа «Статусы поставок»
@@ -310,6 +319,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenLeadModal, onOpenDirec
       <div id="cabinet-video-showcase" className="max-w-7xl mx-auto px-4">
         <CabinetVideoShowcase onOpenLeadModal={onOpenLeadModal} />
       </div>
+
+      {showDeliveryProofBlocks && (
+        <div className="max-w-7xl mx-auto px-4 space-y-8 lg:space-y-10">
+          <DeliveryStatusSection
+            onOpenLeadModal={onOpenLeadModal}
+            stabilityTitle="Стабильность поставок – залог успешного будущего"
+          />
+          <IndividualDeliveryCalculation
+            onOpenLeadModal={onOpenDirectLeadModal || onOpenLeadModal}
+          />
+        </div>
+      )}
 
       {/* Customer Scenario Selector ("Какая задача у вас сейчас?") */}
       <section className="max-w-7xl mx-auto px-4">

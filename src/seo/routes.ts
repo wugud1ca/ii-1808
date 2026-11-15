@@ -293,6 +293,12 @@ export const SEO_ROUTES: Record<string, SeoEntry> = {
     description: 'Условия оказания услуг доставки Express Today.',
     priority: '0.3',
   },
+  '/index_test_15112026': {
+    title: 'Express Today — тестовая версия главной от 15.11.2026',
+    description: 'Тестовая копия главной страницы Express Today с блоками стабильности поставок и индивидуального расчёта.',
+    robots: 'noindex',
+    sitemap: false,
+  },
   '/test2': {
     title: 'Express Today — тестовая страница',
     description: 'Служебная страница.',

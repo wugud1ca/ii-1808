@@ -4,9 +4,13 @@ import { DeliveryChart } from '../common/DeliveryChart';
 
 interface DeliveryStatusSectionProps {
   onOpenLeadModal: (requestType?: string) => void;
+  stabilityTitle?: string;
 }
 
-export const DeliveryStatusSection: React.FC<DeliveryStatusSectionProps> = ({ onOpenLeadModal }) => (
+export const DeliveryStatusSection: React.FC<DeliveryStatusSectionProps> = ({
+  onOpenLeadModal,
+  stabilityTitle = 'Работаем давно — стабильно смотрим в будущее',
+}) => (
   <div className="space-y-8">
     {/* Блок 1: официальные каналы доставки стабильны */}
     <section className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 space-y-5">
@@ -90,7 +94,7 @@ export const DeliveryStatusSection: React.FC<DeliveryStatusSectionProps> = ({ on
     <section className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-orange-500 to-amber-500 rounded-3xl p-6 sm:p-10 text-white shadow-lg shadow-orange-600/20">
       <div className="relative z-10 space-y-6">
         <div className="space-y-3">
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Работаем давно — стабильно смотрим в будущее</h2>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight">{stabilityTitle}</h2>
           <p className="text-sm sm:text-base text-orange-50 leading-relaxed max-w-3xl">
             Express Today возит грузы из Китая для собственных нужд с 2005 года, а сервис для клиентов работает с 2015 года.
             Мы пережили не один кризис логистики — и каждый раз сохраняли грузы, сроки и доверие клиентов.

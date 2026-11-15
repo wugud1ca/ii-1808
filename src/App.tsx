@@ -439,6 +439,19 @@ export default function App() {
       return <ServicePage slug={cleanSlug} onNavigate={handleNavigate} onOpenLeadModal={handleOpenCalculationFlow} />;
     }
 
+    // Тестовая копия главной от 15.11.2026: дополнительные блоки доверия и расчёта
+    if (currentRoute === '/index_test_15112026') {
+      return (
+        <HomePage
+          onOpenLeadModal={handleOpenCalculationFlow}
+          onOpenDirectLeadModal={handleOpenDirectLeadModal}
+          onNavigate={handleNavigate}
+          showDailyArrivals
+          showDeliveryProofBlocks
+        />
+      );
+    }
+
     // Default Home Page
     if (currentRoute === '/test2') {
       return <HomePage onOpenLeadModal={handleOpenCalculationFlow} onOpenDirectLeadModal={handleOpenDirectLeadModal} onNavigate={handleNavigate} showDailyArrivals />;
@@ -469,6 +482,7 @@ export default function App() {
         onOpenLeadModal={handleOpenCalculationFlow}
         activeNav={currentRoute}
         onNavigate={handleNavigate}
+        hideHeaderCtas={currentRoute === '/index_test_15112026'}
       />
 
       {/* Main Content Area */}

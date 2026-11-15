@@ -38,6 +38,7 @@ interface HeaderProps {
   onOpenLeadModal: (requestType?: string) => void;
   activeNav: string;
   onNavigate: (route: string) => void;
+  hideHeaderCtas?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -48,6 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenLeadModal,
   activeNav,
   onNavigate,
+  hideHeaderCtas = false,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
@@ -479,16 +481,18 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {/* Desktop CTA */}
-          <button
-            onClick={() => {
-              onOpenLeadModal('Рассчитать доставку из шапки');
-              trackEvent('open_calculator', { source: 'desktop_header' });
-            }}
-            className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-sm px-4 py-2.5 rounded-xl shadow-md shadow-orange-600/25 transition-all cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-98 whitespace-nowrap"
-          >
-            <CalcIcon className="w-4 h-4 shrink-0" />
-            <span>Рассчитать доставку</span>
-          </button>
+          {!hideHeaderCtas && (
+            <button
+              onClick={() => {
+                onOpenLeadModal('Рассчитать доставку из шапки');
+                trackEvent('open_calculator', { source: 'desktop_header' });
+              }}
+              className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-sm px-4 py-2.5 rounded-xl shadow-md shadow-orange-600/25 transition-all cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-98 whitespace-nowrap"
+            >
+              <CalcIcon className="w-4 h-4 shrink-0" />
+              <span>Рассчитать доставку</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -573,16 +577,18 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Tablet Right Controls */}
           <div className="flex items-center gap-3 shrink-0">
-            <button
-              onClick={() => {
-                onOpenLeadModal('Рассчитать доставку из шапки планшета');
-                trackEvent('open_calculator', { source: 'tablet_header' });
-              }}
-              className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md shadow-orange-600/25 transition-all cursor-pointer flex items-center gap-2 min-h-[44px] active:scale-98 whitespace-nowrap"
-            >
-              <CalcIcon className="w-4 h-4 shrink-0" />
-              <span>Рассчитать</span>
-            </button>
+            {!hideHeaderCtas && (
+              <button
+                onClick={() => {
+                  onOpenLeadModal('Рассчитать доставку из шапки планшета');
+                  trackEvent('open_calculator', { source: 'tablet_header' });
+                }}
+                className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md shadow-orange-600/25 transition-all cursor-pointer flex items-center gap-2 min-h-[44px] active:scale-98 whitespace-nowrap"
+              >
+                <CalcIcon className="w-4 h-4 shrink-0" />
+                <span>Рассчитать</span>
+              </button>
+            )}
 
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -679,31 +685,33 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Row 3: Mobile CTA Bar (In Normal Flow) */}
-        <div className="bg-slate-50/80 p-2.5 border-b border-slate-200">
-          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2">
-            {/* Primary CTA: Calculate */}
-            <button
-              onClick={() => {
-                onOpenLeadModal('Мобильная кнопка Рассчитать');
-                trackEvent('open_calculator', { source: 'mobile_cta_bar' });
-              }}
-              className="w-full min-h-[52px] bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-sm rounded-xl shadow-md shadow-orange-600/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-            >
-              <CalcIcon className="w-5 h-5 shrink-0" />
-              <span>Рассчитать доставку</span>
-            </button>
+        {!hideHeaderCtas && (
+          <div className="bg-slate-50/80 p-2.5 border-b border-slate-200">
+            <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2">
+              {/* Primary CTA: Calculate */}
+              <button
+                onClick={() => {
+                  onOpenLeadModal('Мобильная кнопка Рассчитать');
+                  trackEvent('open_calculator', { source: 'mobile_cta_bar' });
+                }}
+                className="w-full min-h-[52px] bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-sm rounded-xl shadow-md shadow-orange-600/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              >
+                <CalcIcon className="w-5 h-5 shrink-0" />
+                <span>Рассчитать доставку</span>
+              </button>
 
-            {/* Secondary CTA: Call */}
-            <a
-              href={siteConfig.phone.mainHref}
-              onClick={() => trackEvent('click_phone', { source: 'mobile_cta_bar' })}
-              className="w-full min-h-[52px] bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-            >
-              <Phone className="w-5 h-5 text-orange-400 shrink-0" />
-              <span>Позвонить</span>
-            </a>
+              {/* Secondary CTA: Call */}
+              <a
+                href={siteConfig.phone.mainHref}
+                onClick={() => trackEvent('click_phone', { source: 'mobile_cta_bar' })}
+                className="w-full min-h-[52px] bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              >
+                <Phone className="w-5 h-5 text-orange-400 shrink-0" />
+                <span>Позвонить</span>
+              </a>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* =========================================================================
@@ -767,16 +775,18 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               {/* Quick Calculate Banner */}
-              <button
-                onClick={() => {
-                  onOpenLeadModal('Из бокового меню');
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-orange-600/25 text-center text-sm flex items-center justify-center gap-2 cursor-pointer min-h-[48px] active:scale-98"
-              >
-                <CalcIcon className="w-5 h-5" />
-                <span>Рассчитать доставку</span>
-              </button>
+              {!hideHeaderCtas && (
+                <button
+                  onClick={() => {
+                    onOpenLeadModal('Из бокового меню');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-orange-600/25 text-center text-sm flex items-center justify-center gap-2 cursor-pointer min-h-[48px] active:scale-98"
+                >
+                  <CalcIcon className="w-5 h-5" />
+                  <span>Рассчитать доставку</span>
+                </button>
+              )}
 
               {/* Main Navigation Links */}
               <div className="space-y-1">
