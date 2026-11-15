@@ -325,6 +325,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           <DeliveryStatusSection
             onOpenLeadModal={onOpenLeadModal}
             stabilityTitle="Стабильность поставок – залог успешного будущего"
+            testHomeVariant
           />
           <IndividualDeliveryCalculation
             onOpenLeadModal={onOpenDirectLeadModal || onOpenLeadModal}
