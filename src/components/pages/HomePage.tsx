@@ -327,9 +327,6 @@ export const HomePage: React.FC<HomePageProps> = ({
             stabilityTitle="Стабильность поставок – залог успешного будущего"
             testHomeVariant
           />
-          <IndividualDeliveryCalculation
-            onOpenLeadModal={onOpenDirectLeadModal || onOpenLeadModal}
-          />
         </div>
       )}
 
@@ -392,6 +389,14 @@ export const HomePage: React.FC<HomePageProps> = ({
 
         </div>
       </section>
+
+      {showDeliveryProofBlocks && (
+        <div className="max-w-7xl mx-auto px-4">
+          <IndividualDeliveryCalculation
+            onOpenLeadModal={onOpenDirectLeadModal || onOpenLeadModal}
+          />
+        </div>
+      )}
 
       {/* How It Works - 6-Step Workflow Schema */}
       <section className="max-w-7xl mx-auto px-4">
