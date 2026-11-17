@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { X, ArrowRight, ArrowDownRight, RussianRuble } from 'lucide-react';
+import { X, ArrowRight, ArrowDownRight, EyeOff, RussianRuble } from 'lucide-react';
 import { toastCenter } from '../../utils/toastCenter';
 import type { DailyArrival } from '../../data/dailyArrivals';
 
 interface ToastCenterProps {
   onOpenLeadModal: (requestType?: string) => void;
+  showTtnHideAction?: boolean;
 }
 
 const PROMO_APPEAR_MS = 6000;   // промо появляется через 6 секунд
@@ -16,7 +17,10 @@ const PROMO_REQUEST = 'Заявка: Отсрочка платежа поста�
 // Единый «центр сообщений»: фиксированная колонка слева внизу.
 // Сверху — промо «Отсрочка платежа» (постоянный, пока не закрыт),
 // под ним — ТТН-пуши, которые сменяют друг друга. Оба можно смахнуть.
-export const ToastCenter: React.FC<ToastCenterProps> = ({ onOpenLeadModal }) => {
+export const ToastCenter: React.FC<ToastCenterProps> = ({
+  onOpenLeadModal,
+  showTtnHideAction = false,
+}) => {
   const [ttn, setTtn] = useState<DailyArrival | null>(toastCenter.ttn);
   const [promoClosed, setPromoClosed] = useState(false);
   const [promoDelayDone, setPromoDelayDone] = useState(false);
@@ -207,13 +211,25 @@ export const ToastCenter: React.FC<ToastCenterProps> = ({ onOpenLeadModal }) => 
                   </div>
                 )}
 
-                <button
-                  onClick={() => goToCargo(ttn.ttn)}
-                  className="mt-2 text-xs font-extrabold text-orange-400 hover:text-orange-300 flex items-center gap-1 cursor-pointer transition-colors bg-orange-500/10 hover:bg-orange-500/20 px-2.5 py-1 rounded-lg border border-orange-500/30"
-                >
-                  <span>Показать груз</span>
-                  <ArrowDownRight className="w-3.5 h-3.5" />
-                </button>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => goToCargo(ttn.ttn)}
+                    className="text-xs font-extrabold text-orange-400 hover:text-orange-300 flex items-center gap-1 cursor-pointer transition-colors bg-orange-500/10 hover:bg-orange-500/20 px-2.5 py-1 rounded-lg border border-orange-500/30"
+                  >
+                    <span>Показать груз</span>
+                    <ArrowDownRight className="w-3.5 h-3.5" />
+                  </button>
+                  {showTtnHideAction && (
+                    <button
+                      onClick={dismissTtn}
+                      className="text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1 cursor-pointer transition-colors bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-600/80"
+                      aria-label="Скрыть уведомление о грузе"
+                    >
+                      <EyeOff className="w-3.5 h-3.5" />
+                      <span>Скрыть</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
               <button

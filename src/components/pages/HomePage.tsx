@@ -438,7 +438,10 @@ export const HomePage: React.FC<HomePageProps> = ({
       )}
 
       {/* Центр сообщений: промо «Отсрочка платежа» + ТТН-пуши единой колонкой */}
-      <ToastCenter onOpenLeadModal={onOpenDirectLeadModal || onOpenLeadModal} />
+      <ToastCenter
+        onOpenLeadModal={onOpenDirectLeadModal || onOpenLeadModal}
+        showTtnHideAction={showDeliveryProofBlocks}
+      />
 
       {/* Official Chinese Legal Entity Block ("Мы работаем официально") */}
       <OfficialLegalEntitySection onOpenLeadModal={onOpenLeadModal} />
