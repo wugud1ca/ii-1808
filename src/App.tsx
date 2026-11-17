@@ -33,7 +33,9 @@ import { ExpressDeliveryPage } from './components/pages/ExpressDeliveryPage';
 import { SeoLandingPage } from './components/pages/SeoLandingPage';
 import { seoLandingBySlug } from './data/seoLandingData';
 import { SupportingDocumentsPage } from './components/pages/SupportingDocumentsPage';
+import { WholesaleGoodsPage } from './components/pages/WholesaleGoodsPage';
 import TnvedApp from './tnved/TnvedApp';
+import { isDeliveryProofHome } from './utils/homeVariant';
 
 // Известные маршруты сайта: всё, что рендерит renderCurrentView.
 // Всё остальное считается 404 и редиректится на выкуп с 1688.
@@ -93,6 +95,7 @@ export default function App() {
     }
     return '/';
   });
+  const showDeliveryProofHome = isDeliveryProofHome(currentRoute);
 
   // Accessibility mode state
   const [accessibilityMode, setAccessibilityMode] = useState<boolean>(() => {
@@ -360,6 +363,15 @@ export default function App() {
       );
     }
 
+    if (currentRoute === '/tovary-iz-kitaja-optom-test') {
+      return (
+        <WholesaleGoodsPage
+          onNavigate={handleNavigate}
+          onOpenLeadModal={handleOpenCalculationFlow}
+        />
+      );
+    }
+
     const landing = seoLandingBySlug[currentRoute];
     if (landing) {
       return (
@@ -462,8 +474,16 @@ export default function App() {
       return <HomePage onOpenLeadModal={handleOpenCalculationFlow} onOpenDirectLeadModal={handleOpenDirectLeadModal} onNavigate={handleNavigate} />;
     }
 
-    // Главная: теперь с блоком «Грузы получаемые нами ежедневно»
-    return <HomePage onOpenLeadModal={handleOpenCalculationFlow} onOpenDirectLeadModal={handleOpenDirectLeadModal} onNavigate={handleNavigate} showDailyArrivals />;
+    // Главная: утверждённая версия с блоками статуса, доверия, КП и примерами грузов
+    return (
+      <HomePage
+        onOpenLeadModal={handleOpenCalculationFlow}
+        onOpenDirectLeadModal={handleOpenDirectLeadModal}
+        onNavigate={handleNavigate}
+        showDailyArrivals
+        showDeliveryProofBlocks={showDeliveryProofHome}
+      />
+    );
   };
 
   return (
@@ -482,7 +502,7 @@ export default function App() {
         onOpenLeadModal={handleOpenCalculationFlow}
         activeNav={currentRoute}
         onNavigate={handleNavigate}
-        hideHeaderCtas={currentRoute === '/index_test_15112026'}
+        hideHeaderCtas={showDeliveryProofHome}
       />
 
       {/* Main Content Area */}

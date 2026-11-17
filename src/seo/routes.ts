@@ -311,6 +311,13 @@ export const SEO_ROUTES: Record<string, SeoEntry> = {
     robots: 'noindex',
     sitemap: false,
   },
+  '/tovary-iz-kitaja-optom-test': {
+    title: 'Товары из Китая оптом: закупка у фабрик, белый ввоз с НДС, документы — Express Today',
+    description:
+      'Тестовая версия страницы «Товары из Китая оптом»: сценарии для селлеров, розницы, дистрибьюторов и корпоративных закупок, схемы поставки и ТЭУ, примеры КП.',
+    robots: 'noindex',
+    sitemap: false,
+  },
 };
 
 // SEO-посадочные страницы (виды доставки, города, статьи): title/description
