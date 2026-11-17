@@ -30,9 +30,7 @@ export const DailyArrivalsBlock: React.FC = () => {
   const [skeletonCount, setSkeletonCount] = useState<number>(0);
   const [active, setActive] = useState<number | null>(null);
   const [highlightTtn, setHighlightTtn] = useState<string | null>(null);
-  const [suppressToasts, setSuppressToasts] = useState<boolean>(() => {
-    try { return localStorage.getItem('et-no-arrival-toasts') === '1'; } catch { return false; }
-  });
+  const [suppressToasts, setSuppressToasts] = useState<boolean>(() => toastCenter.ttnSuppressed);
 
   // Регистрируем обработчик «Показать груз» из ТТН-пуша: подсветка + скролл
   useEffect(() => {
@@ -46,11 +44,15 @@ export const DailyArrivalsBlock: React.FC = () => {
     return () => toastCenter.setHighlightHandler(null);
   }, []);
 
+  // Синхронизируем галочку с кнопкой «Скрыть» в ТТН-пуше.
+  useEffect(
+    () => toastCenter.subscribe(() => setSuppressToasts(toastCenter.ttnSuppressed)),
+    []
+  );
+
   const blockRef = useRef<HTMLDivElement>(null);
   const scheduleRef = useRef<number[]>([]);
   const showAllRef = useRef(false);
-  const suppressRef = useRef(suppressToasts);
-  suppressRef.current = suppressToasts;
   if (scheduleRef.current.length === 0) {
     scheduleRef.current = buildAppearSchedule(dailyArrivals.length - INITIAL_COUNT);
   }
@@ -77,7 +79,7 @@ export const DailyArrivalsBlock: React.FC = () => {
               setSkeletonCount((c) => c - 1);
               setRenderedCount((r) => r + 1);
               const item = dailyArrivals[INITIAL_COUNT + idx];
-              if (item && !isBlockVisible() && !suppressRef.current && !showAllRef.current) {
+              if (item && !isBlockVisible() && !toastCenter.ttnSuppressed && !showAllRef.current) {
                 toastCenter.setTtn(item);
               }
             }, SKELETON_MS)
@@ -98,9 +100,7 @@ export const DailyArrivalsBlock: React.FC = () => {
 
   // Галочка «Не показывать сообщения о примерах ТТН»
   const handleSuppressChange = (v: boolean) => {
-    setSuppressToasts(v);
-    if (v) toastCenter.setTtn(null);
-    try { localStorage.setItem('et-no-arrival-toasts', v ? '1' : '0'); } catch { /* noop */ }
+    toastCenter.setTtnSuppressed(v);
   };
 
   // Подсветка при переходе к грузу из пуша

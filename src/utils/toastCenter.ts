@@ -4,6 +4,17 @@
 import type { DailyArrival } from '../data/dailyArrivals';
 
 let ttn: DailyArrival | null = null;
+const TTN_SUPPRESSION_KEY = 'et-no-arrival-toasts';
+
+function readTtnSuppressed(): boolean {
+  try {
+    return typeof localStorage !== 'undefined' && localStorage.getItem(TTN_SUPPRESSION_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+let ttnSuppressed = readTtnSuppressed();
 let highlightHandler: ((ttn: string) => void) | null = null;
 const subs = new Set<() => void>();
 
@@ -15,8 +26,21 @@ export const toastCenter = {
   get ttn(): DailyArrival | null {
     return ttn;
   },
+  get ttnSuppressed(): boolean {
+    return ttnSuppressed;
+  },
   setTtn(v: DailyArrival | null): void {
-    ttn = v;
+    ttn = v && ttnSuppressed ? null : v;
+    notify();
+  },
+  setTtnSuppressed(v: boolean): void {
+    ttnSuppressed = v;
+    if (v) ttn = null;
+    try {
+      localStorage.setItem(TTN_SUPPRESSION_KEY, v ? '1' : '0');
+    } catch {
+      // localStorage may be unavailable in private/restricted browsing modes.
+    }
     notify();
   },
   setHighlightHandler(h: ((ttn: string) => void) | null): void {

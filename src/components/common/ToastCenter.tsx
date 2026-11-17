@@ -45,6 +45,7 @@ export const ToastCenter: React.FC<ToastCenterProps> = ({
   const openPromoForm = () => onOpenLeadModal(PROMO_REQUEST);
   const closePromo = () => setPromoClosed(true);
   const dismissTtn = () => toastCenter.setTtn(null);
+  const suppressTtn = () => toastCenter.setTtnSuppressed(true);
 
   const goToCargo = (ttnValue: string) => {
     toastCenter.setTtn(null);
@@ -221,9 +222,9 @@ export const ToastCenter: React.FC<ToastCenterProps> = ({
                   </button>
                   {showTtnHideAction && (
                     <button
-                      onClick={dismissTtn}
+                      onClick={suppressTtn}
                       className="text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1 cursor-pointer transition-colors bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-lg border border-slate-600/80"
-                      aria-label="Скрыть уведомление о грузе"
+                      aria-label="Скрыть все уведомления о примерах ТТН"
                     >
                       <EyeOff className="w-3.5 h-3.5" />
                       <span>Скрыть</span>
