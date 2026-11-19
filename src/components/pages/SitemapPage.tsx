@@ -104,7 +104,7 @@ const GROUPS: SitemapGroup[] = [
       { href: '/skolko-stoit-dostavka-iz-kitaia-2025', title: 'Сколько стоит доставка', desc: 'Актуальные тарифы и калькуляция' },
       { href: '/skolko-idet-dostavka-iz-kitaia-v-rossiyu', title: 'Сколько идёт доставка', desc: 'Сроки по всем каналам' },
       { href: '/dostavka-iz-kitaia-5-prostih-shagov', title: 'Доставка: 5 простых шагов', desc: 'Пошаговая инструкция для новичков' },
-      { href: '/tovary-iz-kitaja-optom', title: 'Товары из Китая оптом', desc: 'Какие товары выгодно везти' },
+      { href: '/tovary-iz-kitaja-optom', title: 'Товары из Китая оптом', desc: 'Сценарии для селлеров, розницы и дистрибьюторов' },
       { href: '/optovye-postavshhiki-iz-kitaja', title: 'Оптовые поставщики', desc: 'Как найти и проверить поставщика' },
     ],
   },

@@ -363,7 +363,7 @@ export default function App() {
       );
     }
 
-    if (currentRoute === '/tovary-iz-kitaja-optom-test') {
+    if (currentRoute === '/tovary-iz-kitaja-optom') {
       return (
         <WholesaleGoodsPage
           onNavigate={handleNavigate}
